@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "huangque.query-plan.v1",
+  "project": "黄雀 Oriole",
+  "scope": "全国",
+  "version": "2026-08-20",
+  "timezone": "Asia/Shanghai",
+  "principle": "搜索和网页档案只用于发现稳定发布者；岗位长期以企业官网、官方 ATS、政府就业平台及公开目录为原始来源。",
+  "buckets": [
+    {
+      "id": "national-official",
+      "label": "国家级公共就业与公开招聘平台",
+      "cadenceDays": 1,
+      "queries": [
+        "site:job.mohrss.gov.cn 招聘 岗位 全国",
+        "site:ncss.cn/student/jobs 职位 中国",
+        "site:mohrss.gov.cn 事业单位 公开招聘 岗位",
+        "site:sasac.gov.cn 招聘 岗位 中央企业",
+        "site:gov.cn 招聘 岗位 公告"
+      ]
+    },
+    {
+      "id": "provincial-public",
+      "label": "省级人社、公共就业与事业单位招聘入口",
+      "cadenceDays": 3,
+      "dimensions": {
+        "province": [
+          "北京", "天津", "河北省", "山西省", "内蒙古自治区", "辽宁省", "吉林省", "黑龙江省",
+          "上海", "江苏省", "浙江省", "安徽省", "福建省", "江西省", "山东省", "河南省",
+          "湖北省", "湖南省", "广东省", "广西壮族自治区", "海南省", "重庆", "四川省", "贵州省",
+          "云南省", "西藏自治区", "陕西省", "甘肃省", "青海省", "宁夏回族自治区", "新疆维吾尔自治区",
+          "台湾省", "香港特别行政区", "澳门特别行政区"
+        ]
+      },
+      "templates": [
+        "{province} 人社 公共就业 招聘 岗位 官方",
+        "site:gov.cn {province} 事业单位 公开招聘 岗位"
+      ]
+    },
+    {
+      "id": "prefecture-rotation",
+      "label": "地级城市轮换补漏",
+      "cadenceDays": 7,
+      "dimensions": {
+        "city": [
+          "石家庄", "太原", "呼和浩特", "沈阳", "大连", "长春", "哈尔滨", "南京", "苏州", "无锡",
+          "杭州", "宁波", "温州", "合肥", "福州", "厦门", "南昌", "济南", "青岛", "郑州",
+          "武汉", "宜昌", "长沙", "广州", "深圳", "佛山", "东莞", "南宁", "海口", "三亚",
+          "成都", "绵阳", "贵阳", "昆明", "拉萨", "西安", "兰州", "西宁", "银川", "乌鲁木齐"
+        ]
+      },
+      "templates": [
+        "{city} 招聘 岗位 公共就业 官方",
+        "{city} 产业园 招聘会 岗位 企业"
+      ]
+    },
+    {
+      "id": "public-ats",
+      "label": "企业官网与公开 ATS 中国岗位板",
+      "cadenceDays": 2,
+      "queries": [
+        "site:jobs.lever.co China jobs",
+        "site:job-boards.greenhouse.io China jobs",
+        "site:jobs.ashbyhq.com China jobs",
+        "site:myworkdayjobs.com China jobs",
+        "site:careers.smartrecruiters.com China jobs"
+      ]
+    },
+    {
+      "id": "company-careers",
+      "label": "重点行业企业招聘官网",
+      "cadenceDays": 7,
+      "dimensions": {
+        "industry": ["制造业", "零售餐饮", "物流供应链", "医疗健康", "教育", "互联网", "金融", "专业服务"]
+      },
+      "templates": [
+        "中国 {industry} 企业 招聘官网 社会招聘",
+        "China {industry} careers official jobs"
+      ],
+      "seedQueries": [
+        "site:jobs.apple.com China jobs",
+        "site:amazon.jobs China jobs",
+        "site:jobs.bytedance.com 中国 社会招聘",
+        "site:zhaopin.meituan.com 职位"
+      ]
+    },
+    {
+      "id": "parks-associations",
+      "label": "园区、协会与公开招聘活动",
+      "cadenceDays": 7,
+      "queries": [
+        "中国 产业园 招聘会 岗位 企业 官方",
+        "中国 行业协会 招聘 岗位 官方",
+        "中国 零工市场 公共就业 岗位 官方"
+      ]
+    }
+  ]
+}

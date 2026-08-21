@@ -1,0 +1,118 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { buildBaiduRequest, extractSitePattern, runBaiduProvider, runCommonCrawlProvider, runPublicCatalogProvider, truncateBaiduQuery } from "../scripts/huangque/lib/providers.mjs";
+import { completedDiscoveryTaskIds } from "../scripts/huangque/lib/engine.mjs";
+import { dueQueryBuckets, expandQueryPlan, queryTaskProviders, selectDueQueryTasks } from "../scripts/huangque/lib/query-plan.mjs";
+import { discoverSourceCandidates } from "../scripts/huangque/lib/source-discovery.mjs";
+
+test("query plan expands dimensions and honors bucket cadence", () => {
+  const plan = {
+    schemaVersion: "huangque.query-plan.v1",
+    buckets: [{ id: "district", cadenceDays: 3, dimensions: { district: ["朝阳", "海淀"] }, templates: ["北京 {district} 招聘"] }],
+  };
+  assert.deepEqual(expandQueryPlan(plan).map((item) => item.query), ["北京 朝阳 招聘", "北京 海淀 招聘"]);
+  const state = { district: { lastCompletedAt: "2026-08-19T00:00:00.000Z" } };
+  assert.equal(dueQueryBuckets(plan, state, new Date("2026-08-20T00:00:00.000Z"))[0].due, false);
+  assert.equal(selectDueQueryTasks(plan, state, { now: new Date("2026-08-23T00:00:00.000Z") }).length, 2);
+});
+
+test("Baidu provider uses official JSON endpoint contract and never logs the key", async () => {
+  let observed;
+  const fetchImpl = async (url, options) => {
+    observed = { url, authorization: options.headers.get("authorization"), payload: JSON.parse(options.body) };
+    return new Response(JSON.stringify({ request_id: "req-1", references: [{ title: "Example Beijing jobs", url: "https://jobs.example.com/careers", snippet: "北京 招聘", date: "2026-08-19", rerank_score: 0.9 }] }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘 官网" }], { apiKey: "super-secret", fetchOptions: { fetchImpl, skipDns: true } });
+  assert.equal(output.providerStatus, "ok");
+  assert.equal(output.hits.length, 1);
+  assert.equal(observed.authorization, "Bearer super-secret");
+  assert.equal(observed.payload.search_source, "baidu_search_v2");
+  assert.equal(buildBaiduRequest("北京 招聘").resource_type_filter[0].top_k, 20);
+  assert.ok(!JSON.stringify(output).includes("super-secret"));
+  assert.ok(truncateBaiduQuery("北".repeat(100)).length <= 36);
+});
+
+test("Baidu missing credential is non-fatal", async () => {
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], { apiKey: "" });
+  assert.equal(output.providerStatus, "not_configured");
+  assert.equal(output.hits.length, 0);
+});
+
+test("discovery tasks expose provider capability and leave Baidu-only work visibly blocked", () => {
+  const plan = {
+    schemaVersion: "huangque.query-plan.v1",
+    buckets: [{ id: "mixed", cadenceDays: 1, queries: ["全国 招聘 官网", "site:gov.cn 招聘 岗位"] }],
+  };
+  assert.deepEqual(queryTaskProviders("全国 招聘 官网"), ["baidu"]);
+  assert.deepEqual(queryTaskProviders("site:gov.cn 招聘 岗位"), ["baidu", "common_crawl"]);
+  assert.deepEqual(selectDueQueryTasks(plan, {}, { availableProviders: ["common_crawl"] }).map((task) => task.query), ["site:gov.cn 招聘 岗位"]);
+  assert.equal(selectDueQueryTasks(plan, {}, { availableProviders: [] }).length, 0);
+  assert.equal(selectDueQueryTasks(plan, {}).length, 2);
+});
+
+test("official catalog success never masks failed query providers for cadence", () => {
+  const tasks = [
+    { id: "a1", bucketId: "a" },
+    { id: "a2", bucketId: "a" },
+    { id: "b1", bucketId: "b" },
+  ];
+  assert.deepEqual(completedDiscoveryTaskIds(tasks, [
+    { provider: "official_catalog", status: "ok", metadata: {} },
+    { provider: "baidu", status: "failed", metadata: { completedTaskIds: [] } },
+    { provider: "common_crawl", status: "ok", metadata: { completedTaskIds: ["a1", "a2"] } },
+  ]), ["a1", "a2"]);
+});
+
+test("official catalog keeps declared nationwide coverage independent from the first search task", async () => {
+  const output = await runPublicCatalogProvider([{ id: "hubei", query: "湖北省 招聘", dimensions: { province: "湖北省" } }], {
+    catalog: {
+      schemaVersion: "huangque.public-catalog.v1",
+      scope: "全国",
+      updatedAt: "2026-08-20T00:00:00.000Z",
+      entries: [{ id: "national", title: "国家大学生就业服务平台", url: "https://www.ncss.cn/student/jobs/index.html", snippet: "全国校园招聘职位", publisher: "国家大学生就业服务平台", region: "全国", regionCode: "CN", coverageRegions: "all_provincial_regions" }],
+    },
+  });
+  assert.equal(output.hits[0].query, "全国 官方招聘目录");
+  assert.equal(output.hits[0].dimensions.regionCode, "CN");
+  const input = { schemaVersion: "huangque.discovery-input.v1", metadata: { scope: "全国", observedAt: "2026-08-20T00:00:00.000Z" }, queries: [{ id: "catalog", query: output.hits[0].query, channel: "official_catalog", results: output.hits.map((hit) => ({ ...hit, providerEvidence: hit.evidence })) }] };
+  const candidate = discoverSourceCandidates(input).candidates[0];
+  assert.deepEqual(candidate.regions.map((region) => region.label), ["全国"]);
+  assert.equal(candidate.regions[0].basis, "official_catalog");
+});
+
+test("partial discovery cycles resume remaining tasks and round-robin large buckets", () => {
+  const plan = {
+    schemaVersion: "huangque.query-plan.v1",
+    buckets: [
+      { id: "large", cadenceDays: 1, queries: ["L1", "L2", "L3", "L4"] },
+      { id: "small", cadenceDays: 1, queries: ["S1", "S2"] },
+    ],
+  };
+  const first = selectDueQueryTasks(plan, {}, { maxQueries: 3 });
+  assert.deepEqual(first.map((task) => task.query), ["L1", "S1", "L2"]);
+  const state = {
+    large: { completedTaskIds: first.filter((task) => task.bucketId === "large").map((task) => task.id) },
+    small: { completedTaskIds: first.filter((task) => task.bucketId === "small").map((task) => task.id) },
+  };
+  const second = selectDueQueryTasks(plan, state, { maxQueries: 3 });
+  assert.deepEqual(second.map((task) => task.query), ["L3", "S2", "L4"]);
+  assert.equal(new Set([...first, ...second].map((task) => task.id)).size, 6);
+});
+
+test("Common Crawl uses latest advertised index only for controlled site queries", async () => {
+  const urls = [];
+  const fetchImpl = async (url) => {
+    urls.push(url);
+    if (url.endsWith("/collinfo.json")) return new Response(JSON.stringify([{ id: "CC-MAIN-2026-30", "cdx-api": "https://index.commoncrawl.org/CC-MAIN-2026-30-index" }]), { headers: { "content-type": "application/json" } });
+    return new Response(`${JSON.stringify({ timestamp: "20260819010203", url: "https://example.com/careers/jobs", mime: "text/html", status: "200", digest: "ABC" })}\n`, { headers: { "content-type": "application/x-ndjson" } });
+  };
+  const output = await runCommonCrawlProvider([
+    { id: "site", query: "site:example.com/careers 北京 招聘" },
+    { id: "keyword", query: "北京 招聘" },
+  ], { fetchOptions: { fetchImpl, skipDns: true } });
+  assert.equal(extractSitePattern("site:example.com/careers 招聘"), "example.com/careers/*");
+  assert.equal(output.hits.length, 1);
+  assert.equal(output.metadata.indexId, "CC-MAIN-2026-30");
+  assert.equal(urls.length, 2);
+  assert.match(urls[1], /CC-MAIN-2026-30-index/);
+});

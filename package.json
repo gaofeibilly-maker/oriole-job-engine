@@ -1,0 +1,65 @@
+{
+  "name": "oriole-job-engine",
+  "version": "1.0.0",
+  "description": "A nationwide China job-source intelligence Agent with evidence-backed discovery, review gates, structured workplace regions, and MCP tools.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "private": false,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "bin": {
+    "oriole": "./scripts/huangque/cli.mjs",
+    "oriole-mcp": "./scripts/huangque/mcp-server.mjs"
+  },
+  "exports": {
+    ".": "./scripts/huangque/lib/engine.mjs",
+    "./agent-tools": "./scripts/huangque/lib/agent-tools.mjs",
+    "./regions": "./scripts/huangque/lib/china-regions.mjs"
+  },
+  "files": [
+    "data/huangque",
+    "scripts/huangque",
+    "scripts/check-secrets.sh",
+    "tests",
+    "docs",
+    "README.md",
+    "README.zh-CN.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "start": "node scripts/huangque/mcp-server.mjs",
+    "mcp": "node scripts/huangque/mcp-server.mjs",
+    "cli": "node scripts/huangque/cli.mjs",
+    "init": "node scripts/huangque/cli.mjs init",
+    "status": "node scripts/huangque/cli.mjs status",
+    "regions": "node scripts/huangque/cli.mjs regions",
+    "daily": "node scripts/huangque/daily-update.mjs",
+    "audit": "node scripts/huangque/cli.mjs audit --output .huangque/latest-audit.json",
+    "secret-scan": "bash scripts/check-secrets.sh",
+    "test": "node --test tests/*.test.mjs",
+    "smoke": "node scripts/huangque/cli.mjs regions --province-code 420000",
+    "verify": "npm test && npm run smoke && npm run secret-scan"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gaofeibilly-maker/oriole-job-engine.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gaofeibilly-maker/oriole-job-engine/issues"
+  },
+  "homepage": "https://github.com/gaofeibilly-maker/oriole-job-engine#readme",
+  "keywords": [
+    "agent",
+    "mcp",
+    "jobs",
+    "recruitment",
+    "china",
+    "baidu",
+    "common-crawl",
+    "jobposting"
+  ]
+}

@@ -1,0 +1,70 @@
+name: Oriole daily nationwide update
+
+on:
+  schedule:
+    # GitHub cron is UTC. 16:00 UTC = 00:00 Asia/Shanghai on the next local day.
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Run again even if the current Beijing-date marker exists
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: oriole-daily-update
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TZ: Asia/Shanghai
+      HUANGQUE_BAIDU_API_KEY: ${{ secrets.HUANGQUE_BAIDU_API_KEY }}
+      HUANGQUE_DAILY_MAX_QUERIES: "20"
+      HUANGQUE_DAILY_MAX_PROBES: "8"
+      HUANGQUE_DAILY_MAX_COLLECTIONS: "100"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+      - name: Restore latest portable Registry
+        uses: actions/cache/restore@v4
+        with:
+          path: .huangque
+          key: oriole-registry-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            oriole-registry-
+      - name: Run once for the current Beijing date
+        env:
+          FORCE_DAILY: ${{ inputs.force || false }}
+        shell: bash
+        run: |
+          if [[ "$FORCE_DAILY" == "true" ]]; then
+            npm run daily -- --force
+          else
+            npm run daily
+          fi
+      - name: Save updated portable Registry
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .huangque
+          key: oriole-registry-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Upload run and audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oriole-daily-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .huangque/latest-daily.json
+            .huangque/latest-audit.json
+            .huangque/hosted-snapshot.json
+          if-no-files-found: warn
+          retention-days: 30

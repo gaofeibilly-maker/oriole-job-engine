@@ -1,0 +1,10 @@
+node_modules/
+.env
+.env.*
+!.env.example
+.huangque/
+coverage/
+*.log
+.DS_Store
+.idea/
+.vscode/

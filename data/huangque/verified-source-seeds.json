@@ -1,0 +1,20 @@
+{
+  "metadata": {
+    "schemaVersion": "huangque.verified-source-seeds.v1",
+    "generatedAt": "2026-08-20T11:24:38.000Z",
+    "scope": "全国",
+    "dataMode": "人工核验公开来源种子",
+    "definition": "这些来源已通过黄雀的发布主体、公开入口和采集边界核验；岗位仍须在运行时重新采集，不随种子文件发布。"
+  },
+  "sources": [
+    { "id": "lever-xsolla", "name": "Xsolla 官方招聘", "provider": "Lever", "kind": "official_ats", "publicUrl": "https://jobs.lever.co/xsolla", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
+    { "id": "lever-weride", "name": "文远知行官方招聘", "provider": "Lever", "kind": "official_ats", "publicUrl": "https://jobs.lever.co/weride/?location=China", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
+    { "id": "greenhouse-speechify", "name": "Speechify 官方招聘", "provider": "Greenhouse", "kind": "official_ats", "publicUrl": "https://job-boards.greenhouse.io/speechify", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
+    { "id": "greenhouse-fusion", "name": "Fusion Worldwide 官方招聘", "provider": "Greenhouse", "kind": "official_ats", "publicUrl": "https://job-boards.greenhouse.io/fusionworldwide", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
+    { "id": "ashby-sensor-tower", "name": "Sensor Tower 官方招聘", "provider": "Ashby", "kind": "official_ats", "publicUrl": "https://jobs.ashbyhq.com/sensor-tower", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
+    { "id": "ashby-adjoe", "name": "adjoe 官方招聘", "provider": "Ashby", "kind": "official_ats", "publicUrl": "https://jobs.ashbyhq.com/adjoe", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
+    { "id": "ashby-voodoo", "name": "Voodoo 官方招聘", "provider": "Ashby", "kind": "official_ats", "publicUrl": "https://jobs.ashbyhq.com/voodoo", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
+    { "id": "beijing-public-employment", "name": "北京市公共就业服务", "provider": "北京市人力资源和社会保障局", "kind": "government_public_employment", "publicUrl": "https://fuwu.rsj.beijing.gov.cn/jycy/jycs/kyjp.html", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的地方政府公开就业来源种子；旧条目不自动视为仍在招" }
+  ],
+  "jobs": []
+}

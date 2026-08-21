@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "huangque.public-catalog.v1",
+  "updatedAt": "2026-08-20T00:00:00.000Z",
+  "scope": "全国",
+  "coverageRegions": [
+    "110000", "120000", "130000", "140000", "150000", "210000", "220000", "230000", "310000",
+    "320000", "330000", "340000", "350000", "360000", "370000", "410000", "420000", "430000",
+    "440000", "450000", "460000", "500000", "510000", "520000", "530000", "540000", "610000",
+    "620000", "630000", "640000", "650000", "710000", "810000", "820000"
+  ],
+  "entries": [
+    {
+      "id": "china-public-recruitment",
+      "title": "中国公共招聘网",
+      "url": "https://job.mohrss.gov.cn/",
+      "snippet": "人力资源和社会保障部国家级公共招聘服务，覆盖全国公开岗位与招聘活动。",
+      "publisher": "中华人民共和国人力资源和社会保障部",
+      "authority": "official_government",
+      "region": "全国",
+      "regionCode": "CN",
+      "coverageRegions": "all_provincial_regions",
+      "sourcePage": "https://job.mohrss.gov.cn/"
+    },
+    {
+      "id": "national-college-employment",
+      "title": "国家大学生就业服务平台",
+      "url": "https://www.ncss.cn/student/jobs/index.html",
+      "snippet": "教育部国家大学生就业服务平台公开的全国校园招聘职位。",
+      "publisher": "国家大学生就业服务平台",
+      "authority": "official_public_service",
+      "region": "全国",
+      "regionCode": "CN",
+      "coverageRegions": "all_provincial_regions",
+      "sourcePage": "https://www.ncss.cn/student/jobs/index.html"
+    },
+    {
+      "id": "central-public-institutions",
+      "title": "中央和国家机关事业单位公开招聘",
+      "url": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/",
+      "snippet": "人社部持续公开中央和国家机关事业单位招聘公告、岗位附件和报名入口，工作地点覆盖全国。",
+      "publisher": "中华人民共和国人力资源和社会保障部",
+      "authority": "official_government",
+      "region": "全国",
+      "regionCode": "CN",
+      "coverageRegions": "all_provincial_regions",
+      "sourcePage": "https://www.mohrss.gov.cn/SYrlzyhshbzb/fwyd/SYkaoshizhaopin/zyhgjjgsydwgkzp/"
+    },
+    {
+      "id": "central-soe-recruitment",
+      "title": "国务院国资委中央企业招聘",
+      "url": "https://www.sasac.gov.cn/n2588035/n2588325/n4513470/index.html",
+      "snippet": "国务院国资委公开汇集中央企业招聘信息，工作地点覆盖全国。",
+      "publisher": "国务院国有资产监督管理委员会",
+      "authority": "official_government",
+      "region": "全国",
+      "regionCode": "CN",
+      "coverageRegions": "all_provincial_regions",
+      "sourcePage": "https://www.sasac.gov.cn/n2588035/n2588325/n4513470/index.html"
+    },
+    {
+      "id": "government-local-department-directory",
+      "title": "中国政府网·地方政府部门公开目录",
+      "url": "https://www.gov.cn/fuwu/bumendifangtingju.htm",
+      "snippet": "中国政府网公开的国务院部门和地方厅局入口目录，用于发现各省市人社及公开招聘栏目，不直接作为岗位最终来源。",
+      "publisher": "中国政府网",
+      "authority": "official_government_directory",
+      "region": "全国",
+      "regionCode": "CN",
+      "coverageRegions": "all_provincial_regions",
+      "sourcePage": "https://www.gov.cn/fuwu/bumendifangtingju.htm"
+    },
+    {
+      "id": "beijing-public-employment",
+      "title": "北京市公共就业服务岗位",
+      "url": "https://fuwu.rsj.beijing.gov.cn/jycy/jycs/kyjp.html",
+      "snippet": "北京市人社局公共就业服务公开岗位栏目，是全国图谱中的省级权威来源种子。",
+      "publisher": "北京市人力资源和社会保障局",
+      "authority": "official_government",
+      "region": "北京",
+      "regionCode": "110000",
+      "sourcePage": "https://fuwu.rsj.beijing.gov.cn/jycy/jycs/kyjp.html"
+    },
+    {
+      "id": "beijing-public-institutions",
+      "title": "北京市事业单位公开招聘",
+      "url": "https://rsj.beijing.gov.cn/xxgk/gkzp/",
+      "snippet": "北京市人社局公开发布事业单位招聘公告和岗位附件。",
+      "publisher": "北京市人力资源和社会保障局",
+      "authority": "official_government",
+      "region": "北京",
+      "regionCode": "110000",
+      "sourcePage": "https://rsj.beijing.gov.cn/xxgk/gkzp/"
+    }
+  ]
+}
