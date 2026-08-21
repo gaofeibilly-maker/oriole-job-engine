@@ -153,6 +153,31 @@ test("Baidu redacts credentials from successful payload fields and drops credent
   assert.ok(!serialized.includes("token="));
 });
 
+test("Baidu redacts credentials before title and snippet length truncation", async () => {
+  const credentialPrefix = ["bce", "v3"].join("-") + "/";
+  const apiKey = `${credentialPrefix}AAAA/BBBB`;
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], {
+    apiKey,
+    maxQueries: 1,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => new Response(JSON.stringify({
+        references: [{
+          title: `${"x".repeat(492)}${apiKey}`,
+          url: "https://jobs.example.com/list",
+          snippet: `${"x".repeat(3_992)}${apiKey}`,
+        }],
+      }), { status: 200, headers: { "content-type": "application/json" } }),
+    },
+  });
+
+  const serialized = JSON.stringify(output);
+  assert.equal(output.providerStatus, "ok");
+  assert.equal(output.hits.length, 1);
+  assert.ok(!serialized.includes(apiKey));
+  assert.ok(!serialized.includes(credentialPrefix));
+});
+
 test("Common Crawl with no eligible site task is not reported as an online success", async () => {
   let fetched = false;
   const output = await runCommonCrawlProvider([{ id: "keyword-only", query: "全国 招聘 官网" }], {

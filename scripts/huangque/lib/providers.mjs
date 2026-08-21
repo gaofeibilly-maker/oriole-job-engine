@@ -201,10 +201,21 @@ export async function runBaiduProvider(tasks, {
           warnings.push(`${task.id}：百度结果 URL 含疑似凭据回显，已安全丢弃。`);
           continue;
         }
-        hits.push(normalizeHit("baidu", task, reference, discoveredAt, "search_result", {
-          requestId: payload.request_id || response.headers["x-request-id"] || null,
-          score: reference.rerank_score ?? null,
-          authorityScore: reference.authority_score ?? null,
+        const safeReference = {
+          title: redactBaiduText(reference.title, apiKey),
+          name: redactBaiduText(reference.name, apiKey),
+          url: reference.url,
+          snippet: redactBaiduText(reference.snippet, apiKey),
+          content: redactBaiduText(reference.content, apiKey),
+          description: redactBaiduText(reference.description, apiKey),
+          publishedAt: reference.publishedAt,
+          date: reference.date,
+          timestamp: reference.timestamp,
+        };
+        hits.push(normalizeHit("baidu", task, safeReference, discoveredAt, "search_result", {
+          requestId: redactBaiduText(payload.request_id || response.headers["x-request-id"] || "", apiKey) || null,
+          score: typeof reference.rerank_score === "string" ? redactBaiduText(reference.rerank_score, apiKey) : reference.rerank_score ?? null,
+          authorityScore: typeof reference.authority_score === "string" ? redactBaiduText(reference.authority_score, apiKey) : reference.authority_score ?? null,
           region: task.dimensions?.region || task.dimensions?.province || task.dimensions?.city || null,
         }));
       }
