@@ -70,6 +70,11 @@ export function buildBaiduRequest(query, { topK = 20, city = null, recentWindow 
   };
 }
 
+function isBaiduUpstreamDailyQuotaCode(value) {
+  const code = String(value || "").trim().toUpperCase();
+  return code.includes("QUOTA") && code.includes("DAILY");
+}
+
 export async function runBaiduProvider(tasks, {
   apiKey = process.env.HUANGQUE_BAIDU_API_KEY,
   endpoint = process.env.HUANGQUE_BAIDU_ENDPOINT || "https://qianfan.baidubce.com/v2/ai_search/web_search",
@@ -93,7 +98,12 @@ export async function runBaiduProvider(tasks, {
   let requestCount = 0;
   let dailyBudget = null;
   let budgetExhausted = false;
-  for (const task of tasks.slice(0, Math.max(0, maxQueries))) {
+  let upstreamQuotaExhausted = false;
+  let haltedReason = null;
+  let queryCount = 0;
+  const selectedTasks = tasks.slice(0, Math.max(0, maxQueries));
+  for (const task of selectedTasks) {
+    queryCount += 1;
     try {
       const upstreamBeforeRequest = fetchOptions.beforeRequest;
       let initialRequestAdmitted = false;
@@ -138,7 +148,9 @@ export async function runBaiduProvider(tasks, {
       }
       if (!response.ok || payload.error || payload.error_code || payload.code >= 400) {
         const code = payload.error_code || payload.code || response.status;
-        throw new Error(`百度 API 错误 ${code}：${payload.error_msg || payload.message || response.status}`);
+        const error = new Error(`百度 API 错误 ${code}：${payload.error_msg || payload.message || response.status}`);
+        if (isBaiduUpstreamDailyQuotaCode(code)) error.code = "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED";
+        throw error;
       }
       const references = payload.references || payload.result?.references || [];
       const expectedMaximum = Math.min(50, Math.max(1, Number(topK) || 20));
@@ -160,19 +172,33 @@ export async function runBaiduProvider(tasks, {
       if (["BAIDU_DAILY_BUDGET_EXHAUSTED", "BAIDU_BUDGET_RESERVATION_FAILED"].includes(error.code)) {
         warnings.push(error.message);
         budgetExhausted = true;
+        haltedReason = error.code;
+        break;
+      }
+      if (error.code === "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED") {
+        failedTaskIds.push(task.id);
+        warnings.push(`${task.id}：${error.message}；本轮百度任务已熔断，剩余任务留待额度恢复后重试。`);
+        upstreamQuotaExhausted = true;
+        haltedReason = error.code;
         break;
       }
       failedTaskIds.push(task.id);
       warnings.push(`${task.id}：${error.message}`);
     }
   }
-  const providerStatus = hits.length > 0 ? "ok" : warnings.length ? "failed" : "ok";
+  const providerStatus = failedTaskIds.length > 0 || haltedReason
+    ? completedTaskIds.length > 0 ? "partial" : "failed"
+    : "ok";
   return result(providerStatus, "baidu", hits, warnings, {
     requestCount,
-    queryCount: Math.min(tasks.length, maxQueries),
+    queryCount,
+    selectedTaskCount: selectedTasks.length,
     completedTaskIds,
     failedTaskIds,
     budgetExhausted,
+    upstreamQuotaExhausted,
+    haltedReason,
+    unattemptedTaskCount: Math.max(0, selectedTasks.length - queryCount),
     dailyBudget: dailyBudget ? {
       day: dailyBudget.day,
       used: dailyBudget.used,
@@ -282,7 +308,10 @@ export async function runCommonCrawlProvider(tasks, {
       warnings.push(`${task.id}：${error.message}`);
     }
   }
-  return result(hits.length || warnings.length === 0 ? "ok" : "failed", "common_crawl", hits, warnings, {
+  const providerStatus = failedTaskIds.length > 0
+    ? completedTaskIds.length > 0 ? "partial" : "failed"
+    : "ok";
+  return result(providerStatus, "common_crawl", hits, warnings, {
     indexId: current.id,
     requestCount,
     eligibleQueries: eligible.length,

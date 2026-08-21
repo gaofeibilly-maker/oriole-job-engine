@@ -59,7 +59,7 @@ async function writeJson(path, value) {
   return body;
 }
 
-async function recoveryFixture({ receipts = true, previousReceipt = false } = {}) {
+async function recoveryFixture({ receipts = true, previousReceipt = false, spiderReceiptStatus = "completed_with_findings" } = {}) {
   const root = await mkdtemp(join(tmpdir(), "oriole-recovery-v2-"));
   const sourceStateDir = join(root, "source-state-data");
   const restoredStateDir = join(root, "isolated", "state-data");
@@ -95,7 +95,7 @@ async function recoveryFixture({ receipts = true, previousReceipt = false } = {}
     });
     await writeJson(join(sourceStateDir, "latest-source-spider.json"), {
       schemaVersion: "huangque.source-spider-run.v1",
-      status: "completed_with_findings",
+      status: spiderReceiptStatus,
       completedAt: "2026-08-21T10:00:00.000Z",
     });
   }
@@ -191,6 +191,16 @@ test("optional latest job and spider receipts are recorded as absent without wea
     present: false,
     artifact: "state-data/latest-source-spider.json",
   });
+  assert.equal(receipt.verification.optionalLatestReceiptsValid, true);
+});
+
+test("a partial spider receipt is structurally recoverable without becoming a successful spider run", async () => {
+  const fixture = await recoveryFixture({ spiderReceiptStatus: "partial" });
+  const receipt = await createStateRecoveryReceipt(receiptInput(fixture));
+
+  assert.equal(receipt.status, "completed");
+  assert.equal(receipt.latestReceipts.sourceSpider.present, true);
+  assert.equal(receipt.latestReceipts.sourceSpider.status, "partial");
   assert.equal(receipt.verification.optionalLatestReceiptsValid, true);
 });
 

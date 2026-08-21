@@ -5,7 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { buildBaiduRequest, extractSitePattern, runBaiduProvider, runCommonCrawlProvider, runPublicCatalogProvider, truncateBaiduQuery } from "../scripts/huangque/lib/providers.mjs";
-import { completedDiscoveryTaskIds, HuangqueEngine } from "../scripts/huangque/lib/engine.mjs";
+import { completedDiscoveryTaskIds, discoveryExecutionStatus, HuangqueEngine } from "../scripts/huangque/lib/engine.mjs";
 import { dueQueryBuckets, expandQueryPlan, queryTaskProviders, selectDueQueryTasks } from "../scripts/huangque/lib/query-plan.mjs";
 import { discoverSourceCandidates } from "../scripts/huangque/lib/source-discovery.mjs";
 
@@ -53,6 +53,49 @@ test("Baidu missing credential is non-fatal", async () => {
   const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], { apiKey: "" });
   assert.equal(output.providerStatus, "not_configured");
   assert.equal(output.hits.length, 0);
+});
+
+test("Baidu opens a circuit on the first upstream daily-quota response", async () => {
+  let requests = 0;
+  const output = await runBaiduProvider([
+    { id: "q1", query: "北京 招聘" },
+    { id: "q2", query: "上海 招聘" },
+    { id: "q3", query: "武汉 招聘" },
+  ], {
+    apiKey: "test-secret",
+    maxQueries: 3,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => {
+        requests += 1;
+        if (requests === 1) {
+          return new Response(JSON.stringify({
+            request_id: "req-before-quota",
+            references: [{ title: "北京招聘", url: "https://jobs.example.com/beijing" }],
+          }), { status: 200, headers: { "content-type": "application/json" } });
+        }
+        return new Response(JSON.stringify({
+          error_code: "QUOTA_USER_DAILY_FREE",
+          error_msg: "Daily free quota per user for Web Search exceeded",
+        }), { status: 200, headers: { "content-type": "application/json" } });
+      },
+    },
+  });
+
+  assert.equal(requests, 2);
+  assert.equal(output.providerStatus, "partial");
+  assert.equal(output.hits.length, 1);
+  assert.equal(output.metadata.requestCount, 2);
+  assert.equal(output.metadata.queryCount, 2);
+  assert.equal(output.metadata.selectedTaskCount, 3);
+  assert.equal(output.metadata.upstreamQuotaExhausted, true);
+  assert.equal(output.metadata.haltedReason, "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED");
+  assert.equal(output.metadata.unattemptedTaskCount, 1);
+  assert.deepEqual(output.metadata.completedTaskIds, ["q1"]);
+  assert.deepEqual(output.metadata.failedTaskIds, ["q2"]);
+  assert.equal(output.warnings.length, 1);
+  assert.equal(discoveryExecutionStatus([{ ...output, status: output.providerStatus }], { taskCount: 3 }), "partial");
+  assert.ok(!JSON.stringify(output).includes("test-secret"));
 });
 
 test("Common Crawl with no eligible site task is not reported as an online success", async () => {

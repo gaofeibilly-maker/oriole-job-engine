@@ -90,8 +90,9 @@ function providerErrors(providerRuns) {
 export function discoveryExecutionStatus(providerRuns, { taskCount = 0 } = {}) {
   const runs = Array.isArray(providerRuns) ? providerRuns : [];
   const succeeded = runs.filter((run) => run?.status === "ok").length;
+  const partial = runs.filter((run) => run?.status === "partial").length;
   const failed = runs.filter((run) => ["failed", "not_configured"].includes(run?.status)).length;
-  if (failed > 0) return succeeded > 0 ? "partial" : "failed";
+  if (failed > 0 || partial > 0) return succeeded > 0 || partial > 0 ? "partial" : "failed";
   if (succeeded > 0) return "completed";
   return taskCount > 0 ? "failed" : "no_work";
 }
