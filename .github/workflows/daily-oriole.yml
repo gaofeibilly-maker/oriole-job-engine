@@ -30,12 +30,12 @@ jobs:
       HUANGQUE_DAILY_MAX_PROBES: "8"
       HUANGQUE_DAILY_MAX_COLLECTIONS: "100"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: "22.13.0"
       - name: Restore latest portable Registry
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: .huangque
           key: oriole-registry-v2-${{ github.run_id }}-${{ github.run_attempt }}
@@ -53,13 +53,13 @@ jobs:
           fi
       - name: Save updated portable Registry
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v6
         with:
           path: .huangque
           key: oriole-registry-v2-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Upload run and audit evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: oriole-daily-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
