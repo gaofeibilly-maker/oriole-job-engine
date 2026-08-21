@@ -127,6 +127,16 @@ test("robots fetch errors fail closed", async () => {
   assert.equal(policy.reason, "robots_fetch_failed_fail_closed");
 });
 
+test("robots DNS failures fail closed instead of aborting the daily pipeline", async () => {
+  const policy = await fetchRobotsPolicy("https://unresolvable.example/jobs", {
+    resolver: async () => { throw Object.assign(new Error("temporary DNS failure"), { code: "EAI_AGAIN" }); },
+  });
+  assert.equal(policy.allowed, false);
+  assert.equal(policy.reason, "robots_fetch_failed_fail_closed");
+  assert.match(policy.error, /DNS/);
+  assert.equal(policy.url, "https://unresolvable.example/robots.txt");
+});
+
 test("content-addressed artifact writes are safe under same-process concurrency", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-artifacts-"));
   const store = new FileArtifactStore(directory);

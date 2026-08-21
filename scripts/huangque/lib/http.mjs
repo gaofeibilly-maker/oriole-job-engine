@@ -372,9 +372,10 @@ export function robotsAllows(robotsText, targetUrl, userAgent = HUANGQUE_USER_AG
 }
 
 export async function fetchRobotsPolicy(targetUrl, options = {}) {
-  const target = new URL(await assertPublicRemoteUrl(targetUrl, options));
-  const robotsUrl = `${target.origin}/robots.txt`;
+  let robotsUrl = null;
   try {
+    const target = new URL(await assertPublicRemoteUrl(targetUrl, options));
+    robotsUrl = `${target.origin}/robots.txt`;
     const response = await safeFetch(robotsUrl, { ...options, maxBytes: Math.min(options.maxBytes || 250_000, 250_000) });
     if (response.status === 404 || response.status === 410) return { allowed: true, status: response.status, url: robotsUrl, reason: "robots_absent" };
     if (!response.ok) return { allowed: false, status: response.status, url: robotsUrl, reason: "robots_unavailable_fail_closed" };
@@ -395,6 +396,9 @@ export async function fetchRobotsPolicy(targetUrl, options = {}) {
     };
   } catch (error) {
     if (isLocalControlError(error)) throw error;
+    if (!robotsUrl) {
+      try { robotsUrl = `${new URL(targetUrl).origin}/robots.txt`; } catch { robotsUrl = null; }
+    }
     return { allowed: false, status: null, url: robotsUrl, reason: "robots_fetch_failed_fail_closed", error: error.message };
   }
 }
