@@ -10,7 +10,7 @@ npm run daily
 
 The script:
 
-1. opens the portable Registry, or imports the eight audited public source seeds when it is empty;
+1. opens the portable Registry and idempotently syncs the versioned nine-source reviewed seed manifest;
 2. runs due discovery buckets;
 3. safely probes a bounded number of candidates;
 4. collects only sources that were already verified and human-approved;

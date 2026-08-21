@@ -14,7 +14,8 @@
     { "id": "ashby-sensor-tower", "name": "Sensor Tower 官方招聘", "provider": "Ashby", "kind": "official_ats", "publicUrl": "https://jobs.ashbyhq.com/sensor-tower", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
     { "id": "ashby-adjoe", "name": "adjoe 官方招聘", "provider": "Ashby", "kind": "official_ats", "publicUrl": "https://jobs.ashbyhq.com/adjoe", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
     { "id": "ashby-voodoo", "name": "Voodoo 官方招聘", "provider": "Ashby", "kind": "official_ats", "publicUrl": "https://jobs.ashbyhq.com/voodoo", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的公开 ATS 来源种子" },
-    { "id": "beijing-public-employment", "name": "北京市公共就业服务", "provider": "北京市人力资源和社会保障局", "kind": "government_public_employment", "publicUrl": "https://fuwu.rsj.beijing.gov.cn/jycy/jycs/kyjp.html", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的地方政府公开就业来源种子；旧条目不自动视为仍在招" }
+    { "id": "beijing-public-employment", "name": "北京市公共就业服务", "provider": "北京市人力资源和社会保障局", "kind": "government_public_employment", "publicUrl": "https://fuwu.rsj.beijing.gov.cn/jycy/jycs/kyjp.html", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "已人工核验的地方政府公开就业来源种子；旧条目不自动视为仍在招" },
+    { "id": "bytedance-official-careers", "name": "字节跳动官方招聘", "provider": "字节跳动", "kind": "official_ats", "publicUrl": "https://jobs.bytedance.com/experienced/position", "jobs": 0, "fetchedAt": "2026-08-20T11:24:38.000Z", "fetchStatus": "ok", "note": "官方招聘域名与前端公开只读岗位搜索接口；运行时仍须重新核验 robots、接口结构、工作地点和申请链接" }
   ],
   "jobs": []
 }

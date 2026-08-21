@@ -7,13 +7,14 @@ import { HuangqueEngine } from "./lib/engine.mjs";
 const defaultProjectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 function usage() {
-  return `黄雀 1.0：岗位垂类的信息源归集引擎
+  return `黄雀 1.1.0：岗位垂类的信息源归集引擎
 
 用法：node scripts/huangque/cli.mjs <command> [options]
 
 命令：
-  init                         导入现有岗位快照中的已验证来源
+  init                         导入已审核来源种子（兼容可选历史快照）
   status                       显示来源图谱、岗位与到期查询桶
+  coverage                     显示渠道、重点企业和全国地域覆盖缺口
   discover                     执行多 Provider 来源发现
   submit --url <url>           提交一个公开来源候选
   probe --source <id>          安全探测候选（也可 --url）
@@ -68,6 +69,7 @@ async function main() {
   let output;
   if (command === "init") output = await engine.bootstrapExistingSources();
   else if (command === "status") output = await engine.status();
+  else if (command === "coverage") output = await engine.sourceCoverage();
   else if (command === "discover") {
     const importedInput = options.input ? JSON.parse(await readFile(resolve(options.input), "utf8")) : null;
     output = await engine.discoverSources({

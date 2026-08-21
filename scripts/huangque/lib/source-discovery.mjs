@@ -168,11 +168,72 @@ function tenantFromPath(pathname, index = 0) {
   return pathname.split("/").filter(Boolean)[index] || null;
 }
 
+const FEISHU_NON_PORTAL_ROOTS = new Set(["api", "atsx", "m", "position"]);
+
+/**
+ * A Feishu tenant can expose several branded websites on one host. Preserve
+ * the observed first path segment (`campus`, `graduate`, a numeric path, and
+ * so on); the host-only API carries no website path and therefore falls back
+ * to the conventional `index` portal.
+ */
+function feishuPortalIdentity(url) {
+  const segments = url.pathname.split("/").filter(Boolean);
+  if (!segments.length) return { portalPath: "index", portalPathObserved: false };
+  let decoded;
+  try { decoded = segments.map((segment) => decodeURIComponent(segment)); }
+  catch { return { portalPath: "index", portalPathObserved: false }; }
+  const first = decoded[0];
+  if (FEISHU_NON_PORTAL_ROOTS.has(first.toLowerCase())) {
+    return { portalPath: "index", portalPathObserved: false };
+  }
+  const second = String(decoded[1] || "").toLowerCase();
+  const third = String(decoded[2] || "").toLowerCase();
+  const isPortalRoute = decoded.length === 1
+    || second === "position"
+    || second === "m" && third === "position";
+  if (!isPortalRoute || !first || first.length > 128 || /[/?#\\]/.test(first)) {
+    return { portalPath: "index", portalPathObserved: false };
+  }
+  return { portalPath: first, portalPathObserved: true };
+}
+
 export function detectAts(value) {
   const canonicalUrl = canonicalizeUrl(value);
   if (!canonicalUrl) return null;
   const url = new URL(canonicalUrl);
   const host = url.hostname;
+
+  // ByteDance's public careers frontend uses a first-party, read-only JSON
+  // search endpoint. Treat every list/detail URL as one employer-controlled
+  // source so search results cannot fragment the board into hundreds of
+  // pseudo-sources.
+  if (host === "jobs.bytedance.com") {
+    return {
+      provider: "ByteDance",
+      tenant: "bytedance",
+      sourceKey: "career:bytedance:jobs.bytedance.com",
+      sourceRootUrl: "https://jobs.bytedance.com/experienced/position",
+      publicApiUrl: "https://jobs.bytedance.com/api/v1/search/job/posts",
+    };
+  }
+
+  // Feishu Recruitment SaaS career portals use the employer subdomain and a
+  // public portal_type=6 search contract. Probe and human approval remain
+  // mandatory before any tenant can be collected.
+  if (host.endsWith(".jobs.feishu.cn") && host.split(".").length >= 4) {
+    const tenant = host.slice(0, -".jobs.feishu.cn".length);
+    if (!tenant) return null;
+    const portal = feishuPortalIdentity(url);
+    return {
+      provider: "FeishuRecruitment",
+      tenant,
+      sourceKey: `ats:feishu:${host}`,
+      portalPath: portal.portalPath,
+      portalPathObserved: portal.portalPathObserved,
+      sourceRootUrl: `${url.protocol}//${host}/${encodeURIComponent(portal.portalPath)}`,
+      publicApiUrl: `${url.protocol}//${host}/api/v1/search/job/posts`,
+    };
+  }
 
   if (host === "jobs.lever.co") {
     const tenant = tenantFromPath(url.pathname);
@@ -273,6 +334,22 @@ function isGovernmentHost(hostname) {
   return hostname === "gov.cn" || hostname.endsWith(".gov.cn");
 }
 
+function isCareerLikeUrl(url) {
+  return /^(?:jobs?|careers?|career|recruit|recruitment)\./i.test(url.hostname)
+    || /\/(?:jobs?|careers?|career|recruit(?:ment)?|positions?|experienced|campus)(?:\/|$)/i.test(url.pathname);
+}
+
+function genericCareerRoot(url) {
+  const segments = url.pathname.split("/").filter(Boolean);
+  const marker = segments.findIndex((segment) => /^(?:jobs?|careers?|career|recruit(?:ment)?|positions?|experienced|campus)$/i.test(segment));
+  if (marker < 0) return canonicalizeUrl(`${url.origin}/`);
+  let end = marker + 1;
+  // Keep paired list paths such as /experienced/position, but never retain a
+  // concrete job id or a trailing /detail segment in the source identity.
+  if (/^(?:experienced|campus)$/i.test(segments[marker] || "") && /^(?:jobs?|positions?)$/i.test(segments[marker + 1] || "")) end += 1;
+  return canonicalizeUrl(`${url.origin}/${segments.slice(0, end).join("/")}`);
+}
+
 function governmentSourceRoot(url) {
   if (url.hostname === "job.mohrss.gov.cn") {
     if (/listJobinfolist|listInstitution/i.test(url.pathname)) return canonicalizeUrl(url.toString());
@@ -329,6 +406,18 @@ export function deriveSourceIdentity(value) {
   if (publicService) return publicService;
 
   const url = new URL(canonicalUrl);
+  if (!isGovernmentHost(url.hostname) && isCareerLikeUrl(url)) {
+    const sourceRootUrl = genericCareerRoot(url);
+    return {
+      provider: null,
+      tenant: null,
+      systemType: "employer_career_site",
+      sourceKey: `career:${url.origin.toLowerCase()}`,
+      sourceRootUrl,
+      publicApiUrl: null,
+      canonicalUrl,
+    };
+  }
   const sourceRootUrl = isGovernmentHost(url.hostname)
     ? governmentSourceRoot(url)
     : canonicalUrl;
@@ -370,6 +459,8 @@ function isLikelyDetailUrl(value) {
   if (/\/(?:article\/)?\d+\.s?html$/i.test(pathname)) return true;
   if (/\/t20\d{6}_\d+\.s?html$/i.test(pathname)) return true;
   if (/\.s?html$/i.test(pathname) && /20\d{4}|detail|info\d+/i.test(pathname)) return true;
+  if (/\/(?:jobs?|positions?)\/[^/]+(?:\/detail)?\/?$/i.test(pathname)
+    && !/\/(?:jobs?|positions?)\/?$/i.test(pathname)) return true;
   return false;
 }
 
@@ -447,6 +538,41 @@ function classifyGroup(group, observedAt, known) {
   const hasRecruitment = RECRUITMENT_TERMS.test(combinedText);
   const isBlocked = LOGIN_OR_BLOCKED_TERMS.test(`${url.pathname} ${combinedText}`);
   const isAts = identity.systemType === "ats";
+  const isEmployerCareerSite = identity.systemType === "employer_career_site";
+  const officialEmployerResult = group.results.find((result) => {
+    const evidence = result.providerEvidence || {};
+    if (evidence.authority !== "official_employer") return false;
+    try {
+      const sourcePage = new URL(evidence.sourcePage || result.url);
+      const resultUrl = new URL(result.url);
+      return sourcePage.protocol === "https:" && sourcePage.origin === resultUrl.origin;
+    } catch {
+      return false;
+    }
+  });
+  const officialEmployerEvidence = Boolean(officialEmployerResult);
+  // A reviewed employer entry may intentionally use a stable application
+  // path whose segments do not literally contain "jobs" (for example
+  // /portal/pc).  Preserve that audited entry for probing instead of reducing
+  // it to the bare origin merely because the host itself starts with job.*.
+  // Search-only observations still use the conservative generic root.
+  let effectiveSourceRootUrl = identity.sourceRootUrl;
+  if (identity.systemType === "employer_career_site" && officialEmployerResult) {
+    const reviewedEntryUrl = canonicalizeUrl(officialEmployerResult.providerEvidence?.sourcePage || officialEmployerResult.url);
+    if (reviewedEntryUrl && !isLikelyDetailUrl(reviewedEntryUrl)) effectiveSourceRootUrl = reviewedEntryUrl;
+  }
+  const officialDirectoryEvidence = group.results.some((result) => {
+    const evidence = result.providerEvidence || {};
+    if (!/^(?:official_government_directory|official_public_directory)$/.test(String(evidence.authority || ""))) return false;
+    try {
+      const sourcePage = new URL(evidence.sourcePage || result.url);
+      const resultUrl = new URL(result.url);
+      return sourcePage.protocol === "https:" && sourcePage.origin === resultUrl.origin;
+    } catch {
+      return false;
+    }
+  });
+  const officialGovernmentDirectoryLink = isGovernment && group.results.some((result) => result.providerEvidence?.authority === "official_government_directory_link");
   const isTrustedPublicService = identity.systemType === "public_service";
   const isPublicEmployment = isTrustedPublicService || (isGovernment && /就业|招聘会|job\.mohrss|就业服务/i.test(`${combinedText} ${url.hostname}`));
   const isCommunityHub = hasChina && hasRecruitment && /社区|街道|就业服务站|零工驿站/i.test(combinedText);
@@ -454,8 +580,10 @@ function classifyGroup(group, observedAt, known) {
   const hasMultipleQueries = group.queryIds.length > 1;
   const hasStableListingObservation = group.results.some((result) => {
     const resultUrl = canonicalizeUrl(result.url);
-    return (resultUrl === canonicalizeUrl(identity.sourceRootUrl) && !isLikelyDetailUrl(resultUrl))
-      || /\/(jobs?|careers?|recruit(?:ment)?|招聘|gkzp)(?:\/|$)/i.test(new URL(resultUrl).pathname);
+    if (!resultUrl || isLikelyDetailUrl(resultUrl)) return false;
+    const pathname = new URL(resultUrl).pathname;
+    return /\/(jobs?|careers?|recruit(?:ment)?|positions?|experienced|campus|招聘|gkzp)(?:\/|$)/i.test(pathname)
+      || officialEmployerEvidence && resultUrl === effectiveSourceRootUrl;
   }) || Boolean(identity.publicApiUrl);
   const recentWeight = Math.max(...group.results.map((result) => recencyWeight(result.publishedAt, observedAt)), 0);
 
@@ -463,7 +591,12 @@ function classifyGroup(group, observedAt, known) {
   let authority = "unknown";
   let collectionStrategy = "manual_source_review";
   let endpointType = "unknown";
-  if (isAts) {
+  if (officialDirectoryEvidence) {
+    sourceType = "official_source_directory";
+    authority = "official_government_directory";
+    collectionStrategy = "bounded_directory_link_discovery";
+    endpointType = "directory";
+  } else if (isAts) {
     sourceType = "official_ats";
     authority = "employer_controlled_board";
     collectionStrategy = identity.publicApiUrl ? "public_ats_api" : "ats_board_probe";
@@ -493,6 +626,11 @@ function classifyGroup(group, observedAt, known) {
     authority = "needs_publisher_ownership_check";
     collectionStrategy = "listing_and_attachment_probe";
     endpointType = hasStableListingObservation ? "job_list" : "unknown";
+  } else if (isEmployerCareerSite || officialEmployerEvidence) {
+    sourceType = "company_career_site";
+    authority = officialEmployerEvidence ? "official_employer" : "needs_domain_ownership_check";
+    collectionStrategy = "jsonld_sitemap_html_probe";
+    endpointType = hasStableListingObservation ? "job_list" : "unknown";
   } else if (/career|careers|招聘|人才/i.test(`${url.pathname} ${combinedText}`)) {
     sourceType = "company_career_site";
     authority = "needs_domain_ownership_check";
@@ -503,6 +641,9 @@ function classifyGroup(group, observedAt, known) {
   const signals = [];
   const addSignal = (code, label, weight, evidence) => signals.push({ code, label, weight, evidence });
   if (isAts) addSignal("known_ats", `识别为 ${identity.provider} 招聘系统`, 27, identity.sourceRootUrl);
+  if (officialDirectoryEvidence) addSignal("official_source_directory", "权威公开目录可用于有界扩展来源候选", 28, identity.sourceRootUrl);
+  if (officialGovernmentDirectoryLink) addSignal("official_directory_link", "政府官方目录提供的政府站点线索", 20, identity.sourceRootUrl);
+  if (officialEmployerEvidence) addSignal("official_employer_catalog", "官方雇主目录已核验招聘域名", 24, identity.sourceRootUrl);
   if (isTrustedPublicService) addSignal("known_public_service", `识别为 ${identity.provider} 官方公共就业平台`, 27, identity.sourceRootUrl);
   if (isGovernment) addSignal("government_domain", "政府官方域名", 30, url.hostname);
   if (hasChina) addSignal("china_scope", "结果明确指向中国境内岗位", 16, regions.map((region) => region.label).join("、") || "查询、标题、摘要、URL 或政府域名中出现中国地域信号");
@@ -517,7 +658,7 @@ function classifyGroup(group, observedAt, known) {
   if (!hasChina) addSignal("missing_china_signal", "尚未发现明确中国境内范围信号", -18, primary.title || primary.url);
 
   const discoveryPriorityScore = clamp(10 + signals.reduce((total, signal) => total + signal.weight, 0));
-  const hardReady = hasChina && hasRecruitment && (isAts || isTrustedPublicService || (isGovernment && hasStableListingObservation));
+  const hardReady = hasChina && hasRecruitment && (isAts || isTrustedPublicService || officialDirectoryEvidence || officialGovernmentDirectoryLink || officialEmployerEvidence && hasStableListingObservation || (isGovernment && hasStableListingObservation));
   let status = "backlog";
   if (known) status = "already_registered";
   else if (isBlocked) status = "rejected_access_restricted";
@@ -526,6 +667,9 @@ function classifyGroup(group, observedAt, known) {
 
   const reasonCodes = [];
   if (isAts) reasonCodes.push("KNOWN_PUBLIC_ATS_PATTERN");
+  if (officialDirectoryEvidence) reasonCodes.push("OFFICIAL_SOURCE_DIRECTORY");
+  if (officialGovernmentDirectoryLink) reasonCodes.push("OFFICIAL_GOVERNMENT_DIRECTORY_LINK");
+  if (officialEmployerEvidence) reasonCodes.push("CURATED_OFFICIAL_EMPLOYER");
   if (isTrustedPublicService) reasonCodes.push("KNOWN_PUBLIC_SERVICE_PATTERN");
   if (isGovernment) reasonCodes.push("OFFICIAL_GOVERNMENT_DOMAIN");
   if (isCommunityHub) reasonCodes.push("COMMUNITY_RECRUITMENT_HUB");
@@ -551,7 +695,8 @@ function classifyGroup(group, observedAt, known) {
     publisherKey: observedPublisher ? `publisher:${stableId("name", observedPublisher)}` : `host:${url.hostname}`,
     sourceKey: identity.sourceKey,
     entryUrl: canonicalizeUrl(primary.url),
-    sourceRootUrl: identity.sourceRootUrl,
+    sourceRootUrl: effectiveSourceRootUrl,
+    portalPath: identity.portalPath || null,
     provider: identity.provider,
     tenant: identity.tenant,
     publicApiUrl: identity.publicApiUrl,
@@ -619,7 +764,18 @@ export function discoverSourceCandidates(input, { knownSnapshot = null, observed
       invalidResults.push({ queryId: result.queryId, url: result.url, reason: "invalid_or_unsupported_url" });
       continue;
     }
-    const group = groups.get(identity.sourceKey) || { identity, results: [] };
+    const group = groups.get(identity.sourceKey) || { identity, identityRank: result.rank, results: [] };
+    // A host-only Feishu API cannot identify a branded portal path. Prefer a
+    // path observed on a public list/detail URL, even when the API result was
+    // encountered first, so later detail URLs stay on the discovered portal.
+    if (identity.provider === "FeishuRecruitment") {
+      const currentObserved = group.identity.portalPathObserved === true;
+      const incomingObserved = identity.portalPathObserved === true;
+      if (incomingObserved && (!currentObserved || result.rank < group.identityRank)) {
+        group.identity = identity;
+        group.identityRank = result.rank;
+      }
+    }
     group.results.push(result);
     groups.set(identity.sourceKey, group);
   }

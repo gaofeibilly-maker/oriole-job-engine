@@ -1,9 +1,15 @@
 import assert from "node:assert/strict";
+import { mkdtemp, readFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { buildBaiduRequest, extractSitePattern, runBaiduProvider, runCommonCrawlProvider, runPublicCatalogProvider, truncateBaiduQuery } from "../scripts/huangque/lib/providers.mjs";
-import { completedDiscoveryTaskIds } from "../scripts/huangque/lib/engine.mjs";
+import { completedDiscoveryTaskIds, HuangqueEngine } from "../scripts/huangque/lib/engine.mjs";
 import { dueQueryBuckets, expandQueryPlan, queryTaskProviders, selectDueQueryTasks } from "../scripts/huangque/lib/query-plan.mjs";
 import { discoverSourceCandidates } from "../scripts/huangque/lib/source-discovery.mjs";
+
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 test("query plan expands dimensions and honors bucket cadence", () => {
   const plan = {
@@ -14,6 +20,17 @@ test("query plan expands dimensions and honors bucket cadence", () => {
   const state = { district: { lastCompletedAt: "2026-08-19T00:00:00.000Z" } };
   assert.equal(dueQueryBuckets(plan, state, new Date("2026-08-20T00:00:00.000Z"))[0].due, false);
   assert.equal(selectDueQueryTasks(plan, state, { now: new Date("2026-08-23T00:00:00.000Z") }).length, 2);
+});
+
+test("query plan can expand the complete prefecture-level region dimension", () => {
+  const plan = {
+    schemaVersion: "huangque.query-plan.v1",
+    buckets: [{ id: "cities", cadenceDays: 7, dimensions: { city: ["$all_prefecture_level"] }, templates: ["{city} 招聘 官方"] }],
+  };
+  const tasks = expandQueryPlan(plan);
+  assert.equal(tasks.length, 365);
+  assert.ok(tasks.some((task) => task.query.includes("武汉市")));
+  assert.ok(tasks.some((task) => task.query.includes("喀什地区")));
 });
 
 test("Baidu provider uses official JSON endpoint contract and never logs the key", async () => {
@@ -78,6 +95,81 @@ test("official catalog keeps declared nationwide coverage independent from the f
   const candidate = discoverSourceCandidates(input).candidates[0];
   assert.deepEqual(candidate.regions.map((region) => region.label), ["全国"]);
   assert.equal(candidate.regions[0].basis, "official_catalog");
+});
+
+test("official catalog turns the bounded employer watchlist into executable discovery candidates", async () => {
+  const output = await runPublicCatalogProvider([], {
+    now: new Date("2026-08-20T00:00:00.000Z"),
+    catalog: {
+      schemaVersion: "huangque.public-catalog.v1",
+      updatedAt: "2026-08-20T00:00:00.000Z",
+      scope: "全国",
+      entries: [{ id: "existing", title: "字节跳动招聘", url: "https://jobs.bytedance.com/experienced/position", publisher: "字节跳动", authority: "official_employer" }],
+    },
+    channelPlan: {
+      schemaVersion: "huangque.source-channel-plan.v1",
+      targetInventory: {
+        employers: [
+          { id: "bytedance", name: "字节跳动", match: { hosts: ["jobs.bytedance.com"] }, audit: { officialRecruitmentUrl: "https://jobs.bytedance.com/" } },
+          { id: "tencent", name: "腾讯", match: { hosts: ["careers.tencent.com"] }, audit: { officialRecruitmentUrl: "https://careers.tencent.com/" } },
+        ],
+      },
+    },
+  });
+  assert.equal(output.providerStatus, "ok");
+  assert.equal(output.metadata.directoryEntries, 1);
+  assert.equal(output.metadata.employerWatchlistEntries, 1);
+  assert.equal(output.hits.length, 2);
+  const tencent = output.hits.find((hit) => hit.url === "https://careers.tencent.com/");
+  assert.equal(tencent.evidence.kind, "official_employer_watchlist");
+  assert.equal(tencent.evidence.authority, "official_employer");
+  assert.equal(tencent.evidence.publisher, "腾讯");
+});
+
+test("all 19 versioned employer targets enter discovery candidates and the Registry", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-employer-watchlist-"));
+  const engine = new HuangqueEngine({
+    projectRoot,
+    registryPath: join(directory, "state.json"),
+    artifactRoot: join(directory, "artifacts"),
+  });
+  await engine.bootstrapExistingSources({ verifiedSeedsOnly: true });
+  const run = await engine.discoverSources({ providers: ["official_catalog"], force: true, maxQueries: 1 });
+  const [plan, state, coverage] = await Promise.all([
+    readFile(resolve(projectRoot, "data/huangque/source-channel-plan.json"), "utf8").then(JSON.parse),
+    engine.registry.snapshot(),
+    engine.sourceCoverage(),
+  ]);
+
+  const matchesTarget = (candidate, target) => {
+    const expected = new Set(target.match.hosts.map((host) => String(host).toLowerCase()));
+    const values = [candidate.sourceRootUrl, candidate.entryUrl, ...(candidate.discoveredUrls || [])];
+    return values.some((value) => {
+      try {
+        const actual = new URL(value).hostname.toLowerCase();
+        return [...expected].some((host) => actual === host || actual.endsWith(`.${host}`));
+      } catch {
+        return false;
+      }
+    });
+  };
+
+  assert.equal(plan.targetInventory.employers.length, 19);
+  const targetCandidates = plan.targetInventory.employers.map((target) => ({
+    target,
+    matches: run.discovery.candidates.filter((candidate) => matchesTarget(candidate, target)),
+  }));
+  assert.ok(targetCandidates.every(({ matches }) => matches.length === 1));
+  assert.equal(targetCandidates.reduce((total, item) => total + item.matches.length, 0), 19);
+  assert.equal(targetCandidates.find(({ target }) => target.id === "bytedance").matches[0].status, "already_registered");
+  assert.ok(targetCandidates.filter(({ target }) => target.id !== "bytedance").every(({ matches }) => matches[0].status === "ready_for_probe"));
+
+  const persistedTargets = plan.targetInventory.employers.map((target) => state.sources.filter((source) => matchesTarget(source.candidate, target)));
+  assert.ok(persistedTargets.every((matches) => matches.length === 1));
+  assert.equal(coverage.summary.employerTargetsPlanned, 19);
+  assert.equal(coverage.targets.filter((target) => target.state === "missing").length, 0);
+  assert.equal(coverage.targets.filter((target) => target.state === "covered").length, 1);
+  assert.equal(coverage.targets.filter((target) => target.state === "discovered").length, 18);
 });
 
 test("partial discovery cycles resume remaining tasks and round-robin large buckets", () => {

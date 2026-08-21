@@ -2,6 +2,30 @@
 
 All notable changes to Oriole are documented here. The project follows semantic versioning.
 
+## 1.1.0 — 2026-08-20
+
+Source-spider and major-employer coverage-measurement release.
+
+### Added
+
+- ByteDance and Feishu Recruitment public search adapters with provider-specific anonymous CSRF sessions, pagination, multi-location normalization, and canonical detail URLs.
+- A versioned nine-channel source plan and bounded watchlist of 19 major employers across internet, technology, manufacturing, and central state-owned groups.
+- Executable watchlist discovery, bounded official-directory expansion, and cross-origin employer ATS handoff candidates under the existing probe/review gate.
+- Explicit 34-province and 365-second-level discovery dimensions, persistent probe backlog, and 24-hour retry for transient probe failures.
+- `huangque.source_coverage` and `npm run coverage`, bringing the Agent interface to 16 MCP tools.
+- Persisted per-source pagination, parser, HTTP, storage, and anonymous-session summaries for independent run verification.
+
+### Changed
+
+- Clean-clone bootstrap now contains nine reviewed sources and zero jobs, including ByteDance's official experienced-hire source.
+- Large feeds stop as explicit bounded/incomplete observations instead of discarding every safely parsed prior page; incomplete feeds never advance missing-job closures.
+- Employer, channel, and region coverage now distinguish discovered, verified, approved, and current-job evidence. Per-run pagination completeness remains separate collection evidence and is not folded into the source-coverage score.
+- MCP `serverInfo` and the outbound HTTP User-Agent now identify release `1.1.0` consistently with the package metadata.
+
+### Security
+
+- Public recruitment tokens/cookies remain memory-only; risk-control challenges, schema drift, business errors, robots failures, and cross-origin job URLs fail closed.
+
 ## 1.0.0 — 2026-08-20
 
 First public Agent release.

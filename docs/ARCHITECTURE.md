@@ -37,11 +37,12 @@ The implementation uses Node.js built-ins and local JSON configuration. It has n
 - `http.mjs` owns outbound safety. Callers do not fetch arbitrary URLs directly.
 - `providers.mjs` implements discovery channels and preserves provider evidence.
 - `query-plan.mjs` declares Provider capability per task, schedules only runnable tasks, and leaves unavailable work visible to the engine as blocked backlog.
-- `probe.mjs` converts a candidate into verified or failed probe evidence without approving it.
+- `probe.mjs` converts a candidate into verified or failed probe evidence without approving it; bounded directory and employer handoff links become separate candidates.
 - `collector.mjs` collects only approved sources and defaults to preview unless `commit` is explicit.
 - `adapters.mjs` recognizes supported feeds and produces `huangque.job.v2` jobs.
 - `china-regions.mjs` supplies deterministic two-level workplace classification.
-- `agent-tools.mjs` defines and validates the 15 MCP tool schemas.
+- `source-coverage.mjs` measures gaps across nine channels, 19 bounded employer targets, and the nationwide region taxonomy. It does not consume per-run pagination completeness; that remains separate collection evidence.
+- `agent-tools.mjs` defines and validates the 16 MCP tool schemas.
 
 ## Persistence
 
@@ -76,13 +77,14 @@ Invariants:
 
 - only `approved + verified + collectionEnabled` sources can be collected;
 - probing never approves;
+- transient probe failures retry after a 24-hour backoff; explicit robots denial and access restriction remain blocked;
 - approval requires reviewer, reason, confirmation, and the expected Registry revision;
 - preview collection performs network and parser work but does not modify the job store;
 - committed jobs retain source URLs, source IDs, evidence, versions, and graph relations.
 
 ### Clean-clone bootstrap
 
-`data/huangque/verified-source-seeds.json` is a reviewed trust manifest, not a job snapshot. It contains eight public source identities, verification timestamps, publisher-controlled entry points, and zero jobs. `init` imports those sources as approved so the standalone Agent can collect on its first run. Adding or changing a verified seed is therefore equivalent to an operator approval and must receive source/evidence review. Ordinary discovery paths never write this file and never inherit its approval.
+`data/huangque/verified-source-seeds.json` is a reviewed trust manifest, not a job snapshot. It contains nine public source identities, verification timestamps, publisher-controlled entry points, and zero jobs. `init` imports those sources as approved so the standalone Agent can collect on its first run; the daily runner source-key-syncs newly reviewed seeds without resetting Registry history. Adding or changing a verified seed is therefore equivalent to an operator approval and must receive source/evidence review. Ordinary discovery paths never write this file and never inherit its approval.
 
 ## Nationwide location model
 

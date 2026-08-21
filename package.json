@@ -1,6 +1,6 @@
 {
   "name": "oriole-job-engine",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A nationwide China job-source intelligence Agent with evidence-backed discovery, review gates, structured workplace regions, and MCP tools.",
   "type": "module",
   "license": "Apache-2.0",
@@ -15,9 +15,11 @@
   "exports": {
     ".": "./scripts/huangque/lib/engine.mjs",
     "./agent-tools": "./scripts/huangque/lib/agent-tools.mjs",
+    "./source-coverage": "./scripts/huangque/lib/source-coverage.mjs",
     "./regions": "./scripts/huangque/lib/china-regions.mjs"
   },
   "files": [
+    ".env.example",
     "data/huangque",
     "scripts/huangque",
     "scripts/check-secrets.sh",
@@ -36,6 +38,8 @@
     "cli": "node scripts/huangque/cli.mjs",
     "init": "node scripts/huangque/cli.mjs init",
     "status": "node scripts/huangque/cli.mjs status",
+    "coverage": "node scripts/huangque/cli.mjs coverage",
+    "live-source-check": "node scripts/huangque/live-source-check.mjs",
     "regions": "node scripts/huangque/cli.mjs regions",
     "daily": "node scripts/huangque/daily-update.mjs",
     "audit": "node scripts/huangque/cli.mjs audit --output .huangque/latest-audit.json",

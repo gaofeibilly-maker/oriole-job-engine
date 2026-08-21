@@ -5,8 +5,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
 import { canonicalizeUrl, isPrivateOrLocalHost } from "../scripts/huangque/lib/source-discovery.mjs";
-import { assertPublicRemoteUrl, fetchRobotsPolicy, robotsAllows, safeFetch } from "../scripts/huangque/lib/http.mjs";
+import { assertPublicRemoteUrl, fetchRobotsPolicy, HUANGQUE_USER_AGENT, robotsAllows, safeFetch } from "../scripts/huangque/lib/http.mjs";
 import { FileArtifactStore } from "../scripts/huangque/lib/artifacts.mjs";
+
+test("outbound user agent identifies the 1.1.0 release", () => {
+  assert.equal(HUANGQUE_USER_AGENT, "HuangqueJobSourceAgent/1.1.0 (+public-source-audit; respects robots.txt)");
+});
 
 test("URL safety rejects local suffixes, carrier NAT, mapped IPv6 and reserved ranges", () => {
   for (const value of [

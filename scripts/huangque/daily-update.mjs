@@ -42,8 +42,10 @@ if (previous?.status === "completed" && previous?.scheduledDate === scheduledDat
 }
 
 const engine = new HuangqueEngine({ projectRoot, registryPath, artifactRoot });
-const before = await engine.status();
-if (Object.values(before.sourceCounts).reduce((total, count) => total + count, 0) === 0) await engine.bootstrapExistingSources();
+// Sync the versioned reviewed seed manifest on every new Beijing-date run.
+// The import is source-key idempotent: it adds newly reviewed sources without
+// resetting the portable Registry or bypassing review for search candidates.
+await engine.bootstrapExistingSources({ verifiedSeedsOnly: true });
 
 const startedAt = new Date().toISOString();
 try {

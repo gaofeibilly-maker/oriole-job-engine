@@ -60,6 +60,74 @@ test("unsupported ATS JSON never falls through to a generic source-scope adapter
   }
 });
 
+test("ByteDance public search payload normalizes China jobs and rejects overseas-only rows", () => {
+  const source = {
+    id: "bytedance-official-careers",
+    sourceKey: "career:bytedance:jobs.bytedance.com",
+    name: "字节跳动官方招聘",
+    candidate: {
+      provider: "ByteDance",
+      tenant: "bytedance",
+      publisher: "字节跳动",
+      sourceType: "official_ats",
+      sourceRootUrl: "https://jobs.bytedance.com/experienced/position",
+      publicApiUrl: "https://jobs.bytedance.com/api/v1/search/job/posts",
+    },
+  };
+  const response = {
+    body: JSON.stringify({ data: { count: 2, job_post_list: [
+      {
+        id: "cn-1",
+        title: "后端研发工程师",
+        city_info: { name: "北京" },
+        city_list: [{ name: "北京" }, { name: "湖北省武汉市" }],
+        job_category: { name: "研发" },
+        publish_time: 1_787_097_600,
+        description: "负责服务端系统",
+        requirement: "熟悉 JavaScript",
+      },
+      { id: "us-1", title: "Engineer", city_info: { name: "San Jose, United States" } },
+    ] } }),
+    contentType: "application/json",
+    finalUrl: "https://jobs.bytedance.com/api/v1/search/job/posts",
+  };
+  const normalized = normalizeAdapterPayload(source, response, "2026-08-20T00:00:00.000Z");
+  assert.equal(normalized.strategy, "bytedance_public_search_api");
+  assert.equal(normalized.inspection.schemaRecognized, true);
+  assert.equal(normalized.inspection.chinaRows, 1);
+  assert.equal(normalized.inspection.beijingRows, 1);
+  assert.equal(normalized.jobs.length, 1);
+  assert.equal(normalized.jobs[0].externalId, "cn-1");
+  assert.equal(normalized.jobs[0].regionProvince, "北京市");
+  assert.deepEqual(normalized.jobs[0].workLocations.map((region) => `${region.provinceCode}:${region.cityCode || "ALL"}`).sort(), ["110000:ALL", "420000:420100"]);
+  assert.equal(normalized.jobs[0].applyUrl, "https://jobs.bytedance.com/experienced/position/cn-1/detail");
+  assert.equal(normalized.jobs[0].publishedAt, "2026-08-19T00:00:00.000Z");
+});
+
+test("Feishu detail links use the source's observed campus portal instead of index", () => {
+  const source = {
+    id: "feishu-campus",
+    sourceKey: "ats:feishu:kurogame.jobs.feishu.cn",
+    name: "库洛游戏校园招聘",
+    candidate: {
+      provider: "FeishuRecruitment",
+      tenant: "kurogame",
+      sourceType: "official_ats",
+      portalPath: "campus",
+      sourceRootUrl: "https://kurogame.jobs.feishu.cn/campus",
+      publicApiUrl: "https://kurogame.jobs.feishu.cn/api/v1/search/job/posts",
+    },
+  };
+  const response = {
+    body: JSON.stringify({ code: 0, data: { count: 1, job_post_list: [{ id: "campus-1", title: "北京游戏研发工程师", city_list: [{ name: "北京" }] }] } }),
+    contentType: "application/json",
+    finalUrl: "https://kurogame.jobs.feishu.cn/api/v1/search/job/posts",
+  };
+  const normalized = normalizeAdapterPayload(source, response, "2026-08-20T00:00:00.000Z");
+  assert.equal(normalized.jobs.length, 1);
+  assert.equal(normalized.jobs[0].applyUrl, "https://kurogame.jobs.feishu.cn/campus/position/campus-1/detail");
+});
+
 test("exact dedupe merges equal canonical apply URLs even across sources with external IDs", () => {
   const shared = "https://jobs.example.com/apply/1?utm_source=feed";
   const output = dedupeJobs([

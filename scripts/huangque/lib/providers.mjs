@@ -296,18 +296,50 @@ export async function runCommonCrawlProvider(tasks, {
 export async function runPublicCatalogProvider(tasks, {
   catalogPath,
   catalog,
+  channelPlanPath = null,
+  channelPlan = null,
   now = new Date(),
 } = {}) {
   const payload = catalog || JSON.parse(await readFile(catalogPath, "utf8"));
   if (payload?.schemaVersion !== "huangque.public-catalog.v1" || !Array.isArray(payload.entries)) {
     return result("failed", "official_catalog", [], ["官方目录格式无效"]);
   }
+  let watchlist = channelPlan;
+  if (!watchlist && channelPlanPath) {
+    try { watchlist = JSON.parse(await readFile(channelPlanPath, "utf8")); }
+    catch (error) { return result("failed", "official_catalog", [], [`重点企业清单无法读取：${error.message}`]); }
+  }
+  if (watchlist && (watchlist.schemaVersion !== "huangque.source-channel-plan.v1" || !Array.isArray(watchlist.targetInventory?.employers))) {
+    return result("failed", "official_catalog", [], ["重点企业清单格式无效"]);
+  }
+  const catalogHosts = new Set(payload.entries.map((entry) => {
+    try { return new URL(entry.url).hostname.toLowerCase(); } catch { return null; }
+  }).filter(Boolean));
+  const employerEntries = (watchlist?.targetInventory?.employers || [])
+    .filter((target) => !(target.match?.hosts || []).some((host) => catalogHosts.has(String(host).toLowerCase())))
+    .map((target) => ({
+      id: `employer-watchlist:${target.id}`,
+      title: `${target.name}官方招聘`,
+      url: target.audit.officialRecruitmentUrl,
+      snippet: `${target.name}由版本化重点企业清单提供的官方公开招聘入口；岗位地点以职位记录为准。`,
+      publisher: target.name,
+      authority: "official_employer",
+      region: "全国",
+      regionCode: "CN",
+      coverageRegions: "job_level_locations_only",
+      sourcePage: target.audit.officialRecruitmentUrl,
+      evidenceKind: "official_employer_watchlist",
+    }));
+  const entries = [
+    ...payload.entries.map((entry) => ({ ...entry, evidenceKind: "official_directory" })),
+    ...employerEntries,
+  ];
   const discoveredAt = new Date(now).toISOString();
-  const hits = payload.entries.map((entry, index) => normalizeHit("official_catalog", {
+  const hits = entries.map((entry, index) => normalizeHit("official_catalog", {
     id: `official-catalog:${entry.id || index + 1}`,
     query: `${entry.region || payload.scope || "全国"} 官方招聘目录`,
     dimensions: { catalogEntryId: entry.id || index + 1, region: entry.region || payload.scope || "全国", regionCode: entry.regionCode || null },
-  }, entry, discoveredAt, "official_directory", {
+  }, entry, discoveredAt, entry.evidenceKind, {
     sourcePage: entry.sourcePage || entry.url,
     authority: entry.authority || null,
     publisher: entry.publisher || null,
@@ -316,7 +348,13 @@ export async function runPublicCatalogProvider(tasks, {
     coverageRegions: entry.coverageRegions || null,
     catalogUpdatedAt: payload.updatedAt || null,
   }));
-  return result("ok", "official_catalog", hits, [], { catalogUpdatedAt: payload.updatedAt || null, entries: hits.length, inputTaskCount: tasks.length });
+  return result("ok", "official_catalog", hits, [], {
+    catalogUpdatedAt: payload.updatedAt || null,
+    entries: hits.length,
+    directoryEntries: payload.entries.length,
+    employerWatchlistEntries: employerEntries.length,
+    inputTaskCount: tasks.length,
+  });
 }
 
 export function runImportedProvider(importedInput, { now = new Date() } = {}) {
@@ -335,6 +373,7 @@ export function runImportedProvider(importedInput, { now = new Date() } = {}) {
 export async function runDiscoveryProviders(tasks, {
   providers = ["official_catalog", "common_crawl", "baidu"],
   catalogPath,
+  channelPlanPath,
   importedInput,
   now = new Date(),
   baidu = {},
@@ -342,7 +381,7 @@ export async function runDiscoveryProviders(tasks, {
 } = {}) {
   const outputs = [];
   for (const provider of providers) {
-    if (provider === "official_catalog") outputs.push(await runPublicCatalogProvider(tasks, { catalogPath, now }));
+    if (provider === "official_catalog") outputs.push(await runPublicCatalogProvider(tasks, { catalogPath, channelPlanPath, now }));
     else if (provider === "common_crawl") outputs.push(await runCommonCrawlProvider(tasks, { ...commonCrawl, now }));
     else if (provider === "baidu") outputs.push(await runBaiduProvider(tasks, { ...baidu, now }));
     else if (provider === "imported") outputs.push(runImportedProvider(importedInput, { now }));

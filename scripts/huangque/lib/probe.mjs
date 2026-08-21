@@ -2,9 +2,10 @@ import { createHash } from "node:crypto";
 import { normalizeAdapterPayload, plainText } from "./adapters.mjs";
 import { fetchRobotsPolicy, isLocalControlError, robotsAllowsRules, safeFetch } from "./http.mjs";
 import { canonicalizeUrl, sourceOwnsJobUrl } from "./source-discovery.mjs";
+import { createPublicRecruitmentSession } from "./public-recruitment-session.mjs";
 
 const LOGIN_OR_CHALLENGE = /login required|sign[ -]?in required|please log in|access denied|captcha|cloudflare challenge|验证码|请先登录|登录后查看|仅限登录|访问受限|付费墙/i;
-const RECRUITMENT_LANGUAGE = /招聘|岗位|职位|招考|报名|录用|career|careers|job|jobs|hiring|position|opening/i;
+const RECRUITMENT_LANGUAGE = /招聘|岗位|职位|招考|报名|录用|就业|人社|人力资源|人才|career|careers|job|jobs|hiring|position|opening|talent/i;
 const ALLOWED_CONTENT = /(?:application\/(?:json|ld\+json|xml)|text\/(?:html|plain|xml)|\+json|\+xml)/i;
 
 function extractAttribute(tag, name) {
@@ -53,6 +54,32 @@ function publicEndpoint(candidate) {
 }
 
 function requestOptions(candidate) {
+  if (["ByteDance", "FeishuRecruitment"].includes(candidate.provider) && /\/api\/v1\/search\/job\/posts/i.test(candidate.publicApiUrl || "")) {
+    const feishu = candidate.provider === "FeishuRecruitment";
+    return {
+      method: "POST",
+      headers: {
+        "content-type": "application/json;charset=UTF-8",
+        "portal-channel": feishu ? "saas-career" : "office",
+        "portal-platform": "pc",
+      },
+      body: JSON.stringify({
+        keyword: "",
+        limit: 20,
+        offset: 0,
+        job_category_id_list: [],
+        tag_id_list: [],
+        location_code_list: [],
+        subject_id_list: [],
+        recruitment_id_list: [],
+        portal_type: feishu ? 6 : 2,
+        job_function_id_list: [],
+        storefront_id_list: [],
+        job_post_id_list: [],
+        ...(feishu ? {} : { portal_entrance: 1 }),
+      }),
+    };
+  }
   if (candidate.provider === "BeijingPublicEmployment" && /\/zyjp\/getTblb/i.test(candidate.publicApiUrl || "")) {
     return {
       method: "POST",
@@ -67,12 +94,25 @@ function providerStrategy(candidate, inspection, pageSignals) {
   if (candidate.provider === "Lever") return "lever_public_api";
   if (candidate.provider === "Greenhouse") return "greenhouse_public_api";
   if (candidate.provider === "Ashby") return "ashby_public_api";
+  if (candidate.provider === "ByteDance") return "bytedance_public_search_api";
+  if (candidate.provider === "FeishuRecruitment") return "feishu_recruitment_public_search_api";
   if (candidate.provider === "NCSS") return "ncss_public_json";
   if (candidate.provider === "BeijingPublicEmployment") return "beijing_public_employment_json";
   if (inspection.format === "xml" && inspection.totalRows > 0) return "xml_feed_or_sitemap";
   if (inspection.format === "html" && inspection.totalRows > 0) return "jobposting_jsonld";
   if (pageSignals.jobLinks.length > 0) return "listing_html";
   return "unsupported";
+}
+
+function likelyCollectionPage(value) {
+  try {
+    const path = new URL(value).pathname;
+    if (/\/(?:jobs?|positions?)\/[^/]+(?:\/detail)?\/?$/i.test(path)
+      && !/\/(?:jobs?|positions?)\/?$/i.test(path)) return false;
+    return /\/(?:jobs?|careers?|career|recruit(?:ment)?|positions?|experienced|campus)(?:\/|$)/i.test(path);
+  } catch {
+    return false;
+  }
 }
 
 function normalizeProbeResponse(candidate, response, probedAt) {
@@ -94,16 +134,21 @@ export async function probeCandidate(candidate, {
   const targetUrl = publicEndpoint(candidate);
   const robots = await fetchRobotsPolicy(targetUrl, fetchOptions);
   if (!robots.allowed) {
+    const verificationState = robots.reason === "robots_disallowed" ? "blocked_robots"
+      : [401, 403].includes(robots.status) ? "access_restricted" : "probe_failed";
+    const message = robots.reason === "robots_disallowed" ? "robots.txt 明确禁止黄雀访问该路径"
+      : [401, 403].includes(robots.status) ? `robots.txt 返回 HTTP ${robots.status}，无法确认公开访问权限`
+        : "robots.txt 暂时无法核验；本次安全停止，24 小时退避后可自动重试";
     return {
       schemaVersion: "huangque.probe.v1",
       sourceId: candidate.id,
       probedAt,
-      verificationState: "blocked_robots",
+      verificationState,
       collectable: false,
       strategy: "none",
       robots,
       evidence: [{ kind: "robots", ...robots }],
-      errors: ["robots.txt 明确禁止黄雀访问该路径"],
+      errors: [{ code: verificationState === "probe_failed" ? "ROBOTS_UNAVAILABLE" : verificationState === "access_restricted" ? "ROBOTS_ACCESS_RESTRICTED" : "ROBOTS_DISALLOWED", message }],
       edges: [],
       sampleJobs: [],
       counts: { total: 0, china: 0, beijing: 0 },
@@ -111,10 +156,18 @@ export async function probeCandidate(candidate, {
   }
 
   let response;
+  let publicSession = { headers: {}, evidence: null };
   try {
+    publicSession = await createPublicRecruitmentSession(candidate, targetUrl, { fetchOptions, robots });
+    const request = requestOptions(candidate);
     response = await safeFetch(targetUrl, {
       ...fetchOptions,
-      ...requestOptions(candidate),
+      ...request,
+      headers: {
+        ...(fetchOptions.headers || {}),
+        ...(request.headers || {}),
+        ...publicSession.headers,
+      },
       redirectGuard: ({ to }) => robotsAllowsRules(robots.rules || [], to),
     });
   } catch (error) {
@@ -135,19 +188,21 @@ export async function probeCandidate(candidate, {
     };
   }
 
+  const httpObservation = {
+    kind: "http_observation",
+    requestedUrl: response.requestedUrl,
+    finalUrl: response.finalUrl,
+    status: response.status,
+    contentType: response.contentType,
+    bytes: response.bytes,
+    contentHash: response.contentHash,
+    redirectChain: response.redirectChain,
+    fetchedAt: response.fetchedAt,
+  };
   const evidence = [
     { kind: "robots", ...robots },
-    {
-      kind: "http_observation",
-      requestedUrl: response.requestedUrl,
-      finalUrl: response.finalUrl,
-      status: response.status,
-      contentType: response.contentType,
-      bytes: response.bytes,
-      contentHash: response.contentHash,
-      redirectChain: response.redirectChain,
-      fetchedAt: response.fetchedAt,
-    },
+    ...(publicSession.evidence ? [publicSession.evidence] : []),
+    httpObservation,
   ];
   const edges = [];
   if (candidate.publicApiUrl) edges.push({ type: "collection_endpoint", to: candidate.publicApiUrl, evidence: { provider: candidate.provider, endpointType: "api" } });
@@ -162,7 +217,7 @@ export async function probeCandidate(candidate, {
       collectable: false,
       strategy: "none",
       robots,
-      http: evidence[1],
+      http: httpObservation,
       evidence,
       errors: [`端点返回 HTTP ${response.status}`],
       edges,
@@ -179,7 +234,7 @@ export async function probeCandidate(candidate, {
       collectable: false,
       strategy: "none",
       robots,
-      http: evidence[1],
+      http: httpObservation,
       evidence,
       errors: [`不采集内容类型：${response.contentType}`],
       edges,
@@ -198,7 +253,7 @@ export async function probeCandidate(candidate, {
       collectable: false,
       strategy: "none",
       robots,
-      http: evidence[1],
+      http: httpObservation,
       evidence,
       errors: ["页面正文显示需要登录、验证码或访问受限"],
       edges,
@@ -208,6 +263,20 @@ export async function probeCandidate(candidate, {
   }
 
   const discoveredPageEdges = [...pageSignals.edges];
+  const clueLimit = candidate.sourceType === "official_source_directory" ? 25
+    : candidate.authority === "official_employer" ? 8 : 0;
+  const sourceClues = clueLimit > 0
+    ? pageSignals.jobLinks.filter((link) => {
+      try { return new URL(link.url).origin !== new URL(candidate.sourceRootUrl).origin; }
+      catch { return false; }
+    }).slice(0, clueLimit).map((link) => ({
+      url: link.url,
+      title: link.text || new URL(link.url).hostname,
+      parentSourceId: candidate.id,
+      parentUrl: response.finalUrl,
+      evidenceKind: candidate.sourceType === "official_source_directory" ? "directory_link" : "official_employer_handoff",
+    }))
+    : [];
   let normalized = normalizeProbeResponse(candidate, response, probedAt);
   let inspection = normalized.inspection;
   let collectionEndpoint = targetUrl;
@@ -216,6 +285,7 @@ export async function probeCandidate(candidate, {
       ...(robots.sitemaps || []),
       ...pageSignals.edges.filter((edge) => edge.type === "feed" || edge.type === "sitemap").map((edge) => edge.to),
       ...(inspection.nestedSitemaps || []),
+      ...pageSignals.jobLinks.map((link) => link.url).filter(likelyCollectionPage),
     ])].filter((url) => sourceOwnsJobUrl({ candidate }, url, { responseUrl: response.finalUrl })).slice(0, 8);
     for (let alternativeIndex = 0; alternativeIndex < alternativeUrls.length && alternativeIndex < 8; alternativeIndex += 1) {
       const alternativeUrl = alternativeUrls[alternativeIndex];
@@ -285,7 +355,10 @@ export async function probeCandidate(candidate, {
   const scopeVerified = hasChinaRows || chinaListingLinks
     || (htmlListing && authoritativeChinaScope);
   const unsafeJobOrigins = Number(inspection.rejectedCrossOriginJobs || 0);
-  const verificationState = unsafeJobOrigins > 0 ? "unsafe_job_origin"
+  const publicSearchBusinessError = ["ByteDance", "FeishuRecruitment"].includes(candidate.provider)
+    && Number(inspection.payload?.code) !== 0;
+  const verificationState = publicSearchBusinessError ? "upstream_error"
+    : unsafeJobOrigins > 0 ? "unsafe_job_origin"
     : inspection.rowLimitExceeded ? "payload_limit_exceeded"
       : knownAdapter && credibleResponse && scopeVerified ? "verified"
     : credibleResponse && !knownAdapter ? "adapter_unavailable"
@@ -322,11 +395,14 @@ export async function probeCandidate(candidate, {
     collectionEndpoint,
     publisher: candidate.publisher || candidate.tenant || new URL(candidate.sourceRootUrl).hostname,
     robots,
-    http: evidence[1],
+    http: httpObservation,
     evidence,
     evidenceHash,
-    errors: verificationState === "verified" ? [] : [`探测未达到批准门槛：${verificationState}`],
+    errors: verificationState === "verified" ? [] : [publicSearchBusinessError
+      ? `公开招聘查询返回业务错误 ${inspection.payload?.code ?? "unknown"}`
+      : `探测未达到批准门槛：${verificationState}`],
     edges,
+    sourceClues,
     sampleJobs,
     counts: {
       total: inspection.totalRows || pageSignals.jobLinks.length,

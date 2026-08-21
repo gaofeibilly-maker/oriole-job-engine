@@ -28,6 +28,95 @@ test("file lock preserves updates from independent registry instances", async ()
   assert.deepEqual(state.sources.map((source) => source.id).sort(), ["left", "right"]);
 });
 
+test("unapproved candidate rediscovery accumulates bounded evidence without weakening readiness", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-candidate-merge-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  const strong = {
+    ...candidate("merge"),
+    status: "ready_for_probe",
+    authority: "official_public_service",
+    discoveryPriorityScore: 91,
+    queryIds: ["strong-query"],
+    discoveredUrls: ["https://merge.example.com/jobs"],
+    titles: ["强证据招聘入口"],
+    evidence: [{ channel: "official_catalog", url: "https://merge.example.com/jobs" }],
+    decision: { status: "ready_for_probe", reasonCodes: ["OFFICIAL_DIRECTORY"], decidedBy: "strong_rules" },
+    nextAction: "探测官方公开入口",
+  };
+  await registry.upsertCandidates({ candidates: [strong] }, "run-strong");
+  const weak = {
+    ...candidate("merge"),
+    name: "较弱搜索标题",
+    status: "backlog",
+    authority: "unknown",
+    discoveryPriorityScore: 12,
+    queryIds: ["strong-query", ...Array.from({ length: 220 }, (_, index) => `query-${index}`)],
+    discoveredUrls: ["https://merge.example.com/jobs", ...Array.from({ length: 120 }, (_, index) => `https://merge.example.com/jobs/${index}`)],
+    titles: ["强证据招聘入口", ...Array.from({ length: 60 }, (_, index) => `搜索标题 ${index}`)],
+    evidence: [
+      { channel: "official_catalog", url: "https://merge.example.com/jobs" },
+      ...Array.from({ length: 60 }, (_, index) => ({ channel: "search", queryId: `query-${index}`, url: `https://merge.example.com/jobs/${index}` })),
+    ],
+    decision: { status: "backlog", reasonCodes: ["WEAK_SEARCH"], decidedBy: "weak_rules" },
+    nextAction: "等待更多证据",
+  };
+  await registry.upsertCandidates({ candidates: [weak] }, "run-weak");
+
+  const source = (await registry.snapshot()).sources.find((item) => item.id === "merge");
+  assert.equal(source.lifecycle, "candidate");
+  assert.equal(source.candidate.status, "ready_for_probe");
+  assert.equal(source.candidate.authority, "official_public_service");
+  assert.equal(source.candidate.discoveryPriorityScore, 91);
+  assert.equal(source.candidate.decision.status, "ready_for_probe");
+  assert.equal(source.candidate.decision.decidedBy, "strong_rules");
+  assert.equal(source.candidate.nextAction, "探测官方公开入口");
+  assert.deepEqual(source.candidate.decision.reasonCodes.sort(), ["OFFICIAL_DIRECTORY", "WEAK_SEARCH"]);
+  assert.equal(source.candidate.queryIds.length, 200);
+  assert.equal(source.candidate.evidence.length, 50);
+  assert.equal(source.candidate.discoveredUrls.length, 100);
+  assert.equal(source.candidate.titles.length, 50);
+  assert.equal(new Set(source.candidate.queryIds).size, source.candidate.queryIds.length);
+  assert.equal(new Set(source.candidate.discoveredUrls).size, source.candidate.discoveredUrls.length);
+  assert.equal(new Set(source.candidate.titles).size, source.candidate.titles.length);
+  assert.ok(source.candidate.queryIds.includes("query-219"));
+  assert.ok(source.candidate.evidence.some((item) => item.queryId === "query-59"));
+});
+
+test("stronger candidate rediscovery upgrades readiness while preserving earlier observations", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-candidate-upgrade-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  const weak = {
+    ...candidate("upgrade"),
+    status: "needs_review",
+    authority: "needs_domain_ownership_check",
+    discoveryPriorityScore: 35,
+    queryIds: ["query-old"],
+    discoveredUrls: ["https://upgrade.example.com/jobs"],
+    titles: ["旧标题"],
+    evidence: [{ channel: "search", queryId: "query-old" }],
+    decision: { status: "needs_review", reasonCodes: ["DOMAIN_UNCONFIRMED"], decidedBy: "search_rules" },
+  };
+  const strong = {
+    ...weak,
+    status: "ready_for_probe",
+    authority: "official_employer",
+    discoveryPriorityScore: 88,
+    queryIds: ["query-new"],
+    titles: ["官方招聘入口"],
+    evidence: [{ channel: "official_catalog", queryId: "query-new" }],
+    decision: { status: "ready_for_probe", reasonCodes: ["OFFICIAL_EMPLOYER"], decidedBy: "catalog_rules" },
+  };
+  await registry.upsertCandidates({ candidates: [weak] }, "run-old");
+  await registry.upsertCandidates({ candidates: [strong] }, "run-new");
+  const merged = (await registry.snapshot()).sources[0].candidate;
+  assert.equal(merged.status, "ready_for_probe");
+  assert.equal(merged.authority, "official_employer");
+  assert.equal(merged.discoveryPriorityScore, 88);
+  assert.deepEqual(merged.queryIds, ["query-old", "query-new"]);
+  assert.deepEqual(merged.titles, ["旧标题", "官方招聘入口"]);
+  assert.equal(merged.evidence.length, 2);
+});
+
 test("an unverified rediscovery cannot replace the evidence carried by a verified graph edge", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-edge-evidence-"));
   const registry = new JsonRegistry(join(directory, "state.json"));

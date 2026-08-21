@@ -4,7 +4,7 @@
 
 **Turn the open web into a traceable, review-gated map of job sources—not an opaque pile of scraped listings.**
 
-Oriole is an open, nationwide China job-source intelligence Agent. It discovers public recruitment publishers, verifies their endpoints, requires human approval before collection, normalizes jobs by their actual workplace, and exposes the result to any LLM through 15 MCP tools.
+Oriole is an open, nationwide China job-source intelligence Agent. It discovers public recruitment publishers, verifies their endpoints, requires human approval before collection, normalizes jobs by their actual workplace, and exposes the result to any LLM through 16 MCP tools.
 
 It is deliberately built as an engine, not a single website. Run it from the CLI, schedule it at midnight, embed the deterministic core in another Node.js service, or connect an MCP-capable model without giving that model your credentials.
 
@@ -14,12 +14,12 @@ It is deliberately built as an engine, not a single website. Run it from the CLI
 | --- | --- |
 | Nationwide geography | Deterministic two-level China taxonomy: 34 province-level regions and 365 prefecture/province-direct entries |
 | Workplace classification | Uses the job's stated work location, preserves multi-location jobs, supports province/city filters, and rejects foreign-only rows |
-| Source discovery | Eight audited public source seeds, official public directories, optional Baidu AI Search API, keyless Common Crawl URL Index, and user-supplied public URLs |
-| Stable collection | Lever, Greenhouse, Ashby, flexible public JSON, JobPosting JSON-LD, RSS/Atom, Sitemap XML, and guarded HTML listings |
+| Source discovery | Nine audited seeds, a bounded 19-employer watchlist, official directories, Baidu Search API, Common Crawl URL Index, all 365 second-level region tasks, and submitted URLs |
+| Stable collection | Lever, Greenhouse, Ashby, bounded ByteDance/Feishu Recruitment public search adapters, flexible public JSON, JSON-LD, RSS/Atom, Sitemap XML, and guarded HTML |
 | Source graph | Evidence-bearing relations between publisher, source, region, entry point, endpoint, discovery channel, and job |
 | Trust workflow | `candidate → probed → approved/rejected`; discovery and probing never auto-approve a source |
 | Evidence | Run records, HTTP summaries, content hashes, compressed raw-response artifacts, source/job traceability, and machine-readable audits |
-| Agent interface | 15 bilingual MCP tools over JSON-RPC 2.0 NDJSON stdio; modern `2026-07-28` plus legacy `2025-11-25`, `2025-06-18`, and `2025-03-26` negotiation |
+| Agent interface | 16 bilingual MCP tools over JSON-RPC 2.0 NDJSON stdio; modern `2026-07-28` plus legacy `2025-11-25`, `2025-06-18`, and `2025-03-26` negotiation |
 | Daily operation | Idempotent Beijing-date runner and GitHub Actions schedule at `00:00 Asia/Shanghai` |
 | Safety | HTTPS-only outbound access, public-address DNS pinning, SSRF defenses, redirect and robots guards, time/size/row limits, rate limits, and secret-host pinning |
 
@@ -33,9 +33,11 @@ Discovery channels and job sources have different jobs:
 - **Employer sites, official ATS boards, and government employment pages** are the long-lived collection targets. A source must pass safety probing and human review before its jobs can enter the Registry.
 - **User submission** lets another Agent or operator propose a public URL, while keeping the same probe-and-review gate.
 
-No Baidu key is required to collect the eight pre-approved source seeds or to discover candidates from the bundled official catalog. Provider capability is explicit per query task: ordinary keyword discovery is Baidu-only, so those tasks remain visibly `blocked` in `status.discoveryBacklog` and discovery-run statistics when Baidu is unavailable. Common Crawl is eligible only for controlled `site:` tasks; blocked work is never counted as completed.
+No Baidu key is required to collect the nine pre-approved source seeds or to discover candidates from the bundled official catalog. Provider capability is explicit per query task: ordinary keyword discovery is Baidu-only, so those tasks remain visibly `blocked` in `status.discoveryBacklog` and discovery-run statistics when Baidu is unavailable. Common Crawl is eligible only for controlled `site:` tasks; blocked work is never counted as completed.
 
-The public repository ships **zero job records**. `npm run init` imports eight explicitly audited public source seeds—seven employer-controlled ATS boards and one government employment source—so a clean clone has functional collection targets without publishing a stale or private job snapshot. This is not automatic approval of search results: the seed manifest itself is a reviewed trust decision, and all newly discovered sources still require probe and approval.
+The public repository ships **zero job records**. `npm run init` imports nine explicitly audited public source seeds—eight employer-controlled boards, including ByteDance, and one government employment source—so a clean clone has functional collection targets without publishing a stale or private job snapshot. This is not automatic approval of search results: the seed manifest itself is a reviewed trust decision, and all newly discovered sources still require probe and approval.
+
+Coverage is a measurable gap report, not a claim of complete national job capture. In the 19-employer watchlist, ByteDance is the only reviewed bootstrap target; the other 18 employer roots start as unapproved candidates and cannot produce jobs until they are probed, verified, and approved. ByteDance/Feishu collection is also bounded to 50 pages, 5,000 rows, and 24 MB per source run, so a run can finish with `pagination.complete: false`. Inspect collection-run evidence separately: `npm run coverage` measures source/channel/region state and does not read pagination completeness.
 
 See [docs/SOURCES.md](docs/SOURCES.md) for the exact provider boundaries and seed catalog.
 
@@ -49,10 +51,13 @@ cd oriole-job-engine
 npm test
 npm run init
 npm run status
+npm run coverage
 npm run regions -- --province-code 420000
 ```
 
-After `init`, `status` should show 8 approved sources and 0 bundled jobs. Jobs only appear after a real committed collection.
+After `init`, `status` should show 9 approved sources and 0 bundled jobs. Jobs only appear after a real committed collection.
+
+For a preview-only, evidence-producing check of ByteDance's current public jobs (no Baidu key required), run `npm run live-source-check`. It validates official application URLs and prints a compact summary rather than raw responses or job descriptions. The matching GitHub workflow can be run manually or by labeling a pull request `live-source-audit`.
 
 Discover the bundled official catalog without a credential:
 
@@ -115,7 +120,7 @@ Example MCP client configuration:
 }
 ```
 
-The server exposes tools for pipeline runs, run lookup, status, discovery, public-source submission, probing, source listing, job listing, region listing, graph reading, human review, collection, due work, audit, and portable projection export.
+The server exposes tools for pipeline runs, run lookup, status, measurable source-coverage gaps, discovery, public-source submission, probing, source listing, job listing, region listing, graph reading, human review, collection, due work, audit, and portable projection export.
 
 `huangque.list_regions` reports unique-job aggregates at province level, province-only level, and each second-level city. A job explicitly offered in two cities in one province counts once in the province total and once in each applicable city.
 

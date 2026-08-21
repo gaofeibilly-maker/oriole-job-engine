@@ -67,8 +67,9 @@ function externalIdScalar(value) {
 
 function iso(value) {
   if (!value && value !== 0) return null;
-  if (typeof value === "number" || /^\d{13}$/.test(String(value))) {
-    const date = new Date(Number(value));
+  if (typeof value === "number" || /^\d{10,13}$/.test(String(value))) {
+    const numeric = Number(value);
+    const date = new Date(numeric < 100_000_000_000 ? numeric * 1_000 : numeric);
     return Number.isNaN(date.getTime()) ? null : date.toISOString();
   }
   if (/^\d{14}$/.test(String(value))) {
@@ -214,10 +215,31 @@ function ashbyRows(payload) {
   return Array.isArray(payload?.jobs) ? payload.jobs : [];
 }
 
+function feishuRecruitmentRows(payload) {
+  return Array.isArray(payload?.data?.job_post_list) ? payload.data.job_post_list : [];
+}
+
+function feishuPortalRoot(source, fallbackUrl) {
+  const candidate = source?.candidate || {};
+  const origin = new URL(candidate.sourceRootUrl || fallbackUrl).origin;
+  let path = null;
+  try {
+    const root = new URL(candidate.sourceRootUrl);
+    const segment = root.pathname.split("/").filter(Boolean)[0];
+    if (segment && !["api", "atsx", "m", "position"].includes(decodeURIComponent(segment).toLowerCase())) path = segment;
+  } catch {
+    // Older/manual source records may only have portalPath; use it below.
+  }
+  if (!path && typeof candidate.portalPath === "string" && candidate.portalPath.trim()) {
+    path = encodeURIComponent(candidate.portalPath.trim());
+  }
+  return `${origin}/${path || "index"}`;
+}
+
 function flexibleRows(payload) {
   if (Array.isArray(payload)) return payload;
   const paths = [
-    payload?.jobs, payload?.data?.jobs, payload?.data?.list, payload?.data?.records,
+    payload?.jobs, payload?.data?.jobs, payload?.data?.job_post_list, payload?.data?.list, payload?.data?.records,
     payload?.result?.jobs, payload?.result?.list, payload?.returnData?.tblb, payload?.rows,
   ];
   return paths.find(Array.isArray) || [];
@@ -408,6 +430,7 @@ export function inspectPayload(provider, body, contentType = "", baseUrl = "") {
       const rows = provider === "Lever" ? leverRows(payload)
         : provider === "Greenhouse" ? greenhouseRows(payload)
           : provider === "Ashby" ? ashbyRows(payload)
+            : provider === "ByteDance" || provider === "FeishuRecruitment" ? feishuRecruitmentRows(payload)
             : flexibleRows(payload);
       if (rows.length > MAX_JSON_ROWS_PER_PAGE) {
         return {
@@ -424,6 +447,7 @@ export function inspectPayload(provider, body, contentType = "", baseUrl = "") {
       }
       const schemaRecognized = provider === "Lever" ? Array.isArray(payload)
         : provider === "Greenhouse" || provider === "Ashby" ? Array.isArray(payload?.jobs)
+          : provider === "ByteDance" || provider === "FeishuRecruitment" ? Array.isArray(payload?.data?.job_post_list)
           : knownPublicJsonSchema(provider, payload) || rows.length > 0;
       const chinaRows = rows.filter((row) => rowLocatedInChina(row)).length;
       return { format: "json", payload, rows, schemaRecognized, totalRows: rows.length, chinaRows, beijingRows: rows.filter(rowLocatedInBeijing).length };
@@ -444,7 +468,7 @@ export function normalizeAdapterPayload(source, response, observedAt = new Date(
   const inspection = inspectPayload(provider, response.body, response.contentType, response.finalUrl);
   let rawJobs = [];
   let strategy = "generic_json";
-  const supportedAtsProviders = ["Lever", "Greenhouse", "Ashby"];
+  const supportedAtsProviders = ["Lever", "Greenhouse", "Ashby", "ByteDance", "FeishuRecruitment"];
   if (source.candidate?.sourceType === "official_ats" && !supportedAtsProviders.includes(provider) && inspection.format === "json") {
     strategy = "unsupported_ats_json";
     rawJobs = [];
@@ -495,6 +519,42 @@ export function normalizeAdapterPayload(source, response, observedAt = new Date(
       sourceUrl: row.jobUrl,
       applyUrl: row.applyUrl || row.jobUrl,
     }));
+  } else if (provider === "ByteDance" || provider === "FeishuRecruitment") {
+    strategy = provider === "ByteDance" ? "bytedance_public_search_api" : "feishu_recruitment_public_search_api";
+    rawJobs = inspection.rows.map((row) => {
+      const id = externalIdScalar(row.id || row.job_post_id || row.position_id);
+      const origin = new URL(source.candidate?.sourceRootUrl || response.finalUrl).origin;
+      const explicitUrl = row.job_url || row.job_post_url || row.position_url || row.url || null;
+      let detailUrl = null;
+      try { detailUrl = explicitUrl ? new URL(explicitUrl, origin).toString() : null; } catch { detailUrl = null; }
+      if (!detailUrl && provider === "ByteDance" && id) detailUrl = `${origin}/experienced/position/${encodeURIComponent(id)}/detail`;
+      if (!detailUrl && provider === "FeishuRecruitment" && id) detailUrl = `${feishuPortalRoot(source, response.finalUrl)}/position/${encodeURIComponent(id)}/detail`;
+      const cityValues = [
+        row.city_info?.name,
+        ...(Array.isArray(row.city_list) ? row.city_list.map((item) => item?.name || item) : []),
+        ...(Array.isArray(row.location_list) ? row.location_list.map((item) => item?.name || item) : []),
+      ].filter(Boolean);
+      const location = cityValues.join(" · ") || row.location?.name || row.location || "地点未提供";
+      return {
+        externalId: id,
+        title: row.title || row.name,
+        company: source.probe?.publisher || source.candidate?.publisher || (provider === "ByteDance" ? "字节跳动" : source.candidate?.tenant),
+        location,
+        workLocationsRaw: [row.city_info, row.city_list, row.location_list, row.location],
+        department: row.job_category?.name || row.job_function?.name || row.department?.name || row.department,
+        employmentType: row.recruit_type?.name || row.employment_type?.name || row.employment_type,
+        workplaceType: row.workplace_type?.name || row.workplace_type,
+        publishedAt: row.publish_time || row.publishTime || row.create_time,
+        validThrough: row.job_post_info?.never_expiry ? null : row.job_post_info?.expiry_time,
+        salary: row.job_post_info?.salary_min || row.job_post_info?.salary_max
+          ? [row.job_post_info?.salary_min, row.job_post_info?.salary_max].filter((value) => value !== null && value !== undefined && value !== "").join("–")
+          : null,
+        description: [row.description, row.requirement, row.qualifications].filter(Boolean).join("\n\n"),
+        sourceUrl: detailUrl || source.candidate?.sourceRootUrl,
+        applyUrl: detailUrl || source.candidate?.sourceRootUrl,
+        urlIsFallback: !detailUrl,
+      };
+    });
   } else if (provider === "BeijingPublicEmployment") {
     strategy = "beijing_public_employment_json";
     rawJobs = inspection.rows.map((row) => {

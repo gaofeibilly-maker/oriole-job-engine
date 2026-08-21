@@ -276,6 +276,9 @@ export function structuredJobLocationValues(row) {
     row.categories?.location,
     row.areaName,
     row.city,
+    row.city_info,
+    row.city_list,
+    row.location_list,
     row.address,
     row.gzdd,
   ]);

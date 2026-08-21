@@ -90,6 +90,18 @@
       "region": "北京",
       "regionCode": "110000",
       "sourcePage": "https://rsj.beijing.gov.cn/xxgk/gkzp/"
+    },
+    {
+      "id": "bytedance-official-careers",
+      "title": "字节跳动官方招聘·社会招聘",
+      "url": "https://jobs.bytedance.com/experienced/position",
+      "snippet": "字节跳动官方招聘网站公开的社会招聘职位，岗位工作地点以每条职位记录为准。",
+      "publisher": "字节跳动",
+      "authority": "official_employer",
+      "region": "全国",
+      "regionCode": "CN",
+      "coverageRegions": "job_level_locations_only",
+      "sourcePage": "https://jobs.bytedance.com/experienced/position"
     }
   ]
 }
