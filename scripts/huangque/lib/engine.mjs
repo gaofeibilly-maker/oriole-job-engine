@@ -214,6 +214,7 @@ export function schedulerObservationIsLive(observation, env = process.env) {
     && Boolean(env?.GITHUB_RUN_ID)
     && observation?.trigger === "github_actions"
     && observation?.stage === "post_pipeline_finalization"
+    && ["completed", "completed_with_findings", "no_work"].includes(observation?.status)
     && String(observation?.runId || "") === String(env.GITHUB_RUN_ID);
 }
 
