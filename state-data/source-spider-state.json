@@ -1,8 +1,8 @@
 {
   "schemaVersion": "huangque.source-spider-state.v1",
-  "revision": 1,
+  "revision": 2,
   "createdAt": "2026-08-21T08:14:54.158Z",
-  "updatedAt": "2026-08-21T08:46:15.154Z",
+  "updatedAt": "2026-08-21T19:06:55.632Z",
   "targets": {
     "employer-cn-81baf57e05f112764536": {
       "frontier": [
@@ -3254,9 +3254,1629 @@
         "baidu": "failed",
         "common_crawl": "ok"
       }
+    },
+    "employer-cn-00cdf8849970983912f9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-00d401bbab83da7f2657": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-00d4065a0311e58f3b83": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-00d486b79987878e3b81": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-00daf684030770bf6961": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-00dca5d734c9ace7517f": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-00ef765c71692dcc19a7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-00f784bbb3636c550153": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01043a54434716362507": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0107d171c3c6beecdcfa": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-011414c279947355b6bc": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0118bf5fb238a1043c93": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-011c503b99906e8a3dfa": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-013123f13ffcac5384f9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0148a58bb731be2906e3": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-014cfbbed750b8b2f258": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01547d8ba9706c82aef9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0157c07f15aee5f7b4c5": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01669ffe9681b6821310": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0169b8525e6a68e5db2e": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01728da51e41a38afa63": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-017bdbaf4e9edd128a99": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-017cca25b6ebb1729758": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0183c30636b54526a064": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-018c2b9133fd5538d987": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-018c71835d2a876fe163": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0191504c74c8dd3e33d1": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0194601f8bf8af1662d7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01c48df4ff9c7f19db9d": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01c5c186f39645e568f2": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01cc7ad725a987917493": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01d9a68a27e623c36117": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01dda098a7e70910081f": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01e93d47687b878bc5c2": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01ee02bf436fa7621529": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-01f45888c9e3545e2373": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-021b2b6fca9f0f8c534f": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-022625075b989ebc5052": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02415dcb50db98976ffe": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-024d2f1b58b711923447": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-025126d8ed369f622f63": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0271d04c2ebf06de2fbc": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0275ce90fc2e28a8d3f3": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-027a5a5af2a288ef8468": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0281357e1436fa5067c9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-028b51c1b0fb398e6b0c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-029402a871a2c133dd88": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-029e620776c664fe9c36": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02a7e0ee70cd62eb5fc9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02a94a56ab92ca427ee7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02b114d6e416995cb478": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02ba75df3311fe0a1899": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02cad8f4d0d5b51fa93b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02cef95f35fbca401d6d": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02d685b71e333de917f0": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02e47ada3caf19b44b41": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02f28b5e3df46b01080f": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-02f88be28b61b973a722": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-03056014a7753846d390": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-030f848c40b6888d2dd0": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-032c773725986b92b6cd": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0358bbee9be1f953bef6": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0359217be325d85b44d1": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-035cd43c435cbb8f9c84": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-036493ac5f7705c716e1": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-036d02449c2a5a4d4a51": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0370dca6ef496bb58d85": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0370f3a5afc734b02f44": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-038b43066860991bbf47": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0395611edd731e3a6141": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-039fca61f45aa8af7dbb": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-03d4dc7deb11d3d2ac93": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-03e622adb3f4ea5029a4": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-03edefa868e7186f5b0b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-03f11d88418c357f4af8": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04042f4e5c01119ac63d": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04208c1492b3f178a0ef": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-042c02890d597829d67c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-043fb799654508984ec2": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-044a96d4b84aadab28b5": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-045611d0c0d697e40089": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-047b401089b283347a2c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0488c65121c82d26c39c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0489daae9e546ce7b1df": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04af49e4a1e9670c3b78": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04be07c1cc0e4626dbcf": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04be1c199c9ac30fcfbf": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04c0293157b00a6e6807": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04c61984515e132fa800": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04cb907e6fa03c2adc63": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04dfbd9a1850f64bb7fa": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04f87655e574bd2d58f6": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-04fc89a5441cfb2cbece": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0502025a5ed76602050a": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0521f9dddf39d3ff33c4": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0524a1e4e7634651dfb7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-053ecc06ae3ac0fc1534": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-054494b0f94d4f1adf6f": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-05515b992fa3769eddea": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
+    },
+    "employer-cn-0563549816f9b99328c2": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T19:05:20.489Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T19:05:20.489Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "baidu": "failed",
+        "common_crawl": "not_applicable"
+      }
     }
   },
   "runs": [
+    {
+      "id": "run-19b169ff-0012-45f7-a0de-0fc57d3ad49c",
+      "at": "2026-08-21T19:06:55.632Z",
+      "scheduledDate": "2026-08-22",
+      "mode": "daily",
+      "selectedTargets": 100,
+      "discoveredSources": 0,
+      "probes": 0,
+      "status": "failed",
+      "trigger": "github_actions",
+      "githubRunId": "32516611629",
+      "onlineEvidence": {
+        "present": false,
+        "successfulProviders": [],
+        "successfulCrawlPages": 0,
+        "verifiedProbes": 0,
+        "note": "本地 imported 目标根只证明队列工作；不能替代真实网络成功证据。"
+      },
+      "registryCommittedAt": "2026-08-21T19:06:58.007Z"
+    },
     {
       "id": "run-26fac64a-073d-42b2-adf7-15accd8a36af",
       "at": "2026-08-21T08:46:15.154Z",
