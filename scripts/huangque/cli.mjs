@@ -7,7 +7,7 @@ import { HuangqueEngine } from "./lib/engine.mjs";
 const defaultProjectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 function usage() {
-  return `黄雀 1.1.0：岗位垂类的信息源归集引擎
+  return `黄雀 1.1.1：岗位垂类的信息源归集引擎
 
 用法：node scripts/huangque/cli.mjs <command> [options]
 

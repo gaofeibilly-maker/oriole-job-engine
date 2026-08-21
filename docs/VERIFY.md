@@ -28,7 +28,8 @@ The suite covers:
 - Common Crawl index selection, CDX query bounds, and evidence;
 - per-task Provider capability, Baidu-only keyword blocking, and Common Crawl `site:` eligibility;
 - candidate classification, source ownership, Registry graph evidence, and job identity;
-- atomic Registry behavior, revision conflicts, retention, and preview versus commit;
+- atomic Registry behavior, revision and resume-generation conflicts, retention, and preview versus commit;
+- ByteDance/Feishu head refresh, overlapping tail rotation, bounded checkpoints, terminal wrapping, and missing-job suppression;
 - HTTPS, SSRF, DNS, redirect, robots, time, size, and artifact protections;
 - MCP initialization across modern and three legacy revisions, tool schemas, invalid arguments, rate limits, and bounded outputs;
 - unique province/province-only/city aggregates and referentially closed hosted projections.
@@ -66,7 +67,20 @@ npm run coverage
 
 Verify that `nonExhaustive` is `true` and the summary reports 9 planned channels, 19 planned employer targets, 34 province-level regions, and 365 second-level regions. Immediately after clean initialization plus official-catalog discovery, only ByteDance should count as a covered employer target; the other 18 watchlist entries must remain listed in `missingTargetIds` even though they now exist as candidates. Channel and region gaps are expected until sources are separately probed, approved, enabled, and—where applicable—backed by active jobs with structured locations.
 
-This command does not prove that a collection read every upstream page. It intentionally does not read `pagination.complete`. For ByteDance/Feishu or another bounded source, inspect the collection command result, the Registry run's `output.collectionEvidence`, or the daily report's `sourceRuns`; a run that reaches 50 pages, 5,000 rows, 24 MB, or an upstream gap must remain visibly incomplete.
+This command does not prove that a collection read every upstream page. It intentionally reads neither `pagination.complete` nor `source.collection.resume`. For ByteDance/Feishu or another bounded source, inspect the collection result, the Registry run's `output.collectionEvidence`, the source's committed resume state, or the daily report's `sourceRuns`; a run that reaches 50 pages, 5,000 rows, 24 MB, or an upstream gap must remain visibly incomplete.
+
+### Persistent large-feed rotation
+
+Run the deterministic cursor suites:
+
+```bash
+node --test \
+  tests/huangque-collector.test.mjs \
+  tests/huangque-registry.test.mjs \
+  tests/huangque-engine.test.mjs
+```
+
+Verify that a bounded offset-zero segment records a nonzero `nextOffset`; the next committed segment first requests offset zero, then resumes that tail with one page of overlap. `source.collection.resume.generation` must increment only with the atomic job commit. Preview, simulated HTTP failure, malformed checkpoint, a changed source revision, or a concurrent cursor-generation loser must leave both saved cursor and jobs unchanged. The source-revision check must use the revision captured before network collection and run again inside the write transaction before any mutation. A resumed segment that reaches the upstream tail must set `cycleEndReached: true` and rotate the committed offset to zero while keeping `pagination.complete: false` and `missingAdvanceSuppressed: true`. Small feeds traversed from zero remain capable of a genuinely complete observation.
 
 ## 4. Workplace verification
 
@@ -107,7 +121,7 @@ Then send the initialized notification and list tools:
 {"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}
 ```
 
-Verify that `serverInfo.version` is `1.1.0`, that 16 tools are returned including `huangque.source_coverage`, and that `huangque.review_source` is rejected unless MCP review was explicitly enabled. Repeat initialization with `2025-06-18` and `2025-03-26`; each successful response must return the exact requested protocol revision. The automated release-consistency test also verifies that the outbound User-Agent identifies `HuangqueJobSourceAgent/1.1.0`.
+Verify that `serverInfo.version` is `1.1.1`, that 16 tools are returned including `huangque.source_coverage`, and that `huangque.review_source` is rejected unless MCP review was explicitly enabled. Repeat initialization with `2025-06-18` and `2025-03-26`; each successful response must return the exact requested protocol revision. Automated release-consistency tests also require package metadata, lockfile, CLI, changelog, MCP metadata, and the outbound `HuangqueJobSourceAgent/1.1.1` User-Agent to agree.
 
 For a collected multi-city job, compare `jobs` and `regions`: the province total must count the job once, while every explicit city gets its own count. Projection tests also assert that every `lists_job` target exists in the same bounded job array.
 
@@ -162,7 +176,7 @@ Run the bounded, preview-only source check on a machine with ordinary public Int
 npm --silent run live-source-check > live-source-summary.json
 ```
 
-The command fails closed if robots cannot be verified, the public endpoint changes, no China jobs are returned, or any application URL leaves the official ByteDance recruitment origin. On success, the JSON contains only counts, pagination, covered region codes, and five official-link samples; it excludes raw responses, descriptions, cookies, and CSRF tokens. `pagination.complete: false` is a valid, honest result when the upstream total exceeds the per-run safety budget.
+The command fails closed if robots cannot be verified, the public endpoint changes, no China jobs are returned, or any application URL leaves the official ByteDance recruitment origin. On success, the JSON contains only counts, pagination, covered region codes, and five official-link samples; it excludes raw responses, descriptions, cookies, and CSRF tokens. It is preview-only, so it cannot advance `source.collection.resume`. `pagination.complete: false` is a valid, honest result when the upstream total exceeds the per-invocation safety budget or the observed window is resumed.
 
 The same check is available as `.github/workflows/live-source-audit.yml`. Run it manually, or add the `live-source-audit` label to a pull request; download the `oriole-live-source-*` artifact and validate `success`, `http.status`, `parserStats.observedRows`, `jobs.chinaObserved`, and `safety.previewOnly`.
 

@@ -38,7 +38,7 @@ The implementation uses Node.js built-ins and local JSON configuration. It has n
 - `providers.mjs` implements discovery channels and preserves provider evidence.
 - `query-plan.mjs` declares Provider capability per task, schedules only runnable tasks, and leaves unavailable work visible to the engine as blocked backlog.
 - `probe.mjs` converts a candidate into verified or failed probe evidence without approving it; bounded directory and employer handoff links become separate candidates.
-- `collector.mjs` collects only approved sources and defaults to preview unless `commit` is explicit.
+- `collector.mjs` collects only approved sources and defaults to preview unless `commit` is explicit. Large ByteDance/Feishu offset feeds refresh one head page and resume a bounded, overlapping tail segment.
 - `adapters.mjs` recognizes supported feeds and produces `huangque.job.v2` jobs.
 - `china-regions.mjs` supplies deterministic two-level workplace classification.
 - `source-coverage.mjs` measures gaps across nine channels, 19 bounded employer targets, and the nationwide region taxonomy. It does not consume per-run pagination completeness; that remains separate collection evidence.
@@ -46,7 +46,7 @@ The implementation uses Node.js built-ins and local JSON configuration. It has n
 
 ## Persistence
 
-The portable Registry is an atomically replaced JSON document. A sidecar lock serializes cross-process writers; mutations verify the expected revision where an operator decision could otherwise race. Raw collection responses can be stored as content-addressed gzip artifacts with SHA-256 hashes.
+The portable Registry is an atomically replaced JSON document. A sidecar lock serializes cross-process writers; mutations verify the expected revision where an operator decision could otherwise race. ByteDance/Feishu sources keep an optional versioned cursor under `source.collection.resume`. Its fingerprint binds the provider endpoint, fixed request shape, and approval epoch. In the same transaction as the segment's job writes, the Registry compare-and-swaps both the source revision captured before network collection and the committed cursor generation. Either conflict aborts before job or cursor mutation. Raw collection responses can be stored as content-addressed gzip artifacts with SHA-256 hashes.
 
 Default paths:
 
@@ -80,6 +80,8 @@ Invariants:
 - transient probe failures retry after a 24-hour backoff; explicit robots denial and access restriction remain blocked;
 - approval requires reviewer, reason, confirmation, and the expected Registry revision;
 - preview collection performs network and parser work but does not modify the job store;
+- preview, failed collection, source-revision conflict, and cursor-generation conflict do not advance a persisted resume checkpoint or write segment jobs;
+- every resumed ByteDance/Feishu segment refreshes the head, shares the same per-invocation safety budget, and overlaps one tail page;
 - committed jobs retain source URLs, source IDs, evidence, versions, and graph relations.
 
 ### Clean-clone bootstrap
@@ -96,7 +98,7 @@ Classification reads structured work-location fields first. It preserves multipl
 
 Strong identity uses canonical apply URLs and provider external IDs within the approved source boundary. Soft identity uses normalized title, organization, and location signals to create review candidates; it does not silently merge ambiguous jobs. Conflicting external IDs or cross-origin job URLs fail the collection.
 
-Jobs keep observation times, validity dates, active/freshness scores, content versions, and missing observations. Authoritative complete feeds can advance missing-state thresholds; incomplete HTML/XML listings do not automatically close jobs.
+Jobs keep observation times, validity dates, active/freshness scores, content versions, and missing observations. Only an authoritative complete traversal that began at offset zero can advance missing-state thresholds. A resumed tail segment and a cross-run rotation cycle never close jobs merely because that bounded segment did not observe them; incomplete HTML/XML listings likewise do not automatically close jobs.
 
 ## Source graph
 

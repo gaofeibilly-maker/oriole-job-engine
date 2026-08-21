@@ -13,11 +13,11 @@ The script:
 1. opens the portable Registry and idempotently syncs the versioned nine-source reviewed seed manifest;
 2. runs due discovery buckets;
 3. safely probes a bounded number of candidates;
-4. collects only sources that were already verified and human-approved;
+4. collects only sources that were already verified and human-approved; committed ByteDance/Feishu segments atomically write jobs and advance their persisted tail cursor only if both source revision and cursor generation still match;
 5. writes a portable projection and machine-readable audit;
 6. records a dated archive, then atomically commits `.huangque/latest-daily.json` as the authoritative completion receipt.
 
-If that date already completed, another invocation exits successfully without repeating the run. Use `npm run daily -- --force` only for an intentional replay.
+If that date already completed, another invocation exits successfully without repeating the run or advancing a collection cursor. Use `npm run daily -- --force` only for an intentional replay; a forced committed replay can advance another ByteDance/Feishu segment only when that source is due.
 
 ## GitHub Actions
 
@@ -29,7 +29,7 @@ If that date already completed, another invocation exits successfully without re
 
 GitHub cron uses UTC. `16:00 UTC` is `00:00 Asia/Shanghai` on the following calendar day. Scheduled jobs can be delayed by platform queues; the completed Beijing date in `.huangque/latest-daily.json` still prevents duplicates. A dated archive is evidence, not the idempotency authority.
 
-The workflow has one non-cancelling concurrency group, restores the latest `.huangque` cache, runs the Agent, saves a new cache key, and uploads the latest run/audit/projection as a 30-day artifact. Repository caches are operational convenience, not guaranteed permanent storage. A production deployment should mount persistent storage and back it up.
+The workflow has one non-cancelling concurrency group, restores the latest `.huangque` cache—including nested source resume cursors—runs the Agent, saves a new cache key, and uploads the latest run/audit/projection as a 30-day artifact. Losing that cache safely restarts a large-feed rotation at offset zero; it does not corrupt jobs, but it delays deep-tail progress. Repository caches are operational convenience, not guaranteed permanent storage. A production deployment should mount persistent storage and back it up.
 
 ## Optional Baidu secret
 
@@ -52,7 +52,7 @@ Defaults can be changed with repository/workflow environment variables:
 | `HUANGQUE_DAILY_MAX_COLLECTIONS` | 100 | approved sources considered for collection |
 | `HUANGQUE_BAIDU_DAILY_BUDGET` | 40 | maximum admitted Baidu requests per Registry day |
 
-The query plan has its own cadence per bucket and each source has a collection cadence. Therefore the midnight runner does not necessarily call every provider or source every day; it runs what is due. The seed manifest contains no jobs, so the first real job rows can only come from a successful runtime collection.
+The query plan has its own cadence per bucket and each source has a collection cadence. Therefore the midnight runner does not necessarily call every provider or source every day; it runs what is due. A resumed ByteDance/Feishu invocation still uses one head-refresh page and the remaining bounded budget for its tail, and only a successful committed Registry transaction advances `source.collection.resume`. The seed manifest contains no jobs, so the first real job rows can only come from a successful runtime collection.
 
 ## System cron alternative
 

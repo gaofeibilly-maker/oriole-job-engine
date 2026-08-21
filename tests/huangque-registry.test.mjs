@@ -15,6 +15,45 @@ function candidate(id) {
   };
 }
 
+const cursorFingerprint = `sha256:${"a".repeat(64)}`;
+
+function offsetCandidate(id, provider = "ByteDance") {
+  return {
+    ...candidate(id),
+    provider,
+    publicApiUrl: `https://${id}.example.com/api/v1/search/job/posts`,
+  };
+}
+
+function checkpoint({ fingerprint = cursorFingerprint, generation, startOffset, nextOffset, cycleEndReached = false, headRefreshRows = 100, tailRowsObserved = 4_900 }) {
+  return {
+    schemaVersion: "huangque.collection-resume.v1",
+    fingerprint,
+    generation,
+    startOffset,
+    nextOffset,
+    cycleEndReached,
+    headRefreshRows,
+    tailRowsObserved,
+  };
+}
+
+function sourceJob(sourceId, externalId) {
+  return {
+    id: `${sourceId}-${externalId}`,
+    sourceId,
+    externalId,
+    company: "示例公司",
+    title: `岗位 ${externalId}`,
+    location: "北京",
+    status: "confirmed_active",
+    evidence: [{ kind: "test" }],
+    sourceUrl: `https://${sourceId}.example.com/jobs/${externalId}`,
+    applyUrl: `https://${sourceId}.example.com/jobs/${externalId}`,
+    contentHash: `hash-${externalId}`,
+  };
+}
+
 test("file lock preserves updates from independent registry instances", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-lock-"));
   const path = join(directory, "state.json");
@@ -26,6 +65,182 @@ test("file lock preserves updates from independent registry instances", async ()
   ]);
   const state = await left.snapshot();
   assert.deepEqual(state.sources.map((source) => source.id).sort(), ["left", "right"]);
+});
+
+test("concurrent segments use cursor CAS so a loser cannot half-commit jobs", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-cursor-cas-"));
+  const path = join(directory, "state.json");
+  const left = new JsonRegistry(path);
+  const right = new JsonRegistry(path);
+  await left.importApprovedSource(offsetCandidate("racing"));
+  const options = {
+    commit: true,
+    allowMissingAdvance: false,
+    collectionCheckpoint: checkpoint({ generation: 0, startOffset: 0, nextOffset: 100, tailRowsObserved: 200 }),
+  };
+  const settled = await Promise.allSettled([
+    left.storeJobs("racing", [sourceJob("racing", "left")], options),
+    right.storeJobs("racing", [sourceJob("racing", "right")], options),
+  ]);
+  assert.equal(settled.filter((result) => result.status === "fulfilled").length, 1);
+  const rejected = settled.find((result) => result.status === "rejected");
+  assert.equal(rejected.reason.code, "COLLECTION_CHECKPOINT_CONFLICT");
+  const state = await left.snapshot();
+  assert.equal(state.sources[0].collection.resume.generation, 1);
+  assert.equal(state.sources[0].collection.resume.nextOffset, 100);
+  assert.equal(state.jobs.length, 1);
+  assert.equal(state.events.filter((event) => event.type === "jobs_collected").length, 1);
+});
+
+test("source revision CAS rejects preview and commit after an approved endpoint changes", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-source-revision-cas-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  const original = offsetCandidate("revision-race");
+  await registry.importApprovedSource(original);
+  const expectedSourceRevision = (await registry.snapshot()).sources[0].revision;
+  const changedEndpoint = "https://revision-race.example.com/api/v2/search/job/posts";
+  await registry.importApprovedSource({ ...original, publicApiUrl: changedEndpoint });
+  const options = {
+    expectedSourceRevision,
+    collectionCheckpoint: checkpoint({ generation: 0, startOffset: 0, nextOffset: 100, tailRowsObserved: 200 }),
+  };
+
+  await assert.rejects(
+    () => registry.storeJobs("revision-race", [sourceJob("revision-race", "preview")], { ...options, commit: false }),
+    (error) => error.code === "SOURCE_REVISION_CONFLICT"
+      && error.expectedSourceRevision === expectedSourceRevision
+      && error.actualSourceRevision === expectedSourceRevision + 1,
+  );
+  await assert.rejects(
+    () => registry.storeJobs("revision-race", [sourceJob("revision-race", "commit")], { ...options, commit: true }),
+    (error) => error.code === "SOURCE_REVISION_CONFLICT",
+  );
+  const state = await registry.snapshot();
+  assert.equal(state.sources[0].candidate.publicApiUrl, changedEndpoint);
+  assert.equal(state.sources[0].collection?.resume, undefined);
+  assert.equal(state.jobs.length, 0);
+  assert.equal(state.events.some((event) => event.type === "jobs_collected"), false);
+});
+
+test("job writes and nested cursor rotation commit atomically while preview and failure never advance", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-collection-checkpoint-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  await registry.importApprovedSource(offsetCandidate("segmented"));
+
+  await registry.storeJobs("segmented", [sourceJob("segmented", "first")], {
+    runId: "segment-1",
+    commit: true,
+    allowMissingAdvance: false,
+    collectionCheckpoint: checkpoint({ generation: 0, startOffset: 0, nextOffset: 4_900 }),
+  });
+  let state = await registry.snapshot();
+  let collection = state.sources[0].collection;
+  assert.equal(collection.resume.schemaVersion, "huangque.collection-resume.v1");
+  assert.equal(collection.resume.generation, 1);
+  assert.equal(collection.resume.nextOffset, 4_900);
+  assert.equal(collection.resume.cycle.number, 1);
+  assert.equal(collection.resume.cycle.segmentsCommitted, 1);
+  assert.equal(collection.resume.cycle.completedAt, null);
+
+  await registry.storeJobs("segmented", [sourceJob("segmented", "preview")], {
+    runId: "segment-preview",
+    commit: false,
+    allowMissingAdvance: false,
+    collectionCheckpoint: checkpoint({ generation: 1, startOffset: 4_900, nextOffset: 9_800 }),
+  });
+  state = await registry.snapshot();
+  collection = state.sources[0].collection;
+  assert.equal(collection.resume.nextOffset, 4_900);
+  assert.equal(collection.resume.generation, 1);
+  assert.equal(state.jobs.some((job) => job.externalId === "preview"), false);
+
+  await registry.recordCollectionAttempt("segmented", {
+    runId: "segment-failed",
+    success: false,
+    commit: true,
+    error: { code: "COLLECTION_HTTP_ERROR", message: "fixture failure" },
+  });
+  collection = (await registry.snapshot()).sources[0].collection;
+  assert.equal(collection.resume.nextOffset, 4_900);
+  assert.equal(collection.resume.generation, 1);
+
+  await registry.storeJobs("segmented", [sourceJob("segmented", "second")], {
+    runId: "segment-2",
+    commit: true,
+    allowMissingAdvance: false,
+    collectionCheckpoint: checkpoint({ generation: 1, startOffset: 4_900, nextOffset: 9_800 }),
+  });
+  collection = (await registry.snapshot()).sources[0].collection;
+  assert.equal(collection.resume.nextOffset, 9_800);
+  assert.equal(collection.resume.generation, 2);
+  assert.equal(collection.resume.cycle.number, 1);
+  assert.equal(collection.resume.cycle.segmentsCommitted, 2);
+
+  await registry.storeJobs("segmented", [sourceJob("segmented", "tail")], {
+    runId: "segment-tail",
+    commit: true,
+    allowMissingAdvance: false,
+    collectionCheckpoint: checkpoint({ generation: 2, startOffset: 9_800, nextOffset: 0, cycleEndReached: true, tailRowsObserved: 200 }),
+  });
+  state = await registry.snapshot();
+  collection = state.sources[0].collection;
+  assert.equal(collection.resume.nextOffset, 0);
+  assert.equal(collection.resume.generation, 3);
+  assert.equal(collection.resume.cycle.number, 1);
+  assert.equal(collection.resume.cycle.segmentsCommitted, 3);
+  assert.ok(collection.resume.cycle.completedAt);
+  assert.equal(collection.resume.cycle.endReason, "source_end_reached");
+  assert.deepEqual(collection.resume.segments.map((segment) => segment.startOffset), [0, 4_900, 9_800]);
+  assert.equal(state.jobs.find((job) => job.externalId === "first").status, "confirmed_active");
+  assert.equal(state.jobs.find((job) => job.externalId === "first").sourceObservations.segmented.consecutiveMissing, 0);
+});
+
+test("ordinary sources stay cursor-free while legacy, changed, and malformed cursors reset safely", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-collection-checkpoint-legacy-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  await registry.importApprovedSource(candidate("ordinary"));
+  await registry.storeJobs("ordinary", [sourceJob("ordinary", "one")], { commit: true, runId: "ordinary-run" });
+  const ordinary = (await registry.snapshot()).sources.find((source) => source.id === "ordinary").collection;
+  assert.equal(Object.hasOwn(ordinary, "resume"), false);
+
+  await registry.importApprovedSource(offsetCandidate("legacy"));
+  await registry.transaction((draft) => {
+    const source = draft.sources.find((item) => item.id === "legacy");
+    source.collection = { resumeOffset: 49_000, cycle: { number: 99 } };
+  });
+  await registry.storeJobs("legacy", [sourceJob("legacy", "one")], {
+    runId: "legacy-segment",
+    commit: true,
+    allowMissingAdvance: false,
+    collectionCheckpoint: checkpoint({ generation: 0, startOffset: 0, nextOffset: 100, tailRowsObserved: 200 }),
+  });
+  let collection = (await registry.snapshot()).sources.find((source) => source.id === "legacy").collection;
+  assert.equal(collection.resume.nextOffset, 100);
+  assert.equal(collection.resume.generation, 1);
+  assert.equal(collection.resume.resetReason, "legacy_checkpoint_replaced");
+  assert.equal(Object.hasOwn(collection, "resumeOffset"), false);
+  assert.equal(Object.hasOwn(collection, "cycle"), false);
+
+  const changedFingerprint = `sha256:${"b".repeat(64)}`;
+  await registry.storeJobs("legacy", [sourceJob("legacy", "two")], {
+    runId: "changed-fingerprint",
+    commit: true,
+    allowMissingAdvance: false,
+    collectionCheckpoint: checkpoint({ fingerprint: changedFingerprint, generation: 0, startOffset: 0, nextOffset: 50, tailRowsObserved: 150 }),
+  });
+  collection = (await registry.snapshot()).sources.find((source) => source.id === "legacy").collection;
+  assert.equal(collection.resume.fingerprint, changedFingerprint);
+  assert.equal(collection.resume.generation, 1);
+  assert.equal(collection.resume.nextOffset, 50);
+  assert.equal(collection.resume.resetReason, "fingerprint_changed_or_invalid");
+
+  await assert.rejects(() => registry.storeJobs("legacy", [sourceJob("legacy", "never-written")], {
+    commit: true,
+    collectionCheckpoint: checkpoint({ fingerprint: changedFingerprint, generation: 1, startOffset: 50, nextOffset: 50_000_001 }),
+  }), (error) => error.code === "INVALID_COLLECTION_CHECKPOINT");
+  const finalState = await registry.snapshot();
+  assert.equal(finalState.sources.find((source) => source.id === "legacy").collection.resume.nextOffset, 50);
+  assert.equal(finalState.jobs.some((job) => job.externalId === "never-written"), false);
 });
 
 test("unapproved candidate rediscovery accumulates bounded evidence without weakening readiness", async () => {

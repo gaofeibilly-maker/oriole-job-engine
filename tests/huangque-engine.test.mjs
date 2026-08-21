@@ -371,6 +371,152 @@ test("ByteDance collection uses the public read-only POST contract and paginates
   assert.ok(!JSON.stringify(persistedRun).includes("fixture-cookie"));
 });
 
+test("ByteDance committed segments persist and rotate the nested cursor without preview, failure, or tail false-closure", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-bytedance-cursor-"));
+  const offsets = [];
+  let failureOffset = null;
+  const total = 201;
+  const fetchImpl = async (url, options = {}) => {
+    if (url.endsWith("/robots.txt")) return new Response("User-agent: *\nAllow: /\n", { headers: { "content-type": "text/plain" } });
+    if (url.endsWith("/api/v1/csrf/token")) {
+      return new Response(JSON.stringify({ code: 0, data: { token: "cursor-token" } }), {
+        headers: { "content-type": "application/json", "set-cookie": "atsx-csrf-token=cursor-cookie; Secure" },
+      });
+    }
+    const body = JSON.parse(options.body);
+    offsets.push(body.offset);
+    if (body.offset === failureOffset) {
+      return new Response(JSON.stringify({ code: -1 }), { status: 500, headers: { "content-type": "application/json" } });
+    }
+    const count = Math.min(3, Math.max(0, total - body.offset));
+    const rows = Array.from({ length: count }, (_, index) => {
+      const id = body.offset + index + 1;
+      return { id: String(id), title: `全国岗位 ${id}`, city_info: { name: id % 2 ? "北京" : "湖北省武汉市" } };
+    });
+    return new Response(JSON.stringify({ code: 0, data: { count: total, job_post_list: rows } }), { headers: { "content-type": "application/json" } });
+  };
+  const engine = new HuangqueEngine({
+    projectRoot,
+    registryPath: join(directory, "state.json"),
+    artifactRoot: join(directory, "artifacts"),
+    now: () => new Date("2026-08-20T00:00:00.000Z"),
+    fetchOptions: { fetchImpl, skipDns: true },
+  });
+  const candidate = {
+    id: "bytedance-cursor",
+    sourceKey: "career:bytedance:cursor-fixture",
+    name: "字节跳动断点样例",
+    publisher: "字节跳动",
+    provider: "ByteDance",
+    tenant: "bytedance",
+    sourceType: "official_ats",
+    sourceRootUrl: "https://jobs.bytedance.com/experienced/position",
+    publicApiUrl: "https://jobs.bytedance.com/api/v1/search/job/posts",
+    scopeSignals: ["全国"],
+  };
+  await engine.registry.importApprovedSource(candidate);
+
+  let result = await engine.collectJobs({ sourceId: candidate.id, commit: true });
+  assert.equal(result.results[0].pagination.startOffset, 0);
+  assert.equal(result.results[0].pagination.nextOffset, 50);
+  let state = await engine.registry.snapshot();
+  assert.equal(state.sources[0].collection.resume.generation, 1);
+  assert.equal(state.sources[0].collection.resume.nextOffset, 50);
+  assert.equal(state.jobs.length, 150);
+
+  const previewOffsetIndex = offsets.length;
+  result = await engine.collectJobs({ sourceId: candidate.id, commit: false });
+  assert.deepEqual(offsets.slice(previewOffsetIndex, previewOffsetIndex + 2), [0, 50]);
+  assert.equal(result.results[0].pagination.startOffset, 50);
+  assert.equal(result.results[0].pagination.nextOffset, 97);
+  state = await engine.registry.snapshot();
+  assert.equal(state.sources[0].collection.resume.generation, 1);
+  assert.equal(state.sources[0].collection.resume.nextOffset, 50);
+  assert.equal(state.jobs.length, 150);
+
+  failureOffset = 50;
+  await assert.rejects(() => engine.collectJobs({ sourceId: candidate.id, commit: true }), (error) => error.code === "COLLECTION_HTTP_ERROR");
+  failureOffset = null;
+  state = await engine.registry.snapshot();
+  assert.equal(state.sources[0].collection.resume.generation, 1);
+  assert.equal(state.sources[0].collection.resume.nextOffset, 50);
+  assert.equal(state.jobs.length, 150);
+
+  result = await engine.collectJobs({ sourceId: candidate.id, commit: true });
+  assert.equal(result.results[0].pagination.startOffset, 50);
+  assert.equal(result.results[0].pagination.headRefreshRows, 3);
+  assert.equal(result.results[0].pagination.nextOffset, 97);
+  state = await engine.registry.snapshot();
+  assert.equal(state.sources[0].collection.resume.generation, 2);
+  assert.equal(state.sources[0].collection.resume.nextOffset, 97);
+
+  result = await engine.collectJobs({ sourceId: candidate.id, commit: true });
+  assert.equal(result.results[0].pagination.startOffset, 97);
+  assert.equal(result.results[0].pagination.cycleEndReached, true);
+  assert.equal(result.results[0].pagination.nextOffset, 0);
+  state = await engine.registry.snapshot();
+  assert.equal(state.sources[0].collection.resume.generation, 3);
+  assert.equal(state.sources[0].collection.resume.nextOffset, 0);
+  assert.ok(state.sources[0].collection.resume.cycle.completedAt);
+  assert.equal(state.jobs.length, total);
+  const first = state.jobs.find((job) => job.externalId === "1");
+  assert.equal(first.status, "confirmed_active");
+  assert.equal(first.sourceObservations[candidate.id].consecutiveMissing, 0);
+});
+
+test("a source endpoint mutation during fetch rejects both observed jobs and cursor", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-source-revision-race-"));
+  const candidate = {
+    id: "bytedance-revision-race",
+    sourceKey: "career:bytedance:revision-race",
+    name: "字节跳动来源版本竞态样例",
+    publisher: "字节跳动",
+    provider: "ByteDance",
+    tenant: "bytedance",
+    sourceType: "official_ats",
+    sourceRootUrl: "https://jobs.bytedance.com/experienced/position",
+    publicApiUrl: "https://jobs.bytedance.com/api/v1/search/job/posts",
+    scopeSignals: ["全国"],
+  };
+  const changedEndpoint = "https://jobs.bytedance.com/api/v2/search/job/posts";
+  let engine;
+  let endpointChanged = false;
+  const fetchImpl = async (url) => {
+    if (url.endsWith("/robots.txt")) return new Response("User-agent: *\nAllow: /\n", { headers: { "content-type": "text/plain" } });
+    if (url.endsWith("/api/v1/csrf/token")) {
+      return new Response(JSON.stringify({ code: 0, data: { token: "revision-token" } }), {
+        headers: { "content-type": "application/json", "set-cookie": "atsx-csrf-token=revision-cookie; Secure" },
+      });
+    }
+    assert.equal(url, candidate.publicApiUrl);
+    if (!endpointChanged) {
+      endpointChanged = true;
+      await engine.registry.importApprovedSource({ ...candidate, publicApiUrl: changedEndpoint });
+    }
+    return new Response(JSON.stringify({
+      code: 0,
+      data: { count: 1, job_post_list: [{ id: "stale-endpoint-job", title: "旧入口岗位", city_info: { name: "北京" } }] },
+    }), { headers: { "content-type": "application/json" } });
+  };
+  engine = new HuangqueEngine({
+    projectRoot,
+    registryPath: join(directory, "state.json"),
+    artifactRoot: join(directory, "artifacts"),
+    fetchOptions: { fetchImpl, skipDns: true },
+  });
+  await engine.registry.importApprovedSource(candidate);
+  await assert.rejects(
+    () => engine.collectJobs({ sourceId: candidate.id, commit: true }),
+    (error) => error.code === "SOURCE_REVISION_CONFLICT",
+  );
+  const state = await engine.registry.snapshot();
+  const source = state.sources.find((item) => item.id === candidate.id);
+  assert.equal(source.candidate.publicApiUrl, changedEndpoint);
+  assert.equal(source.collection?.resume, undefined);
+  assert.equal(state.jobs.length, 0);
+  assert.equal(state.events.some((event) => event.type === "jobs_collected"), false);
+});
+
 test("Feishu Recruitment uses its SaaS public portal contract and canonical detail route", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-feishu-pages-"));
   const fetchImpl = async (url, options = {}) => {

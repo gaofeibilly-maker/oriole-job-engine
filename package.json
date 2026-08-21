@@ -1,6 +1,6 @@
 {
   "name": "oriole-job-engine",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A nationwide China job-source intelligence Agent with evidence-backed discovery, review gates, structured workplace regions, and MCP tools.",
   "type": "module",
   "license": "Apache-2.0",
