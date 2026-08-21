@@ -276,7 +276,7 @@ function validateOptionalReceipt(value, kind) {
     : "huangque.source-spider-run.v1";
   const allowedStatuses = kind === "job"
     ? new Set(["completed", "completed_with_findings", "no_work", "partial", "failed"])
-    : new Set(["completed", "completed_with_findings", "no_work", "failed"]);
+    : new Set(["completed", "completed_with_findings", "no_work", "partial", "failed"]);
   if (!value || typeof value !== "object" || Array.isArray(value)
     || value.schemaVersion !== expectedSchema || !allowedStatuses.has(value.status)) {
     throw recoveryError(

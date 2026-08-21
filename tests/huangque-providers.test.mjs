@@ -5,7 +5,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import { buildBaiduRequest, extractSitePattern, runBaiduProvider, runCommonCrawlProvider, runPublicCatalogProvider, truncateBaiduQuery } from "../scripts/huangque/lib/providers.mjs";
-import { completedDiscoveryTaskIds, HuangqueEngine } from "../scripts/huangque/lib/engine.mjs";
+import { completedDiscoveryTaskIds, discoveryExecutionStatus, HuangqueEngine } from "../scripts/huangque/lib/engine.mjs";
 import { dueQueryBuckets, expandQueryPlan, queryTaskProviders, selectDueQueryTasks } from "../scripts/huangque/lib/query-plan.mjs";
 import { discoverSourceCandidates } from "../scripts/huangque/lib/source-discovery.mjs";
 
@@ -53,6 +53,129 @@ test("Baidu missing credential is non-fatal", async () => {
   const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], { apiKey: "" });
   assert.equal(output.providerStatus, "not_configured");
   assert.equal(output.hits.length, 0);
+});
+
+test("Baidu opens a circuit on the first upstream daily-quota response", async () => {
+  let requests = 0;
+  const output = await runBaiduProvider([
+    { id: "q1", query: "北京 招聘" },
+    { id: "q2", query: "上海 招聘" },
+    { id: "q3", query: "武汉 招聘" },
+  ], {
+    apiKey: "test-secret",
+    maxQueries: 3,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => {
+        requests += 1;
+        if (requests === 1) {
+          return new Response(JSON.stringify({
+            request_id: "req-before-quota",
+            references: [{ title: "北京招聘", url: "https://jobs.example.com/beijing" }],
+          }), { status: 200, headers: { "content-type": "application/json" } });
+        }
+        return new Response(JSON.stringify({
+          code: "QUOTA_USER_DAILY_FREE",
+          message: "Daily free quota per user for Web Search exceeded",
+        }), { status: 200, headers: { "content-type": "application/json" } });
+      },
+    },
+  });
+
+  assert.equal(requests, 2);
+  assert.equal(output.providerStatus, "partial");
+  assert.equal(output.hits.length, 1);
+  assert.equal(output.metadata.requestCount, 2);
+  assert.equal(output.metadata.queryCount, 2);
+  assert.equal(output.metadata.selectedTaskCount, 3);
+  assert.equal(output.metadata.upstreamQuotaExhausted, true);
+  assert.equal(output.metadata.haltedReason, "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED");
+  assert.equal(output.metadata.unattemptedTaskCount, 1);
+  assert.equal(output.exhausted, false);
+  assert.deepEqual(output.metadata.completedTaskIds, ["q1"]);
+  assert.deepEqual(output.metadata.failedTaskIds, ["q2"]);
+  assert.equal(output.warnings.length, 1);
+  assert.equal(discoveryExecutionStatus([{ ...output, status: output.providerStatus }], { taskCount: 3 }), "partial");
+  assert.ok(!JSON.stringify(output).includes("test-secret"));
+});
+
+test("Baidu redacts an API key echoed by an untrusted upstream error", async () => {
+  const apiKey = "red-team-secret";
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], {
+    apiKey,
+    maxQueries: 1,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => new Response(JSON.stringify({
+        error_code: "UPSTREAM_REJECTED",
+        error_msg: `request contained Authorization: Bearer ${apiKey}; raw=${apiKey}`,
+      }), { status: 200, headers: { "content-type": "application/json" } }),
+    },
+  });
+
+  const serialized = JSON.stringify(output);
+  assert.equal(output.providerStatus, "failed");
+  assert.equal(output.metadata.failedTaskIds[0], "q1");
+  assert.ok(serialized.includes("[REDACTED]"));
+  assert.ok(!serialized.includes(apiKey));
+});
+
+test("Baidu redacts credentials from successful payload fields and drops credentialed URLs", async () => {
+  const apiKey = "red-team-success-secret";
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], {
+    apiKey,
+    maxQueries: 1,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => new Response(JSON.stringify({
+        request_id: `request-${apiKey}`,
+        references: [
+          {
+            title: `title-${apiKey}`,
+            url: "https://jobs.example.com/list",
+            snippet: `Authorization: Bearer ${apiKey}`,
+          },
+          {
+            title: "unsafe URL",
+            url: `https://jobs.example.com/list?token=${apiKey}`,
+          },
+        ],
+      }), { status: 200, headers: { "content-type": "application/json" } }),
+    },
+  });
+
+  const serialized = JSON.stringify(output);
+  assert.equal(output.providerStatus, "ok");
+  assert.equal(output.hits.length, 1);
+  assert.equal(output.warnings.length, 1);
+  assert.ok(serialized.includes("[REDACTED]"));
+  assert.ok(!serialized.includes(apiKey));
+  assert.ok(!serialized.includes("token="));
+});
+
+test("Baidu redacts credentials before title and snippet length truncation", async () => {
+  const credentialPrefix = ["bce", "v3"].join("-") + "/";
+  const apiKey = `${credentialPrefix}AAAA/BBBB`;
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], {
+    apiKey,
+    maxQueries: 1,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => new Response(JSON.stringify({
+        references: [{
+          title: `${"x".repeat(492)}${apiKey}`,
+          url: "https://jobs.example.com/list",
+          snippet: `${"x".repeat(3_992)}${apiKey}`,
+        }],
+      }), { status: 200, headers: { "content-type": "application/json" } }),
+    },
+  });
+
+  const serialized = JSON.stringify(output);
+  assert.equal(output.providerStatus, "ok");
+  assert.equal(output.hits.length, 1);
+  assert.ok(!serialized.includes(apiKey));
+  assert.ok(!serialized.includes(credentialPrefix));
 });
 
 test("Common Crawl with no eligible site task is not reported as an online success", async () => {
