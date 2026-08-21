@@ -7,6 +7,7 @@ import { jobsCanExactMerge, sameSourceExternalIdConflict, softJobIdentity } from
 import { registerOperationRun, throwIfOperationAborted } from "./operation-context.mjs";
 
 export const REGISTRY_SCHEMA_VERSION = "huangque.registry.v1";
+export const COLLECTION_RESUME_SCHEMA_VERSION = "huangque.collection-resume.v1";
 export const REGISTRY_RETENTION = Object.freeze({
   runs: 50,
   events: 1_000,
@@ -14,6 +15,11 @@ export const REGISTRY_RETENTION = Object.freeze({
   jobEvidence: 48,
   recentJobVersions: 2_000,
 });
+
+const OFFSET_RESUME_PROVIDERS = new Set(["ByteDance", "FeishuRecruitment"]);
+const COLLECTION_RESUME_SEGMENT_RETENTION = 32;
+const MAX_COLLECTION_RESUME_OFFSET = 50_000_000;
+const MAX_COLLECTION_RESUME_GENERATION = 1_000_000_000;
 
 const CANDIDATE_RETENTION = Object.freeze({
   queryIds: 200,
@@ -117,6 +123,135 @@ function nowIso(now = new Date()) {
   const date = new Date(now);
   if (Number.isNaN(date.getTime())) throw new TypeError("now 必须是有效时间");
   return date.toISOString();
+}
+
+function nonNegativeSafeInteger(value) {
+  const number = Number(value);
+  return Number.isSafeInteger(number) && number >= 0 ? number : null;
+}
+
+function boundedResumeInteger(value, maximum) {
+  const number = nonNegativeSafeInteger(value);
+  return number !== null && number <= maximum ? number : null;
+}
+
+function validResumeFingerprint(value) {
+  return typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value);
+}
+
+function assertExpectedSourceRevision(source, expectedSourceRevision) {
+  if (expectedSourceRevision === undefined) return;
+  const expected = nonNegativeSafeInteger(expectedSourceRevision);
+  if (expected === null) {
+    throw Object.assign(new TypeError("expectedSourceRevision 必须是非负安全整数"), { code: "INVALID_SOURCE_REVISION" });
+  }
+  const actual = nonNegativeSafeInteger(source?.revision);
+  if (actual !== expected) {
+    throw Object.assign(new Error(`来源版本冲突：采集快照为 ${expected}，当前为 ${actual ?? "invalid"}`), {
+      code: "SOURCE_REVISION_CONFLICT",
+      sourceId: source?.id || null,
+      expectedSourceRevision: expected,
+      actualSourceRevision: actual,
+    });
+  }
+}
+
+function normalizedStoredResume(collection, fingerprint) {
+  const resume = collection?.resume;
+  const generation = boundedResumeInteger(resume?.generation, MAX_COLLECTION_RESUME_GENERATION);
+  const nextOffset = boundedResumeInteger(resume?.nextOffset, MAX_COLLECTION_RESUME_OFFSET);
+  if (resume?.schemaVersion !== COLLECTION_RESUME_SCHEMA_VERSION
+    || resume?.fingerprint !== fingerprint
+    || generation === null
+    || nextOffset === null) return null;
+  return { ...resume, generation, nextOffset };
+}
+
+function advanceCollectionResume(source, checkpoint, at, runId) {
+  if (!checkpoint || typeof checkpoint !== "object" || Array.isArray(checkpoint)) {
+    throw Object.assign(new TypeError("collectionCheckpoint 必须是对象"), { code: "INVALID_COLLECTION_CHECKPOINT" });
+  }
+  if (!OFFSET_RESUME_PROVIDERS.has(source?.candidate?.provider)) {
+    throw Object.assign(new Error(`${source?.candidate?.provider || "该来源"} 不支持 offset 断点`), { code: "COLLECTION_CHECKPOINT_UNSUPPORTED" });
+  }
+  const fingerprint = checkpoint.fingerprint;
+  const generation = boundedResumeInteger(checkpoint.generation, MAX_COLLECTION_RESUME_GENERATION);
+  const startOffset = boundedResumeInteger(checkpoint.startOffset, MAX_COLLECTION_RESUME_OFFSET);
+  const observedNextOffset = boundedResumeInteger(checkpoint.nextOffset, MAX_COLLECTION_RESUME_OFFSET);
+  const headRefreshRows = nonNegativeSafeInteger(checkpoint.headRefreshRows ?? 0);
+  const tailRowsObserved = nonNegativeSafeInteger(checkpoint.tailRowsObserved ?? 0);
+  if (checkpoint.schemaVersion !== COLLECTION_RESUME_SCHEMA_VERSION
+    || !validResumeFingerprint(fingerprint)
+    || generation === null
+    || startOffset === null
+    || observedNextOffset === null
+    || headRefreshRows === null
+    || tailRowsObserved === null
+    || typeof checkpoint.cycleEndReached !== "boolean") {
+    throw Object.assign(new Error("采集断点格式、指纹、代次或 offset 无效"), { code: "INVALID_COLLECTION_CHECKPOINT" });
+  }
+  if (checkpoint.cycleEndReached && observedNextOffset !== 0) {
+    throw Object.assign(new Error("已到轮转尾端时 nextOffset 必须为 0"), { code: "INVALID_COLLECTION_CHECKPOINT" });
+  }
+
+  const previous = source.collection || {};
+  const stored = normalizedStoredResume(previous, fingerprint);
+  const expectedGeneration = stored?.generation ?? 0;
+  const expectedStartOffset = stored?.nextOffset ?? 0;
+  if (generation !== expectedGeneration || startOffset !== expectedStartOffset) {
+    throw Object.assign(new Error(`采集断点冲突：期望 generation=${expectedGeneration}, startOffset=${expectedStartOffset}，实际 generation=${generation}, startOffset=${startOffset}`), {
+      code: "COLLECTION_CHECKPOINT_CONFLICT",
+      fingerprint,
+      expectedGeneration,
+      actualGeneration: generation,
+      expectedStartOffset,
+      actualStartOffset: startOffset,
+    });
+  }
+
+  // A source that ignores offset can otherwise pin the engine forever. Reset
+  // to the head without claiming that a complete traversal was observed.
+  const noForwardProgress = !checkpoint.cycleEndReached && observedNextOffset <= startOffset;
+  const committedNextOffset = checkpoint.cycleEndReached || noForwardProgress ? 0 : observedNextOffset;
+  const previousCycle = stored?.cycle && typeof stored.cycle === "object" && !Array.isArray(stored.cycle)
+    ? stored.cycle
+    : null;
+  const startsNewCycle = !previousCycle || Boolean(previousCycle.completedAt || previousCycle.resetAt);
+  const previousCycleNumber = nonNegativeSafeInteger(previousCycle?.number) ?? 0;
+  const cycleNumber = startsNewCycle ? previousCycleNumber + 1 : Math.max(1, previousCycleNumber);
+  const previousSegmentsCommitted = nonNegativeSafeInteger(previousCycle?.segmentsCommitted) ?? 0;
+  const nextGeneration = expectedGeneration + 1;
+  const segment = {
+    generation: nextGeneration,
+    runId,
+    committedAt: at,
+    startOffset,
+    observedNextOffset,
+    nextOffset: committedNextOffset,
+    cycleEndReached: checkpoint.cycleEndReached,
+    headRefreshRows,
+    tailRowsObserved,
+    endReason: checkpoint.cycleEndReached
+      ? "source_end_reached"
+      : noForwardProgress ? "no_forward_progress" : null,
+  };
+  return {
+    schemaVersion: COLLECTION_RESUME_SCHEMA_VERSION,
+    fingerprint,
+    generation: nextGeneration,
+    nextOffset: committedNextOffset,
+    updatedAt: at,
+    resetReason: stored ? null : previous.resume ? "fingerprint_changed_or_invalid" : previous.resumeOffset !== undefined ? "legacy_checkpoint_replaced" : null,
+    cycle: {
+      number: cycleNumber,
+      startedAt: startsNewCycle ? at : previousCycle.startedAt || at,
+      completedAt: checkpoint.cycleEndReached ? at : null,
+      resetAt: noForwardProgress ? at : null,
+      endReason: segment.endReason,
+      segmentsCommitted: startsNewCycle ? 1 : previousSegmentsCommitted + 1,
+    },
+    segments: [...(stored?.segments || []), segment].slice(-COLLECTION_RESUME_SEGMENT_RETENTION),
+  };
 }
 
 function stableEventId(type, payload, at) {
@@ -927,6 +1062,9 @@ export class JsonRegistry {
         sourceId,
         success: Boolean(success),
         nextDueAt,
+        checkpointAdvanced: false,
+        resumeGeneration: previous.resume?.generation ?? null,
+        resumeOffset: previous.resume?.nextOffset ?? null,
       });
       return source.collection;
     });
@@ -955,6 +1093,8 @@ export class JsonRegistry {
     allowMissingAdvance = true,
     markMissingNeedsReview = false,
     missingThreshold = 2,
+    collectionCheckpoint = null,
+    expectedSourceRevision = undefined,
   } = {}) {
     const state = await this.read();
     const source = state.sources.find((item) => item.id === sourceId);
@@ -962,6 +1102,7 @@ export class JsonRegistry {
     if (source.lifecycle !== "approved" || !source.collectionEnabled) {
       throw Object.assign(new Error("只有已批准且启用采集的来源才能收录岗位"), { code: "SOURCE_NOT_APPROVED" });
     }
+    assertExpectedSourceRevision(source, expectedSourceRevision);
     const existingIds = new Set(state.jobs.map((job) => job.id));
     const externalGroups = new Map();
     const existingSourceViews = state.jobs.flatMap(sourceIdentityViews).filter((item) => item.sourceId === sourceId);
@@ -993,6 +1134,12 @@ export class JsonRegistry {
       if (currentSource?.lifecycle !== "approved" || !currentSource.collectionEnabled) {
         throw Object.assign(new Error("来源批准状态已改变，拒绝提交"), { code: "SOURCE_NOT_APPROVED" });
       }
+      assertExpectedSourceRevision(currentSource, expectedSourceRevision);
+      // Cursor CAS happens before any job mutation. If it fails, the registry
+      // transaction writes neither this segment's jobs nor its cursor.
+      const nextResume = collectionCheckpoint
+        ? advanceCollectionResume(currentSource, collectionCheckpoint, at, runId)
+        : null;
       let inserted = 0;
       let updated = 0;
       let unchanged = 0;
@@ -1257,8 +1404,14 @@ export class JsonRegistry {
           updatedAt: at,
         }));
       currentSource.revision += 1;
+      const nextCollection = { ...(currentSource.collection || {}) };
+      if (nextResume) {
+        delete nextCollection.resumeOffset;
+        delete nextCollection.cycle;
+        nextCollection.resume = nextResume;
+      }
       currentSource.collection = {
-        ...(currentSource.collection || {}),
+        ...nextCollection,
         lastCollectedAt: at,
         runId,
         received: jobs.length,
@@ -1269,8 +1422,30 @@ export class JsonRegistry {
         missingAdvanceSuppressed: !allowMissingAdvance,
         missingReviewOnly: Boolean(markMissingNeedsReview),
       };
-      draft.events.unshift({ id: stableEventId("jobs_collected", { sourceId, inserted, updated, unchanged, missing }, at), type: "jobs_collected", at, runId, sourceId, inserted, updated, unchanged, missing });
-      return { sourceId, commit: true, received: jobs.length, new: inserted, updated, unchanged, missing, jobs };
+      draft.events.unshift({
+        id: stableEventId("jobs_collected", { sourceId, inserted, updated, unchanged, missing }, at),
+        type: "jobs_collected",
+        at,
+        runId,
+        sourceId,
+        inserted,
+        updated,
+        unchanged,
+        missing,
+        resumeGeneration: nextResume?.generation ?? null,
+        resumeOffset: nextResume?.nextOffset ?? null,
+      });
+      return {
+        sourceId,
+        commit: true,
+        received: jobs.length,
+        new: inserted,
+        updated,
+        unchanged,
+        missing,
+        jobs,
+        collectionResume: nextResume,
+      };
     });
   }
 }

@@ -617,6 +617,7 @@ export class HuangqueEngine {
     const errors = [];
     const failedArtifacts = [];
     for (const id of sourceIds) {
+      const source = state.sources.find((item) => item.id === id);
       try {
         const result = await collectApprovedSource(this.registry, id, {
           commit,
@@ -625,7 +626,14 @@ export class HuangqueEngine {
           fetchOptions: { ...this.fetchOptions, requestPhase: "collection" },
           artifactStore: this.artifactStore,
         });
-        if (commit) await this.registry.recordCollectionAttempt(id, { runId: run.id, success: true, commit, cadenceHours: collectionCadenceHours(state.sources.find((source) => source.id === id)) });
+        if (commit) {
+          await this.registry.recordCollectionAttempt(id, {
+            runId: run.id,
+            success: true,
+            commit,
+            cadenceHours: collectionCadenceHours(source),
+          });
+        }
         results.push(result);
       } catch (error) {
         failedArtifacts.push(...(error.artifacts || []).map((artifact) => ({ sourceId: id, ...artifact })));
@@ -634,7 +642,7 @@ export class HuangqueEngine {
             runId: run.id,
             success: false,
             commit,
-            cadenceHours: collectionCadenceHours(state.sources.find((source) => source.id === id)),
+            cadenceHours: collectionCadenceHours(source),
             error: { code: error.code || "COLLECTION_FAILED", message: error.message },
           }).catch(() => undefined);
         }

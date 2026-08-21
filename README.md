@@ -15,7 +15,7 @@ It is deliberately built as an engine, not a single website. Run it from the CLI
 | Nationwide geography | Deterministic two-level China taxonomy: 34 province-level regions and 365 prefecture/province-direct entries |
 | Workplace classification | Uses the job's stated work location, preserves multi-location jobs, supports province/city filters, and rejects foreign-only rows |
 | Source discovery | Nine audited seeds, a bounded 19-employer watchlist, official directories, Baidu Search API, Common Crawl URL Index, all 365 second-level region tasks, and submitted URLs |
-| Stable collection | Lever, Greenhouse, Ashby, bounded ByteDance/Feishu Recruitment public search adapters, flexible public JSON, JSON-LD, RSS/Atom, Sitemap XML, and guarded HTML |
+| Stable collection | Lever, Greenhouse, Ashby, bounded ByteDance/Feishu Recruitment public search adapters with durable offset rotation, flexible public JSON, JSON-LD, RSS/Atom, Sitemap XML, and guarded HTML |
 | Source graph | Evidence-bearing relations between publisher, source, region, entry point, endpoint, discovery channel, and job |
 | Trust workflow | `candidate → probed → approved/rejected`; discovery and probing never auto-approve a source |
 | Evidence | Run records, HTTP summaries, content hashes, compressed raw-response artifacts, source/job traceability, and machine-readable audits |
@@ -37,7 +37,9 @@ No Baidu key is required to collect the nine pre-approved source seeds or to dis
 
 The public repository ships **zero job records**. `npm run init` imports nine explicitly audited public source seeds—eight employer-controlled boards, including ByteDance, and one government employment source—so a clean clone has functional collection targets without publishing a stale or private job snapshot. This is not automatic approval of search results: the seed manifest itself is a reviewed trust decision, and all newly discovered sources still require probe and approval.
 
-Coverage is a measurable gap report, not a claim of complete national job capture. In the 19-employer watchlist, ByteDance is the only reviewed bootstrap target; the other 18 employer roots start as unapproved candidates and cannot produce jobs until they are probed, verified, and approved. ByteDance/Feishu collection is also bounded to 50 pages, 5,000 rows, and 24 MB per source run, so a run can finish with `pagination.complete: false`. Inspect collection-run evidence separately: `npm run coverage` measures source/channel/region state and does not read pagination completeness.
+Coverage is a measurable gap report, not a claim of complete national job capture. In the 19-employer watchlist, ByteDance is the only reviewed bootstrap target; the other 18 employer roots start as unapproved candidates and cannot produce jobs until they are probed, verified, and approved.
+
+ByteDance/Feishu collection is bounded to 50 pages, 5,000 upstream rows, and 24 MB per source invocation. When one invocation cannot reach the tail, a committed run stores a fingerprinted, generation-checked cursor under `source.collection.resume`; the next segment refreshes one head page and then continues the tail with one page of deliberate overlap. Job writes and cursor advancement share one atomic Registry transaction. Before either mutation, the Registry compare-and-swaps both the source revision read by the collector and the saved cursor generation; either conflict writes neither jobs nor cursor. Preview, failure, or a conflict never advances the saved position. A resumed tail segment remains `pagination.complete: false` even when it closes a rotation cycle, because a changing offset feed is not a cross-run snapshot and cannot justify missing-job closure. Inspect collection-run and Registry evidence separately: `npm run coverage` measures source/channel/region state and does not read pagination or resume progress.
 
 See [docs/SOURCES.md](docs/SOURCES.md) for the exact provider boundaries and seed catalog.
 
@@ -57,7 +59,7 @@ npm run regions -- --province-code 420000
 
 After `init`, `status` should show 9 approved sources and 0 bundled jobs. Jobs only appear after a real committed collection.
 
-For a preview-only, evidence-producing check of ByteDance's current public jobs (no Baidu key required), run `npm run live-source-check`. It validates official application URLs and prints a compact summary rather than raw responses or job descriptions. The matching GitHub workflow can be run manually or by labeling a pull request `live-source-audit`.
+For a preview-only, evidence-producing check of ByteDance's current public jobs (no Baidu key required), run `npm run live-source-check`. It validates official application URLs and prints a compact summary rather than raw responses or job descriptions. Preview reads the applicable window but never commits jobs or advances a saved resume cursor. The matching GitHub workflow can be run manually or by labeling a pull request `live-source-audit`.
 
 Discover the bundled official catalog without a credential:
 
@@ -176,7 +178,7 @@ npm run verify
 npm run audit
 ```
 
-The test suite exercises normalization, nationwide regions, multi-location handling, providers, graph evidence, Registry concurrency/retention, MCP lifecycle, SSRF controls, robots handling, source ownership, and job identity. The runtime audit separately reports whether external providers and the published GitHub schedule have real successful run evidence in the current Registry. Fixtures and a manual daily run never count as a live provider or GitHub Actions success.
+The test suite exercises normalization, nationwide regions, multi-location handling, providers, bounded large-feed rotation, cursor atomicity/concurrency, graph evidence, Registry retention, MCP lifecycle, SSRF controls, robots handling, source ownership, and job identity. The runtime audit separately reports whether external providers and the published GitHub schedule have real successful run evidence in the current Registry. Fixtures and a manual daily run never count as a live provider or GitHub Actions success.
 
 Follow the reproducible checklist in [docs/VERIFY.md](docs/VERIFY.md).
 

@@ -2,6 +2,26 @@
 
 All notable changes to Oriole are documented here. The project follows semantic versioning.
 
+## 1.1.1 — 2026-08-20
+
+Bounded large-feed rotation and durable resume release.
+
+### Added
+
+- Persistent `source.collection.resume` checkpoints for ByteDance and Feishu Recruitment, bound to the approved endpoint, fixed request shape, and review epoch by a SHA-256 fingerprint.
+- A fresh-head page on every resumed segment plus a one-page tail overlap, making deep offsets reachable over successive committed runs without starving newly inserted head jobs.
+- Source-revision and cursor-generation compare-and-swap checks in the same Registry transaction as job writes, with bounded cycle and segment evidence. Either conflict aborts before any job or cursor mutation.
+
+### Changed
+
+- The 50-page, 5,000-row, and 24 MB limits now apply to the combined head-refresh and resumed-tail work of each source invocation.
+- Preview, failed, or conflicted work cannot advance the committed cursor. A repeated or unaccepted over-budget page is never counted as progress, although earlier accepted pages in that bounded segment may still produce a checkpoint. Reaching the tail from a nonzero offset remains incomplete and never advances missing-job closure.
+- Package metadata, MCP `serverInfo`, CLI banner, and outbound HTTP User-Agent now identify release `1.1.1`.
+
+### Security
+
+- Malformed, stale, cross-endpoint, or concurrently superseded checkpoints fail closed. A source changed after the collector snapshot is rejected by source-revision CAS before job mutation; a later run restarts from the newly reviewed head. Anonymous CSRF tokens and cookies remain memory-only.
+
 ## 1.1.0 — 2026-08-20
 
 Source-spider and major-employer coverage-measurement release.

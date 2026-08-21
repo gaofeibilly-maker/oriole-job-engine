@@ -3,9 +3,28 @@ import { dedupeJobs, normalizeAdapterPayload } from "./adapters.mjs";
 import { fetchRobotsPolicy, robotsAllowsRules, safeFetch } from "./http.mjs";
 import { createPublicRecruitmentSession } from "./public-recruitment-session.mjs";
 
+const PUBLIC_RECRUITMENT_PAGE_SIZE = 100;
+
+function publicRecruitmentFixedQuery(candidate) {
+  const feishu = candidate.provider === "FeishuRecruitment";
+  return {
+    keyword: "",
+    job_category_id_list: [],
+    tag_id_list: [],
+    location_code_list: [],
+    subject_id_list: [],
+    recruitment_id_list: [],
+    portal_type: feishu ? 6 : 2,
+    job_function_id_list: [],
+    storefront_id_list: [],
+    job_post_id_list: [],
+    ...(feishu ? {} : { portal_entrance: 1 }),
+  };
+}
+
 function collectionPage(candidate, endpoint, page, sessionHeaders = {}, observedOffset = 0) {
   if (candidate.provider === "ByteDance" || candidate.provider === "FeishuRecruitment") {
-    const pageSize = 100;
+    const pageSize = PUBLIC_RECRUITMENT_PAGE_SIZE;
     const feishu = candidate.provider === "FeishuRecruitment";
     return {
       url: endpoint,
@@ -19,19 +38,9 @@ function collectionPage(candidate, endpoint, page, sessionHeaders = {}, observed
         ...sessionHeaders,
       },
       body: JSON.stringify({
-        keyword: "",
+        ...publicRecruitmentFixedQuery(candidate),
         limit: pageSize,
         offset: observedOffset,
-        job_category_id_list: [],
-        tag_id_list: [],
-        location_code_list: [],
-        subject_id_list: [],
-        recruitment_id_list: [],
-        portal_type: feishu ? 6 : 2,
-        job_function_id_list: [],
-        storefront_id_list: [],
-        job_post_id_list: [],
-        ...(feishu ? {} : { portal_entrance: 1 }),
       }),
     };
   }
@@ -65,6 +74,87 @@ function collectionPage(candidate, endpoint, page, sessionHeaders = {}, observed
 }
 
 const TRANSIENT_COLLECTION_ERRORS = new Set(["FETCH_FAILED", "TIMEOUT", "DNS_FAILURE", "DNS_TIMEOUT"]);
+const OFFSET_PAGINATION_PROVIDERS = new Set(["ByteDance", "FeishuRecruitment"]);
+const MAX_CURSOR_OFFSET = 50_000_000;
+const MAX_CURSOR_GENERATION = 1_000_000_000;
+
+function nonnegativeSafeInteger(raw, label, code, maximum) {
+  const value = Number(raw);
+  if (!Number.isSafeInteger(value) || value < 0 || value > maximum) {
+    throw Object.assign(new TypeError(`${label} 必须是 0 到 ${maximum} 的安全整数`), { code });
+  }
+  return value;
+}
+
+function publicRecruitmentCursorFingerprint(source, endpoint) {
+  const candidate = source.candidate;
+  if (!OFFSET_PAGINATION_PROVIDERS.has(candidate.provider)) return null;
+  const fixed = publicRecruitmentFixedQuery(candidate);
+  let portalPath = candidate.portalPath || null;
+  if (!portalPath && candidate.provider === "FeishuRecruitment") {
+    try { portalPath = new URL(candidate.sourceRootUrl).pathname.split("/").filter(Boolean)[0] || "index"; }
+    catch { portalPath = null; }
+  }
+  const descriptor = {
+    provider: candidate.provider,
+    endpoint: new URL(endpoint).toString(),
+    sourceKey: source.sourceKey || candidate.sourceKey || null,
+    tenant: candidate.tenant || null,
+    portalPath,
+    trustEpoch: {
+      approvedAt: source.approvedAt || null,
+      reviewedAt: source.review?.reviewedAt || source.reviewedAt || null,
+    },
+    method: "POST",
+    portalType: fixed.portal_type,
+    filters: Object.fromEntries(Object.entries(fixed).filter(([key]) => key !== "portal_type")),
+    sort: "upstream_default",
+  };
+  return `sha256:${createHash("sha256").update(JSON.stringify(descriptor)).digest("hex")}`;
+}
+
+function resolveCursor(source, requestedOffset, requestedGeneration, fingerprint) {
+  const offsetPaginated = OFFSET_PAGINATION_PROVIDERS.has(source?.candidate?.provider);
+  const explicitOffset = requestedOffset === undefined
+    ? undefined
+    : nonnegativeSafeInteger(requestedOffset, "startOffset", "INVALID_START_OFFSET", MAX_CURSOR_OFFSET);
+  if (!offsetPaginated && explicitOffset !== undefined && explicitOffset !== 0) {
+    throw Object.assign(new TypeError(`${source?.candidate?.provider || "该来源"} 不支持 offset 断点采集`), { code: "START_OFFSET_UNSUPPORTED" });
+  }
+  if (!offsetPaginated) return { startOffset: 0, generation: 0 };
+
+  const resume = source?.collection?.resume;
+  const persistedValid = resume?.schemaVersion === "huangque.collection-resume.v1"
+    && resume.fingerprint === fingerprint
+    && Number.isSafeInteger(Number(resume.generation))
+    && Number(resume.generation) >= 0
+    && Number(resume.generation) <= MAX_CURSOR_GENERATION
+    && Number.isSafeInteger(Number(resume.nextOffset))
+    && Number(resume.nextOffset) >= 0
+    && Number(resume.nextOffset) <= MAX_CURSOR_OFFSET;
+  if (resume && !persistedValid) {
+    // An endpoint/filter fingerprint change invalidates the old cursor. Start
+    // from the head and let Registry atomically establish a new generation.
+    return { startOffset: 0, generation: 0 };
+  }
+  if (persistedValid) {
+    const persistedOffset = Number(resume.nextOffset);
+    const persistedGeneration = Number(resume.generation);
+    if (explicitOffset !== undefined && explicitOffset !== persistedOffset) {
+      throw Object.assign(new Error("startOffset 与持久化断点不一致"), { code: "CURSOR_OFFSET_MISMATCH" });
+    }
+    if (requestedGeneration !== undefined
+      && nonnegativeSafeInteger(requestedGeneration, "cursorGeneration", "INVALID_CURSOR_GENERATION", MAX_CURSOR_GENERATION) !== persistedGeneration) {
+      throw Object.assign(new Error("cursorGeneration 与持久化断点不一致"), { code: "CURSOR_GENERATION_MISMATCH" });
+    }
+    return { startOffset: persistedOffset, generation: persistedGeneration };
+  }
+
+  const generation = requestedGeneration === undefined
+    ? 0
+    : nonnegativeSafeInteger(requestedGeneration, "cursorGeneration", "INVALID_CURSOR_GENERATION", MAX_CURSOR_GENERATION);
+  return { startOffset: explicitOffset ?? 0, generation };
+}
 
 async function fetchCollectionPage(url, { retryTransient = false, ...options }, attempts = 2) {
   let lastError = null;
@@ -113,6 +203,8 @@ export async function collectApprovedSource(registry, sourceId, {
   now = new Date(),
   fetchOptions = {},
   artifactStore = null,
+  startOffset = undefined,
+  cursorGeneration = undefined,
 } = {}) {
   const snapshot = await registry.snapshot();
   const source = snapshot.sources.find((item) => item.id === sourceId);
@@ -121,7 +213,15 @@ export async function collectApprovedSource(registry, sourceId, {
     throw Object.assign(new Error("只有人工批准且启用的来源才能采集"), { code: "SOURCE_NOT_APPROVED" });
   }
   const candidate = source.candidate;
+  const offsetPaginated = OFFSET_PAGINATION_PROVIDERS.has(candidate.provider);
   const endpoint = source.probe?.collectionEndpoint || candidate.publicApiUrl || candidate.sourceRootUrl;
+  const cursorFingerprint = publicRecruitmentCursorFingerprint(source, endpoint);
+  const cursor = resolveCursor(source, startOffset, cursorGeneration, cursorFingerprint);
+  const effectiveStartOffset = cursor.startOffset;
+  // Offset feeds can drift when newly published jobs are inserted ahead of a
+  // saved cursor. Re-read one full upstream page at the next committed segment
+  // and let exact source/external-id dedupe absorb the deliberate overlap.
+  const overlapRows = offsetPaginated ? PUBLIC_RECRUITMENT_PAGE_SIZE : 0;
   const robots = await fetchRobotsPolicy(endpoint, fetchOptions);
   if (!robots.allowed) {
     const code = robots.reason === "robots_disallowed"
@@ -143,13 +243,20 @@ export async function collectApprovedSource(registry, sourceId, {
   const artifacts = [];
   const rawPageSignatures = new Set();
   let rowsObserved = 0;
+  let headRefreshRows = 0;
+  let tailRowsObserved = 0;
+  let headRefreshSignature = null;
+  let cursorAdvanceBlocked = false;
   let observedAdvertisedTotal = null;
   let paginationComplete = false;
+  let cycleEndReached = false;
   let stopReason = "single_page";
   let publicSession = await createPublicRecruitmentSession(candidate, endpoint, { fetchOptions, robots });
   let publicSessionRefreshes = 0;
   for (let page = 1; page <= maxPages; page += 1) {
-    let request = collectionPage(candidate, endpoint, page, publicSession.headers, rowsObserved);
+    const isHeadRefresh = offsetPaginated && effectiveStartOffset > 0 && page === 1;
+    const requestOffset = isHeadRefresh ? 0 : effectiveStartOffset + tailRowsObserved;
+    let request = collectionPage(candidate, endpoint, page, publicSession.headers, requestOffset);
     let response = await fetchCollectionPage(request.url, {
       ...fetchOptions,
       method: request.method,
@@ -166,7 +273,7 @@ export async function collectApprovedSource(registry, sourceId, {
     if (response.status === 405 && response.headers?.["x-risk-tag"] !== "2" && publicSession.evidence && publicSessionRefreshes === 0) {
       publicSession = await createPublicRecruitmentSession(candidate, endpoint, { fetchOptions, robots });
       publicSessionRefreshes += 1;
-      request = collectionPage(candidate, endpoint, page, publicSession.headers, rowsObserved);
+      request = collectionPage(candidate, endpoint, page, publicSession.headers, requestOffset);
       response = await fetchCollectionPage(request.url, {
         ...fetchOptions,
         method: request.method,
@@ -228,18 +335,23 @@ export async function collectApprovedSource(registry, sourceId, {
     const advertised = advertisedTotal(normalized.inspection.payload);
     if (advertised !== null) observedAdvertisedTotal = Math.max(Number(observedAdvertisedTotal || 0), advertised);
     const signature = createHash("sha256").update(JSON.stringify(normalized.inspection.rows)).digest("hex");
-    if (page > 1 && rawPageSignatures.has(signature)) {
-      stopReason = "repeated_page_guard";
+    if (page > 1 && normalized.inspection.totalRows > 0 && rawPageSignatures.has(signature)) {
+      const matchesHeadRefresh = Boolean(headRefreshSignature && signature === headRefreshSignature);
+      stopReason = matchesHeadRefresh ? "offset_not_honored" : "repeated_page_guard";
+      if (matchesHeadRefresh) cursorAdvanceBlocked = true;
       paginationComplete = false;
       break;
     }
     rawPageSignatures.add(signature);
+    if (isHeadRefresh) headRefreshSignature = signature;
     normalizedPages.push({
       ...normalized,
       inspection: { ...normalized.inspection, payload: null, rows: [] },
     });
     responses.push(responseSummary(response));
     rowsObserved += normalized.inspection.totalRows;
+    if (isHeadRefresh) headRefreshRows += normalized.inspection.totalRows;
+    else if (offsetPaginated) tailRowsObserved += normalized.inspection.totalRows;
     if (artifact) {
       for (const job of normalized.jobs) {
         job.evidence = [...(job.evidence || []), {
@@ -255,15 +367,37 @@ export async function collectApprovedSource(registry, sourceId, {
     }
     if (!request.paginated) {
       paginationComplete = true;
+      cycleEndReached = true;
       stopReason = "single_page";
       break;
     }
     const total = observedAdvertisedTotal;
-    const advertisedTotalReached = total !== null && rowsObserved >= total;
+    if (isHeadRefresh) {
+      // The refresh keeps newly inserted head jobs fresh but does not advance
+      // the tail cursor. If the persisted cursor is already at/past the newly
+      // advertised end, rotate safely to zero without issuing a redundant tail
+      // request.
+      if (total !== null && effectiveStartOffset >= total) {
+        cycleEndReached = true;
+        paginationComplete = false;
+        stopReason = "cursor_beyond_advertised_total";
+        break;
+      }
+      if (!fetchOptions.fetchImpl || fetchOptions.fetchImpl === globalThis.fetch) {
+        await new Promise((resolveDelay) => setTimeout(resolveDelay, 500));
+      }
+      continue;
+    }
+    const observedEndOffset = effectiveStartOffset + tailRowsObserved;
+    const advertisedTotalReached = total !== null && observedEndOffset >= total;
     const shortPageWithoutAdvertisedRemainder = total === null && normalized.inspection.totalRows < request.pageSize;
     if (normalized.inspection.totalRows === 0 || advertisedTotalReached || shortPageWithoutAdvertisedRemainder) {
-      const advertisedGap = normalized.inspection.totalRows === 0 && total !== null && rowsObserved < total;
-      paginationComplete = !advertisedGap;
+      const advertisedGap = normalized.inspection.totalRows === 0 && total !== null && observedEndOffset < total;
+      cycleEndReached = !advertisedGap;
+      // Only a complete traversal that began at zero is authoritative for
+      // missing-job advancement. A tail segment closes the rotation cycle but
+      // never claims to have observed the whole board in this invocation.
+      paginationComplete = cycleEndReached && effectiveStartOffset === 0;
       stopReason = advertisedGap ? "advertised_total_gap" : normalized.inspection.totalRows === 0 ? "empty_terminal_page" : advertisedTotalReached ? "advertised_total_reached" : "short_terminal_page";
       break;
     }
@@ -289,6 +423,7 @@ export async function collectApprovedSource(registry, sourceId, {
   // confirmed active until it is observed again or its detail is revalidated.
   const authoritativeProviders = new Set(["Lever", "Greenhouse", "Ashby", "ByteDance", "FeishuRecruitment", "NCSS", "BeijingPublicEmployment"]);
   const authoritativeComplete = paginationComplete
+    && (!offsetPaginated || effectiveStartOffset === 0)
     && authoritativeProviders.has(candidate.provider)
     && deduped.identityConflicts.length === 0
     && normalizedPages.every((page) => page.inspection.format === "json"
@@ -298,6 +433,24 @@ export async function collectApprovedSource(registry, sourceId, {
   const allowMissingAdvance = authoritativeComplete && (deduped.jobs.length > 0 || completeKnownEmpty);
   const markMissingNeedsReview = paginationComplete && !allowMissingAdvance;
   const missingThreshold = completeKnownEmpty ? 3 : 2;
+  const observedEndOffset = offsetPaginated ? effectiveStartOffset + tailRowsObserved : 0;
+  const nextOffset = offsetPaginated
+    ? cycleEndReached
+      ? 0
+      : cursorAdvanceBlocked
+        ? effectiveStartOffset
+        : Math.max(effectiveStartOffset, observedEndOffset - overlapRows)
+    : 0;
+  const collectionCheckpoint = offsetPaginated ? {
+    schemaVersion: "huangque.collection-resume.v1",
+    fingerprint: cursorFingerprint,
+    generation: cursor.generation,
+    startOffset: effectiveStartOffset,
+    nextOffset,
+    cycleEndReached,
+    headRefreshRows,
+    tailRowsObserved,
+  } : null;
   let result;
   try {
     result = await registry.storeJobs(sourceId, deduped.jobs, {
@@ -306,6 +459,8 @@ export async function collectApprovedSource(registry, sourceId, {
       allowMissingAdvance,
       markMissingNeedsReview,
       missingThreshold,
+      collectionCheckpoint,
+      expectedSourceRevision: source.revision,
     });
   } catch (error) {
     throw withArtifactEvidence(error, artifacts);
@@ -331,10 +486,27 @@ export async function collectApprovedSource(registry, sourceId, {
     session: publicSession.evidence ? { ...publicSession.evidence, refreshes: publicSessionRefreshes } : null,
     artifact: artifacts[0] || null,
     artifacts,
-    pagination: { complete: paginationComplete, pages: responses.length, maxPages, stopReason, advertisedTotal: observedAdvertisedTotal },
+    pagination: {
+      complete: paginationComplete,
+      pages: responses.length,
+      maxPages,
+      stopReason,
+      advertisedTotal: observedAdvertisedTotal,
+      startOffset: effectiveStartOffset,
+      observedEndOffset,
+      nextOffset,
+      overlapRows,
+      cycleEndReached,
+      headRefreshRows,
+      tailRowsObserved,
+      cursorFingerprint,
+      cursorGeneration: cursor.generation,
+    },
     parser: normalized.strategy,
     parserStats: {
       observedRows: rowsObserved,
+      headRefreshRows,
+      tailRowsObserved,
       beijingRows: normalizedPages.reduce((sum, page) => sum + page.inspection.beijingRows, 0),
     },
     dedupe: {
