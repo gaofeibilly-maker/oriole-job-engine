@@ -53,6 +53,125 @@ test("ATS board, detail and API URLs resolve to one tenant source", () => {
   );
 });
 
+test("ByteDance list, detail and public search API resolve to one source", () => {
+  const list = deriveSourceIdentity("https://jobs.bytedance.com/experienced/position");
+  const detail = deriveSourceIdentity("https://jobs.bytedance.com/experienced/position/123456/detail?source=search");
+  const api = deriveSourceIdentity("https://jobs.bytedance.com/api/v1/search/job/posts");
+  assert.equal(list.sourceKey, "career:bytedance:jobs.bytedance.com");
+  assert.equal(detail.sourceKey, list.sourceKey);
+  assert.equal(api.sourceKey, list.sourceKey);
+  assert.equal(list.provider, "ByteDance");
+  assert.equal(list.publicApiUrl, "https://jobs.bytedance.com/api/v1/search/job/posts");
+
+  const discovery = discoverSourceCandidates(inputFor([
+    { title: "字节跳动社会招聘", snippet: "中国 北京 上海 招聘职位", url: list.canonicalUrl },
+    { title: "后端工程师", snippet: "北京职位", url: detail.canonicalUrl },
+  ], "字节跳动 中国 社会招聘"));
+  assert.equal(discovery.stats.candidateSources, 1);
+  assert.equal(discovery.candidates[0].status, "ready_for_probe");
+  assert.equal(discovery.candidates[0].sourceType, "official_ats");
+});
+
+test("Feishu list, detail and API identities preserve observed portal paths", () => {
+  const index = deriveSourceIdentity("https://nio.jobs.feishu.cn/index/position/list");
+  const indexDetail = deriveSourceIdentity("https://nio.jobs.feishu.cn/index/position/7501226117869668619/detail");
+  const campus = deriveSourceIdentity("https://nio.jobs.feishu.cn/campus/m/position/list");
+  const campusDetail = deriveSourceIdentity("https://nio.jobs.feishu.cn/campus/position/7501226117869668619/detail");
+  const numeric = deriveSourceIdentity("https://nio.jobs.feishu.cn/840753/position/7501226117869668619/detail");
+  const api = deriveSourceIdentity("https://nio.jobs.feishu.cn/api/v1/search/job/posts");
+
+  assert.equal(index.sourceRootUrl, "https://nio.jobs.feishu.cn/index");
+  assert.equal(indexDetail.sourceRootUrl, index.sourceRootUrl);
+  assert.equal(campus.sourceRootUrl, "https://nio.jobs.feishu.cn/campus");
+  assert.equal(campusDetail.sourceRootUrl, campus.sourceRootUrl);
+  assert.equal(numeric.sourceRootUrl, "https://nio.jobs.feishu.cn/840753");
+  assert.equal(api.sourceRootUrl, "https://nio.jobs.feishu.cn/index");
+  assert.equal(campus.portalPath, "campus");
+  assert.equal(numeric.portalPath, "840753");
+  assert.equal(api.portalPathObserved, false);
+  assert.equal(new Set([index, indexDetail, campus, campusDetail, numeric, api].map((identity) => identity.sourceKey)).size, 1);
+
+  const discovery = discoverSourceCandidates(inputFor([
+    { title: "公开职位接口", snippet: "全国招聘职位", url: api.canonicalUrl, rank: 1 },
+    { title: "校园招聘", snippet: "全国校园招聘职位", url: campus.canonicalUrl, rank: 2 },
+  ], "NIO 全国校园招聘"));
+  assert.equal(discovery.candidates[0].sourceRootUrl, "https://nio.jobs.feishu.cn/campus");
+  assert.equal(discovery.candidates[0].portalPath, "campus");
+});
+
+test("generic career pages are origin-grouped but curated ownership is required for automatic probe", () => {
+  const plain = discoverSourceCandidates(inputFor([
+    { title: "示例公司招聘", snippet: "中国招聘职位", url: "https://careers.example.com/jobs" },
+    { title: "北京工程师", snippet: "北京职位", url: "https://careers.example.com/jobs/123/detail" },
+  ], "示例公司 中国 招聘"));
+  assert.equal(plain.stats.candidateSources, 1);
+  assert.equal(plain.candidates[0].sourceKey, "career:https://careers.example.com");
+  assert.equal(plain.candidates[0].status, "needs_review");
+
+  const curated = discoverSourceCandidates({
+    metadata: { scope: "全国", provider: "official_catalog", observedAt },
+    queries: [{
+      id: "official-catalog:example",
+      query: "全国 官方招聘目录",
+      channel: "official_catalog",
+      results: [{
+        title: "示例公司官方招聘",
+        snippet: "中国招聘职位",
+        url: "https://careers.example.com/jobs",
+        providerEvidence: { authority: "official_employer", sourcePage: "https://careers.example.com/jobs", region: "全国", regionCode: "CN" },
+      }],
+    }],
+  });
+  assert.equal(curated.candidates[0].status, "ready_for_probe");
+  assert.ok(curated.candidates[0].decision.reasonCodes.includes("CURATED_OFFICIAL_EMPLOYER"));
+});
+
+test("a reviewed employer portal keeps its stable non-job path for probing", () => {
+  const discovery = discoverSourceCandidates({
+    metadata: { scope: "全国", provider: "official_catalog", observedAt },
+    queries: [{
+      id: "official-catalog:portal-employer",
+      query: "全国 官方招聘目录",
+      channel: "official_catalog",
+      results: [{
+        title: "示例企业官方招聘",
+        snippet: "中国社会招聘职位",
+        url: "https://job.example.com/portal/pc/",
+        providerEvidence: {
+          authority: "official_employer",
+          sourcePage: "https://job.example.com/portal/pc/",
+          region: "全国",
+          regionCode: "CN",
+        },
+      }],
+    }],
+  });
+  assert.equal(discovery.candidates[0].status, "ready_for_probe");
+  assert.equal(discovery.candidates[0].sourceRootUrl, "https://job.example.com/portal/pc");
+  assert.equal(discovery.candidates[0].endpointType, "job_list");
+});
+
+test("an official government directory becomes a bounded probe target rather than a job source", () => {
+  const discovery = discoverSourceCandidates({
+    metadata: { scope: "全国", provider: "official_catalog", observedAt },
+    queries: [{
+      id: "official-catalog:government-directory",
+      query: "全国 官方招聘目录",
+      channel: "official_catalog",
+      results: [{
+        title: "中国政府网地方部门目录",
+        snippet: "用于发现地方人社、就业与公开招聘入口，不直接产出岗位。",
+        url: "https://www.gov.cn/fuwu/bumendifangtingju.htm",
+        providerEvidence: { authority: "official_government_directory", sourcePage: "https://www.gov.cn/fuwu/bumendifangtingju.htm", regionCode: "CN" },
+      }],
+    }],
+  });
+  assert.equal(discovery.candidates[0].sourceType, "official_source_directory");
+  assert.equal(discovery.candidates[0].collectionStrategy, "bounded_directory_link_discovery");
+  assert.equal(discovery.candidates[0].status, "ready_for_probe");
+  assert.ok(discovery.candidates[0].decision.reasonCodes.includes("OFFICIAL_SOURCE_DIRECTORY"));
+});
+
 test("known sources are never reported as new", () => {
   const discovery = discoverSourceCandidates(
     inputFor([

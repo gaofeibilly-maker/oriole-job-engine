@@ -15,6 +15,104 @@ export const REGISTRY_RETENTION = Object.freeze({
   recentJobVersions: 2_000,
 });
 
+const CANDIDATE_RETENTION = Object.freeze({
+  queryIds: 200,
+  evidence: 50,
+  discoveredUrls: 100,
+  titles: 50,
+  reasonCodes: 50,
+});
+
+const CANDIDATE_STATUS_STRENGTH = Object.freeze({
+  rejected_access_restricted: 1,
+  backlog: 2,
+  needs_review: 3,
+  ready_for_probe: 4,
+  already_registered: 5,
+});
+
+const CANDIDATE_AUTHORITY_STRENGTH = Object.freeze({
+  unknown: 0,
+  needs_domain_ownership_check: 1,
+  needs_publisher_ownership_check: 1,
+  employer_controlled_board: 3,
+  official_public_service: 4,
+  official_government: 4,
+  official_government_directory: 4,
+  official_employer: 4,
+});
+
+function candidateStatusStrength(value) {
+  return Number(CANDIDATE_STATUS_STRENGTH[String(value || "")] || 0);
+}
+
+function candidateAuthorityStrength(value) {
+  const normalized = String(value || "");
+  if (Object.hasOwn(CANDIDATE_AUTHORITY_STRENGTH, normalized)) return CANDIDATE_AUTHORITY_STRENGTH[normalized];
+  if (/^official_/.test(normalized)) return 4;
+  return 0;
+}
+
+function boundedRecentUnique(values, limit, keyOf = (value) => String(value)) {
+  const selected = [];
+  const seen = new Set();
+  for (let index = values.length - 1; index >= 0 && selected.length < limit; index -= 1) {
+    const value = values[index];
+    if (value === null || value === undefined || value === "") continue;
+    let key;
+    try { key = keyOf(value); } catch { key = String(value); }
+    if (seen.has(key)) continue;
+    seen.add(key);
+    selected.push(value);
+  }
+  return selected.reverse();
+}
+
+function mergeUnapprovedCandidate(current = {}, incoming = {}) {
+  const currentStatusStrength = candidateStatusStrength(current.status);
+  const incomingStatusStrength = candidateStatusStrength(incoming.status);
+  const incomingCarriesStatus = incomingStatusStrength >= currentStatusStrength;
+  const base = incomingCarriesStatus ? { ...current, ...incoming } : { ...incoming, ...current };
+  const status = incomingCarriesStatus ? incoming.status || current.status : current.status || incoming.status;
+  const authority = !current.authority
+    || candidateAuthorityStrength(incoming.authority) > candidateAuthorityStrength(current.authority)
+    ? incoming.authority || current.authority
+    : current.authority || incoming.authority;
+  const priorityValues = [current.discoveryPriorityScore, incoming.discoveryPriorityScore]
+    .map(Number)
+    .filter(Number.isFinite);
+  const decisionOwner = incomingCarriesStatus ? incoming.decision : current.decision;
+  const fallbackDecision = incomingCarriesStatus ? current.decision : incoming.decision;
+  return {
+    ...base,
+    id: current.id || incoming.id,
+    sourceKey: current.sourceKey || incoming.sourceKey,
+    status,
+    authority,
+    discoveryPriorityScore: priorityValues.length ? Math.max(...priorityValues) : base.discoveryPriorityScore,
+    queryIds: boundedRecentUnique([...(current.queryIds || []), ...(incoming.queryIds || [])], CANDIDATE_RETENTION.queryIds),
+    evidence: boundedRecentUnique(
+      [...(current.evidence || []), ...(incoming.evidence || [])],
+      CANDIDATE_RETENTION.evidence,
+      (value) => JSON.stringify(value),
+    ),
+    discoveredUrls: boundedRecentUnique([...(current.discoveredUrls || []), ...(incoming.discoveredUrls || [])], CANDIDATE_RETENTION.discoveredUrls),
+    titles: boundedRecentUnique([...(current.titles || []), ...(incoming.titles || [])], CANDIDATE_RETENTION.titles),
+    decision: {
+      ...(fallbackDecision || {}),
+      ...(decisionOwner || {}),
+      status,
+      reasonCodes: boundedRecentUnique(
+        [...(current.decision?.reasonCodes || []), ...(incoming.decision?.reasonCodes || [])],
+        CANDIDATE_RETENTION.reasonCodes,
+      ),
+    },
+    nextAction: incomingCarriesStatus
+      ? incoming.nextAction || current.nextAction || null
+      : current.nextAction || incoming.nextAction || null,
+  };
+}
+
 function nowIso(now = new Date()) {
   const date = new Date(now);
   if (Number.isNaN(date.getTime())) throw new TypeError("now 必须是有效时间");
@@ -528,11 +626,12 @@ export class JsonRegistry {
       for (const candidate of discovery.candidates || []) {
         let source = state.sources.find((item) => item.sourceKey === candidate.sourceKey);
         if (!source) {
+          const persistedCandidate = mergeUnapprovedCandidate({}, candidate);
           source = {
-            id: candidate.id,
+            id: persistedCandidate.id,
             revision: 1,
-            sourceKey: candidate.sourceKey,
-            name: candidate.name,
+            sourceKey: persistedCandidate.sourceKey,
+            name: persistedCandidate.name,
             lifecycle: "candidate",
             reviewStatus: "unreviewed",
             verificationState: "unverified_candidate",
@@ -542,7 +641,7 @@ export class JsonRegistry {
             lastProbedAt: null,
             approvedAt: null,
             rejectedAt: null,
-            candidate,
+            candidate: persistedCandidate,
             probe: null,
             review: null,
             collection: null,
@@ -562,8 +661,8 @@ export class JsonRegistry {
               evidence: [...(source.candidate?.evidence || []), ...(candidate.evidence || [])].slice(-50),
             };
           } else {
-            source.name = candidate.name || source.name;
-            source.candidate = candidate;
+            source.candidate = mergeUnapprovedCandidate(source.candidate, candidate);
+            source.name = source.candidate.name || source.name;
           }
           if (runId && !source.runIds.includes(runId)) source.runIds.unshift(runId);
         }

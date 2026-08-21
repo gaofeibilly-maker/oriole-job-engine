@@ -41,12 +41,7 @@
       "label": "地级城市轮换补漏",
       "cadenceDays": 7,
       "dimensions": {
-        "city": [
-          "石家庄", "太原", "呼和浩特", "沈阳", "大连", "长春", "哈尔滨", "南京", "苏州", "无锡",
-          "杭州", "宁波", "温州", "合肥", "福州", "厦门", "南昌", "济南", "青岛", "郑州",
-          "武汉", "宜昌", "长沙", "广州", "深圳", "佛山", "东莞", "南宁", "海口", "三亚",
-          "成都", "绵阳", "贵阳", "昆明", "拉萨", "西安", "兰州", "西宁", "银川", "乌鲁木齐"
-        ]
+        "city": ["$all_prefecture_level"]
       },
       "templates": [
         "{city} 招聘 岗位 公共就业 官方",
@@ -61,6 +56,8 @@
         "site:jobs.lever.co China jobs",
         "site:job-boards.greenhouse.io China jobs",
         "site:jobs.ashbyhq.com China jobs",
+        "site:jobs.bytedance.com experienced position China",
+        "site:jobs.feishu.cn 中国 招聘 职位",
         "site:myworkdayjobs.com China jobs",
         "site:careers.smartrecruiters.com China jobs"
       ]

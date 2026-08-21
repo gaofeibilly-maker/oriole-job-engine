@@ -8,7 +8,13 @@ function expandTemplate(template, dimensions = {}) {
   if (placeholders.length === 0) return [template];
   let values = [{ text: template, dimensionValues: {} }];
   for (const placeholder of [...new Set(placeholders)]) {
-    const choices = Array.isArray(dimensions[placeholder]) ? dimensions[placeholder] : [];
+    let choices = Array.isArray(dimensions[placeholder]) ? dimensions[placeholder] : [];
+    if (choices.includes("$all_prefecture_level")) {
+      choices = [...new Set([
+        ...choices.filter((choice) => choice !== "$all_prefecture_level"),
+        ...listChinaRegions().flatMap((province) => province.cities.map((city) => city.cityName)),
+      ])];
+    }
     if (choices.length === 0) throw new TypeError(`查询模板缺少维度：${placeholder}`);
     values = values.flatMap((current) => choices.map((choice) => ({
       text: current.text.replaceAll(`{${placeholder}}`, choice),
@@ -127,3 +133,4 @@ export function selectDueQueryTasks(plan, bucketState = {}, {
   }
   return selected;
 }
+import { listChinaRegions } from "./china-regions.mjs";

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
-import { mkdtemp } from "node:fs/promises";
+import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createInterface } from "node:readline";
@@ -8,6 +8,7 @@ import test from "node:test";
 
 const projectRoot = resolve(new URL("..", import.meta.url).pathname);
 const serverPath = join(projectRoot, "scripts/huangque/mcp-server.mjs");
+const packageVersion = JSON.parse(await readFile(join(projectRoot, "package.json"), "utf8")).version;
 
 async function withServer(run, extraEnv = {}) {
   const directory = await mkdtemp(join(tmpdir(), "huangque-mcp-"));
@@ -43,6 +44,7 @@ test("legacy MCP 2025 lifecycle, tools, ping and notifications are NDJSON-clean"
     const initialized = JSON.parse(await next());
     assert.equal(initialized.id, 1);
     assert.equal(initialized.result.protocolVersion, "2025-11-25");
+    assert.equal(initialized.result.serverInfo.version, packageVersion);
     send({ jsonrpc: "2.0", id: "pre-initialized-ping", method: "ping" });
     assert.deepEqual(JSON.parse(await next()), { jsonrpc: "2.0", id: "pre-initialized-ping", result: {} });
     send({ jsonrpc: "2.0", method: "notifications/initialized" });
@@ -53,6 +55,7 @@ test("legacy MCP 2025 lifecycle, tools, ping and notifications are NDJSON-clean"
       "huangque.run_pipeline",
       "huangque.get_run",
       "huangque.status",
+      "huangque.source_coverage",
       "huangque.discover_sources",
       "huangque.submit_source",
       "huangque.probe_source",
@@ -87,7 +90,7 @@ test("common earlier MCP revisions negotiate on the same legacy stdio lifecycle"
       assert.equal(initialized.result.protocolVersion, protocolVersion);
       send({ jsonrpc: "2.0", method: "notifications/initialized" });
       send({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} });
-      assert.equal(JSON.parse(await next()).result.tools.length, 15);
+      assert.equal(JSON.parse(await next()).result.tools.length, 16);
     });
   }
 });
@@ -107,7 +110,7 @@ test("modern MCP 2026 supports server/discover and per-request metadata", async 
     send({ jsonrpc: "2.0", id: "list", method: "tools/list", params: { _meta: meta } });
     const listed = JSON.parse(await next());
     assert.equal(listed.result.resultType, "complete");
-    assert.equal(listed.result.tools.length, 15);
+    assert.equal(listed.result.tools.length, 16);
     assert.equal(listed.result.tools.find((tool) => tool.name === "huangque.probe_source").inputSchema.anyOf.length, 2);
     send({ jsonrpc: "2.0", id: "call", method: "tools/call", params: { _meta: meta, name: "huangque.list_sources", arguments: {} } });
     const called = JSON.parse(await next());

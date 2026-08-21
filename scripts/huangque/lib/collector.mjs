@@ -1,8 +1,40 @@
 import { createHash } from "node:crypto";
 import { dedupeJobs, normalizeAdapterPayload } from "./adapters.mjs";
 import { fetchRobotsPolicy, robotsAllowsRules, safeFetch } from "./http.mjs";
+import { createPublicRecruitmentSession } from "./public-recruitment-session.mjs";
 
-function collectionPage(candidate, endpoint, page) {
+function collectionPage(candidate, endpoint, page, sessionHeaders = {}, observedOffset = 0) {
+  if (candidate.provider === "ByteDance" || candidate.provider === "FeishuRecruitment") {
+    const pageSize = 100;
+    const feishu = candidate.provider === "FeishuRecruitment";
+    return {
+      url: endpoint,
+      paginated: true,
+      pageSize,
+      method: "POST",
+      headers: {
+        "content-type": "application/json;charset=UTF-8",
+        "portal-channel": feishu ? "saas-career" : "office",
+        "portal-platform": "pc",
+        ...sessionHeaders,
+      },
+      body: JSON.stringify({
+        keyword: "",
+        limit: pageSize,
+        offset: observedOffset,
+        job_category_id_list: [],
+        tag_id_list: [],
+        location_code_list: [],
+        subject_id_list: [],
+        recruitment_id_list: [],
+        portal_type: feishu ? 6 : 2,
+        job_function_id_list: [],
+        storefront_id_list: [],
+        job_post_id_list: [],
+        ...(feishu ? {} : { portal_entrance: 1 }),
+      }),
+    };
+  }
   if (candidate.provider === "BeijingPublicEmployment") {
     return {
       url: endpoint,
@@ -48,7 +80,7 @@ async function fetchCollectionPage(url, { retryTransient = false, ...options }, 
 }
 
 function advertisedTotal(payload) {
-  const values = [payload?.total, payload?.totalCount, payload?.data?.total, payload?.data?.totalCount, payload?.result?.total, payload?.returnData?.total];
+  const values = [payload?.total, payload?.totalCount, payload?.data?.count, payload?.data?.total, payload?.data?.totalCount, payload?.result?.total, payload?.returnData?.total];
   const value = values.find((item) => Number.isFinite(Number(item)) && Number(item) >= 0);
   return value === undefined ? null : Number(value);
 }
@@ -103,7 +135,7 @@ export async function collectApprovedSource(registry, sourceId, {
     throw Object.assign(new Error(message), { code, robots });
   }
   const observedAt = new Date(now).toISOString();
-  const maxPages = 20;
+  const maxPages = ["ByteDance", "FeishuRecruitment"].includes(candidate.provider) ? 50 : 20;
   const maxCollectionRows = 5_000;
   const maxCollectionBytes = 24_000_000;
   const normalizedPages = [];
@@ -111,19 +143,40 @@ export async function collectApprovedSource(registry, sourceId, {
   const artifacts = [];
   const rawPageSignatures = new Set();
   let rowsObserved = 0;
+  let observedAdvertisedTotal = null;
   let paginationComplete = false;
   let stopReason = "single_page";
+  let publicSession = await createPublicRecruitmentSession(candidate, endpoint, { fetchOptions, robots });
+  let publicSessionRefreshes = 0;
   for (let page = 1; page <= maxPages; page += 1) {
-    const request = collectionPage(candidate, endpoint, page);
-    const response = await fetchCollectionPage(request.url, {
+    let request = collectionPage(candidate, endpoint, page, publicSession.headers, rowsObserved);
+    let response = await fetchCollectionPage(request.url, {
       ...fetchOptions,
       method: request.method,
       headers: request.headers,
       body: request.body,
-      retryTransient: ["GET", "HEAD"].includes(request.method) || candidate.provider === "BeijingPublicEmployment",
+      retryTransient: ["GET", "HEAD"].includes(request.method)
+        || ["BeijingPublicEmployment", "ByteDance", "FeishuRecruitment"].includes(candidate.provider),
       maxBytes: 8_000_000,
       redirectGuard: ({ to }) => robotsAllowsRules(robots.rules || [], to),
     });
+    // The public frontend refreshes its anonymous CSRF session when it expires.
+    // Retry that specific read-only request once; never attempt signatures,
+    // CAPTCHA solving, login cookies, or other access-control workarounds.
+    if (response.status === 405 && response.headers?.["x-risk-tag"] !== "2" && publicSession.evidence && publicSessionRefreshes === 0) {
+      publicSession = await createPublicRecruitmentSession(candidate, endpoint, { fetchOptions, robots });
+      publicSessionRefreshes += 1;
+      request = collectionPage(candidate, endpoint, page, publicSession.headers, rowsObserved);
+      response = await fetchCollectionPage(request.url, {
+        ...fetchOptions,
+        method: request.method,
+        headers: request.headers,
+        body: request.body,
+        retryTransient: true,
+        maxBytes: 8_000_000,
+        redirectGuard: ({ to }) => robotsAllowsRules(robots.rules || [], to),
+      });
+    }
     let artifact = null;
     if (artifactStore) {
       try {
@@ -135,7 +188,14 @@ export async function collectApprovedSource(registry, sourceId, {
     }
     const nextBytes = responses.reduce((sum, item) => sum + item.bytes, 0) + response.bytes;
     if (nextBytes > maxCollectionBytes) {
-      throw withArtifactEvidence(Object.assign(new Error(`单次来源采集响应累计超过 ${maxCollectionBytes} 字节安全上限`), { code: "COLLECTION_TOTAL_LIMIT_EXCEEDED", page }), artifacts);
+      // Keep the already parsed pages as an explicitly incomplete bounded
+      // observation. Large public boards (ByteDance currently advertises far
+      // more rows than one safe run should retain) must not lose every earlier
+      // page merely because the next page crosses the cumulative byte budget.
+      // Incomplete observations never advance authoritative missing counters.
+      stopReason = "byte_budget_reached";
+      paginationComplete = false;
+      break;
     }
     if (!response.ok) throw withArtifactEvidence(Object.assign(new Error(`采集第 ${page} 页返回 HTTP ${response.status}`), { code: "COLLECTION_HTTP_ERROR", status: response.status, page }), artifacts);
     let normalized;
@@ -143,6 +203,13 @@ export async function collectApprovedSource(registry, sourceId, {
     catch (error) { throw withArtifactEvidence(error, artifacts); }
     if (normalized.inspection.format === "invalid_json") {
       throw withArtifactEvidence(Object.assign(new Error(`采集第 ${page} 页 JSON 无法解析：${normalized.inspection.error}`), { code: "COLLECTION_SCHEMA_DRIFT", page }), artifacts);
+    }
+    if (["Lever", "Greenhouse", "Ashby", "ByteDance", "FeishuRecruitment", "NCSS", "BeijingPublicEmployment"].includes(candidate.provider)
+      && normalized.inspection.format === "json" && normalized.inspection.schemaRecognized !== true) {
+      throw withArtifactEvidence(Object.assign(new Error(`采集第 ${page} 页不再符合 ${candidate.provider} 的已知公开结构`), { code: "COLLECTION_SCHEMA_DRIFT", page }), artifacts);
+    }
+    if (["ByteDance", "FeishuRecruitment"].includes(candidate.provider) && Number(normalized.inspection.payload?.code) !== 0) {
+      throw withArtifactEvidence(Object.assign(new Error(`采集第 ${page} 页返回业务错误 ${normalized.inspection.payload?.code ?? "unknown"}`), { code: "COLLECTION_UPSTREAM_ERROR", page }), artifacts);
     }
     if (normalized.inspection.rowLimitExceeded || normalized.inspection.structuralLimitExceeded) {
       const limit = normalized.inspection.maximumRows || normalized.inspection.maximumStructuralTokens;
@@ -159,10 +226,11 @@ export async function collectApprovedSource(registry, sourceId, {
       throw withArtifactEvidence(Object.assign(new Error(`单次来源采集岗位行累计超过 ${maxCollectionRows} 条安全上限`), { code: "COLLECTION_TOTAL_LIMIT_EXCEEDED", page }), artifacts);
     }
     const advertised = advertisedTotal(normalized.inspection.payload);
+    if (advertised !== null) observedAdvertisedTotal = Math.max(Number(observedAdvertisedTotal || 0), advertised);
     const signature = createHash("sha256").update(JSON.stringify(normalized.inspection.rows)).digest("hex");
     if (page > 1 && rawPageSignatures.has(signature)) {
       stopReason = "repeated_page_guard";
-      paginationComplete = normalized.inspection.totalRows < Number(request.pageSize || 0);
+      paginationComplete = false;
       break;
     }
     rawPageSignatures.add(signature);
@@ -190,13 +258,20 @@ export async function collectApprovedSource(registry, sourceId, {
       stopReason = "single_page";
       break;
     }
-    const total = advertised;
-    if (normalized.inspection.totalRows === 0 || normalized.inspection.totalRows < request.pageSize || total !== null && rowsObserved >= total) {
-      paginationComplete = true;
-      stopReason = normalized.inspection.totalRows === 0 ? "empty_terminal_page" : total !== null && rowsObserved >= total ? "advertised_total_reached" : "short_terminal_page";
+    const total = observedAdvertisedTotal;
+    const advertisedTotalReached = total !== null && rowsObserved >= total;
+    const shortPageWithoutAdvertisedRemainder = total === null && normalized.inspection.totalRows < request.pageSize;
+    if (normalized.inspection.totalRows === 0 || advertisedTotalReached || shortPageWithoutAdvertisedRemainder) {
+      const advertisedGap = normalized.inspection.totalRows === 0 && total !== null && rowsObserved < total;
+      paginationComplete = !advertisedGap;
+      stopReason = advertisedGap ? "advertised_total_gap" : normalized.inspection.totalRows === 0 ? "empty_terminal_page" : advertisedTotalReached ? "advertised_total_reached" : "short_terminal_page";
       break;
     }
     if (page === maxPages) stopReason = "page_limit_reached";
+    if (["ByteDance", "FeishuRecruitment"].includes(candidate.provider)
+      && (!fetchOptions.fetchImpl || fetchOptions.fetchImpl === globalThis.fetch)) {
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 500));
+    }
   }
   if (!responses.length) throw Object.assign(new Error("采集器没有得到可解析页面"), { code: "COLLECTION_NO_PAGE" });
   const normalized = normalizedPages[0];
@@ -212,7 +287,7 @@ export async function collectApprovedSource(registry, sourceId, {
   // XML and other non-authoritative lists never auto-close jobs, but a job that
   // disappears from a successful complete fetch must stop being advertised as
   // confirmed active until it is observed again or its detail is revalidated.
-  const authoritativeProviders = new Set(["Lever", "Greenhouse", "Ashby", "NCSS", "BeijingPublicEmployment"]);
+  const authoritativeProviders = new Set(["Lever", "Greenhouse", "Ashby", "ByteDance", "FeishuRecruitment", "NCSS", "BeijingPublicEmployment"]);
   const authoritativeComplete = paginationComplete
     && authoritativeProviders.has(candidate.provider)
     && deduped.identityConflicts.length === 0
@@ -253,9 +328,10 @@ export async function collectApprovedSource(registry, sourceId, {
       pages: responses.length,
     },
     robots,
+    session: publicSession.evidence ? { ...publicSession.evidence, refreshes: publicSessionRefreshes } : null,
     artifact: artifacts[0] || null,
     artifacts,
-    pagination: { complete: paginationComplete, pages: responses.length, maxPages, stopReason },
+    pagination: { complete: paginationComplete, pages: responses.length, maxPages, stopReason, advertisedTotal: observedAdvertisedTotal },
     parser: normalized.strategy,
     parserStats: {
       observedRows: rowsObserved,

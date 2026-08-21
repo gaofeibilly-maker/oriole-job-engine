@@ -1,0 +1,34 @@
+name: Oriole live source audit
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [labeled, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  bytedance-public-jobs:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'live-source-audit')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HUANGQUE_REGISTRY_PATH: .live-source/state.json
+      HUANGQUE_ARTIFACT_ROOT: .live-source/artifacts
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22.13.0"
+      - name: Fetch and validate ByteDance public jobs
+        run: npm --silent run live-source-check > live-source-summary.json
+      - name: Validate evidence JSON
+        run: node -e 'JSON.parse(require("node:fs").readFileSync("live-source-summary.json", "utf8"))'
+      - name: Upload evidence summary
+        uses: actions/upload-artifact@v7
+        with:
+          name: oriole-live-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: live-source-summary.json
+          if-no-files-found: error
+          retention-days: 30

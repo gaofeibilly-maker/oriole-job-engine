@@ -49,6 +49,14 @@ export const HUANGQUE_TOOLS = [
     annotations: { title: "查看黄雀状态", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   },
   {
+    name: "huangque.source_coverage",
+    title: "检查来源覆盖缺口 / Inspect source coverage gaps",
+    description: "按 9 类渠道、19 家有界重点企业、34 个省级与 365 个二级区域计算可审计缺口；不把发现线索冒充已批准来源，也不声称抓全互联网。",
+    inputSchema: schema(),
+    outputSchema: objectOutput,
+    annotations: { title: "检查来源覆盖缺口", readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+  },
+  {
     name: "huangque.discover_sources",
     title: "发现招聘信息源",
     description: "按查询计划通过官方目录、Common Crawl 和已配置的百度官方 API 发现候选；只写候选和证据。",
@@ -311,6 +319,7 @@ export async function callHuangqueTool(engine, name, rawArguments, {
     return { run: await engine.getRun(args.run_id) };
   }
   if (name === "huangque.status") return engine.status();
+  if (name === "huangque.source_coverage") return engine.sourceCoverage();
   if (name === "huangque.discover_sources") {
     const output = await engine.discoverSources({
       providers: args.providers,

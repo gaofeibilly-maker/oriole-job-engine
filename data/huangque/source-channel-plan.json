@@ -1,0 +1,318 @@
+{
+  "schemaVersion": "huangque.source-channel-plan.v1",
+  "metadata": {
+    "project": "黄雀 Oriole",
+    "scope": "全国",
+    "version": "2026-08-20",
+    "reviewedAt": "2026-08-20T00:00:00.000Z",
+    "definition": "面向全国招聘来源归集的有界渠道与目标清单；用于发现覆盖缺口，不代表已经抓全互联网，也不授予任何来源采集权限。",
+    "nonExhaustive": true
+  },
+  "channels": [
+    {
+      "id": "company_career_sites",
+      "label": "企业招聘官网",
+      "labelEn": "Official company career sites",
+      "role": "primary_source",
+      "objective": "覆盖由企业直接控制的公开招聘入口、JobPosting 页面和公开职位列表。",
+      "cadence": { "mode": "fixed", "defaultHours": 24 },
+      "directlyProducesJobs": true,
+      "requiredForOperationalCoverage": true,
+      "requiredQueryBucketIds": ["company-careers"],
+      "match": { "sourceTypes": ["company_career_site", "official_ats"] },
+      "targetCoverage": {
+        "mode": "required_all",
+        "meaning": "每个有界重点企业至少需要一个已批准的企业自有官网或官方 ATS 入口；两类入口任一即可，不要求重复覆盖。"
+      },
+      "acceptanceBoundary": "仅 approved + verified + collectionEnabled 的企业官方公开来源可产出岗位。"
+    },
+    {
+      "id": "public_ats",
+      "label": "公开 ATS",
+      "labelEn": "Public applicant tracking systems",
+      "role": "primary_source",
+      "objective": "优先接入企业控制的公开 ATS 租户及稳定公开 API。",
+      "cadence": { "mode": "fixed", "defaultHours": 6 },
+      "directlyProducesJobs": true,
+      "requiredForOperationalCoverage": true,
+      "requiredQueryBucketIds": ["public-ats"],
+      "match": {
+        "sourceTypes": ["official_ats"],
+        "providers": ["Lever", "Greenhouse", "Ashby", "ByteDance", "FeishuRecruitment", "Workday", "SmartRecruiters"]
+      },
+      "targetCoverage": {
+        "mode": "informational",
+        "meaning": "公开 ATS 是补充渠道，展示命中的重点企业，但不要求每家企业另有一套独立 ATS。"
+      },
+      "acceptanceBoundary": "ATS 搜索命中只形成候选；租户、公开端点、岗位 URL 边界经核验和人工批准后才可采集。"
+    },
+    {
+      "id": "government_public_employment",
+      "label": "政府与公共就业",
+      "labelEn": "Government and public employment",
+      "role": "primary_source",
+      "objective": "覆盖国家、省、市公共就业服务和持续更新的官方公开招聘栏目。",
+      "cadence": { "mode": "fixed", "defaultHours": 12 },
+      "directlyProducesJobs": true,
+      "requiredForOperationalCoverage": true,
+      "requiredQueryBucketIds": ["national-official", "provincial-public", "prefecture-rotation"],
+      "match": {
+        "sourceTypes": ["government_public_employment", "government_recruitment_hub"],
+        "providers": ["NCSS", "BeijingPublicEmployment"]
+      },
+      "acceptanceBoundary": "政府目录可用于发现，但只有可重复读取且通过审核的具体岗位栏目或公开 API 才可产岗。"
+    },
+    {
+      "id": "campus_parks_associations",
+      "label": "高校、园区与协会",
+      "labelEn": "Universities, industrial parks and associations",
+      "role": "primary_source",
+      "objective": "补充高校就业网、产业园区、行业协会、公开招聘会和公共零工市场。",
+      "cadence": { "mode": "fixed", "defaultHours": 24 },
+      "directlyProducesJobs": true,
+      "requiredForOperationalCoverage": true,
+      "requiredQueryBucketIds": ["parks-associations"],
+      "match": {
+        "sourceTypes": ["park_or_association_board", "community_recruitment_hub", "university_employment_board"]
+      },
+      "acceptanceBoundary": "必须确认发布主体、公开入口和申请链接；单次活动或转载页不得冒充长期权威来源。"
+    },
+    {
+      "id": "baidu_search_api",
+      "label": "百度官方搜索 API",
+      "labelEn": "Baidu official Search API",
+      "role": "discovery_only",
+      "objective": "发现企业、政府、高校和园区的公开招聘入口，并驱动区域和行业补漏。",
+      "cadence": { "mode": "plan_driven", "defaultHours": 24 },
+      "directlyProducesJobs": false,
+      "requiredForOperationalCoverage": true,
+      "requiredQueryProviders": ["baidu"],
+      "match": { "evidenceChannels": ["baidu"] },
+      "providerRunEvidence": { "provider": "baidu", "minimumRequestCount": 1 },
+      "acceptanceBoundary": "仅官方 API；搜索结果永不直接成为已批准来源或当前在招证明。"
+    },
+    {
+      "id": "common_crawl_index",
+      "label": "Common Crawl URL Index",
+      "labelEn": "Common Crawl URL Index",
+      "role": "discovery_only",
+      "objective": "对受控 site: 域名进行历史 URL 入口补漏，保留索引 ID、摘要和时间证据。",
+      "cadence": { "mode": "index_driven", "defaultHours": 168 },
+      "directlyProducesJobs": false,
+      "requiredForOperationalCoverage": true,
+      "requiredQueryProviders": ["common_crawl"],
+      "match": { "evidenceChannels": ["common_crawl"] },
+      "providerRunEvidence": { "provider": "common_crawl", "requiredMetadataFields": ["indexId"] },
+      "acceptanceBoundary": "档案 URL 记录只用于发现，不能证明岗位当前有效。"
+    },
+    {
+      "id": "official_public_directories",
+      "label": "官方公开目录",
+      "labelEn": "Official public directories",
+      "role": "discovery_only",
+      "objective": "维护国家和地方政府部门、公共就业平台及权威招聘栏目入口清单。",
+      "cadence": { "mode": "fixed", "defaultHours": 168 },
+      "directlyProducesJobs": false,
+      "requiredForOperationalCoverage": true,
+      "match": { "evidenceChannels": ["official_catalog"] },
+      "providerRunEvidence": { "provider": "official_catalog", "minimumHits": 1 },
+      "acceptanceBoundary": "目录条目只形成候选；具体发布页必须单独探测和审批。"
+    },
+    {
+      "id": "sitemap_rss_feeds",
+      "label": "Sitemap、RSS 与 Atom",
+      "labelEn": "Sitemap, RSS and Atom feeds",
+      "role": "structured_endpoint",
+      "objective": "优先使用同一发布者公开的结构化导航和增量订阅端点。",
+      "cadence": { "mode": "fixed", "defaultHours": 24 },
+      "directlyProducesJobs": true,
+      "requiredForOperationalCoverage": true,
+      "match": { "probeStrategies": ["xml_feed_or_sitemap"] },
+      "acceptanceBoundary": "只有与已批准发布者边界一致的 feed 可产岗；跨域子 Sitemap 作为新来源重新审核。"
+    },
+    {
+      "id": "user_submissions",
+      "label": "用户提交与导入线索",
+      "labelEn": "User submissions and imported leads",
+      "role": "discovery_only",
+      "objective": "接收可解释的公开 URL 线索，补充自动发现尚未覆盖的来源。",
+      "cadence": { "mode": "event_driven", "defaultHours": 0 },
+      "directlyProducesJobs": false,
+      "requiredForOperationalCoverage": false,
+      "match": { "evidenceChannels": ["user_submission", "imported"] },
+      "acceptanceBoundary": "提交只形成 candidate，不能绕过 probe、人工审核和来源 URL 边界。"
+    }
+  ],
+  "targetInventory": {
+    "scopeStatement": "这是为验证渠道覆盖而维护的有限重点企业清单，不是企业排名，也不宣称覆盖全部中国企业或全部互联网岗位。",
+    "selectionBasis": "选择具有全国性招聘需求、可审计官方招聘入口且分属互联网、科技、制造和中央企业的代表性发布者。",
+    "reviewedAt": "2026-08-20T00:00:00.000Z",
+    "employers": [
+      {
+        "id": "bytedance",
+        "name": "字节跳动",
+        "segment": "internet",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["jobs.bytedance.com"], "publisherAliases": ["字节跳动", "ByteDance"] },
+        "audit": { "officialRecruitmentUrl": "https://jobs.bytedance.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "tencent",
+        "name": "腾讯",
+        "segment": "internet",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["careers.tencent.com"], "publisherAliases": ["腾讯", "Tencent"] },
+        "audit": { "officialRecruitmentUrl": "https://careers.tencent.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "alibaba",
+        "name": "阿里巴巴",
+        "segment": "internet",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["talent.alibaba.com"], "publisherAliases": ["阿里巴巴", "Alibaba"] },
+        "audit": { "officialRecruitmentUrl": "https://talent.alibaba.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "meituan",
+        "name": "美团",
+        "segment": "internet",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["zhaopin.meituan.com"], "publisherAliases": ["美团", "Meituan"] },
+        "audit": { "officialRecruitmentUrl": "https://zhaopin.meituan.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "baidu",
+        "name": "百度",
+        "segment": "internet",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["talent.baidu.com"], "publisherAliases": ["百度", "Baidu"] },
+        "audit": { "officialRecruitmentUrl": "https://talent.baidu.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "jd",
+        "name": "京东",
+        "segment": "internet",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["zhaopin.jd.com"], "publisherAliases": ["京东", "JD.com"] },
+        "audit": { "officialRecruitmentUrl": "https://zhaopin.jd.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "huawei",
+        "name": "华为",
+        "segment": "technology",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["career.huawei.com"], "publisherAliases": ["华为", "Huawei"] },
+        "audit": { "officialRecruitmentUrl": "https://career.huawei.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "xiaomi",
+        "name": "小米",
+        "segment": "technology",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["hr.xiaomi.com"], "publisherAliases": ["小米", "Xiaomi"] },
+        "audit": { "officialRecruitmentUrl": "https://hr.xiaomi.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "dji",
+        "name": "大疆创新",
+        "segment": "technology",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["we.dji.com", "careers.dji.com"], "publisherAliases": ["大疆", "DJI"] },
+        "audit": { "officialRecruitmentUrl": "https://we.dji.com/zh-CN/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "lenovo",
+        "name": "联想",
+        "segment": "technology",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["jobs.lenovo.com"], "publisherAliases": ["联想", "Lenovo"] },
+        "audit": { "officialRecruitmentUrl": "https://jobs.lenovo.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "zte",
+        "name": "中兴通讯",
+        "segment": "technology",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["job.zte.com.cn"], "publisherAliases": ["中兴通讯", "ZTE"] },
+        "audit": { "officialRecruitmentUrl": "https://job.zte.com.cn/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "byd",
+        "name": "比亚迪",
+        "segment": "manufacturing",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["job.byd.com"], "publisherAliases": ["比亚迪", "BYD"] },
+        "audit": { "officialRecruitmentUrl": "https://job.byd.com/portal/pc/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "catl",
+        "name": "宁德时代",
+        "segment": "manufacturing",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["talent.catl.com"], "publisherAliases": ["宁德时代", "CATL"] },
+        "audit": { "officialRecruitmentUrl": "https://talent.catl.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "midea",
+        "name": "美的集团",
+        "segment": "manufacturing",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["recruit.midea.com", "careers.midea.com"], "publisherAliases": ["美的", "Midea"] },
+        "audit": { "officialRecruitmentUrl": "https://recruit.midea.com/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "haier",
+        "name": "海尔集团",
+        "segment": "manufacturing",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["maker.haier.net"], "publisherAliases": ["海尔", "Haier"] },
+        "audit": { "officialRecruitmentUrl": "https://maker.haier.net/client", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "state_grid",
+        "name": "国家电网",
+        "segment": "central_state_owned",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["zhaopin.sgcc.com.cn"], "publisherAliases": ["国家电网", "State Grid"] },
+        "audit": { "officialRecruitmentUrl": "https://zhaopin.sgcc.com.cn/sgcchr/static/home.html", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "china_mobile",
+        "name": "中国移动",
+        "segment": "central_state_owned",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["job.10086.cn"], "publisherAliases": ["中国移动", "China Mobile"] },
+        "audit": { "officialRecruitmentUrl": "https://job.10086.cn/", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "cnpc",
+        "name": "中国石油",
+        "segment": "central_state_owned",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["zhaopin.cnpc.com.cn", "www.cnpc.com.cn"], "publisherAliases": ["中国石油", "CNPC"] },
+        "audit": { "officialRecruitmentUrl": "https://www.cnpc.com.cn/cnpc/jrwm/jrwm_index.shtml", "evidenceKind": "official_recruitment_root" }
+      },
+      {
+        "id": "sinopec",
+        "name": "中国石化",
+        "segment": "central_state_owned",
+        "desiredChannelIds": ["company_career_sites", "public_ats"],
+        "match": { "hosts": ["job.sinopec.com"], "publisherAliases": ["中国石化", "Sinopec"] },
+        "audit": { "officialRecruitmentUrl": "https://job.sinopec.com/", "evidenceKind": "official_recruitment_root" }
+      }
+    ]
+  },
+  "regionCoverage": {
+    "taxonomy": "china-regions@2025-12-31",
+    "levels": ["province", "second_level"],
+    "sourceChannelIds": [
+      "company_career_sites",
+      "public_ats",
+      "government_public_employment",
+      "campus_parks_associations",
+      "sitemap_rss_feeds"
+    ],
+    "queryDimensions": { "province": "province", "secondLevel": "city" },
+    "principle": "全国来源不自动填满每个省市；只有明确地域来源、结构化岗位地点或对应地域查询任务才计入各自覆盖。"
+  }
+}

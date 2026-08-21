@@ -12,6 +12,7 @@ import { resolveHostedJob } from "./host-policy.mjs";
 import { isLocalControlError } from "./http.mjs";
 import { buildHostedProjection } from "./hosted-projection.mjs";
 import { classifyChinaLocation, jobMatchesRegion, listChinaRegions } from "./china-regions.mjs";
+import { analyzeSourceCoverage } from "./source-coverage.mjs";
 
 async function readJson(path, label) {
   try {
@@ -68,6 +69,20 @@ function positiveBoundedInteger(value, fallback, maximum) {
   return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, maximum) : fallback;
 }
 
+function collectionEvidenceSummary(result) {
+  return {
+    sourceId: result.sourceId,
+    fetchedAt: result.fetchedAt,
+    endpoint: result.endpoint,
+    http: result.http,
+    pagination: result.pagination,
+    parser: result.parser,
+    parserStats: result.parserStats,
+    storage: result.storage,
+    session: result.session,
+  };
+}
+
 function availableQueryProviders(providers, baiduConfigured) {
   const requested = new Set(providers || []);
   const available = [];
@@ -122,6 +137,25 @@ export function collectionDueState(source, now = new Date()) {
   return { due: dueAt <= current, dueAt: dueAt.toISOString(), cadenceHours: collectionCadenceHours(source) };
 }
 
+function readyProbeBacklog(state, now = new Date()) {
+  const current = new Date(now);
+  return state.sources
+    .filter((source) => {
+      if (source.lifecycle === "candidate" && source.reviewStatus === "unreviewed" && source.verificationState === "unverified_candidate") return true;
+      if (source.lifecycle !== "probed" || source.verificationState !== "probe_failed" || source.collectionEnabled) return false;
+      const lastProbedAt = source.lastProbedAt ? new Date(source.lastProbedAt) : null;
+      return lastProbedAt && !Number.isNaN(lastProbedAt.getTime()) && current.getTime() - lastProbedAt.getTime() >= 24 * 3_600_000;
+    })
+    .filter((source) => source.collectionEnabled === false && source.candidate?.status === "ready_for_probe")
+    .sort((left, right) => {
+      const leftQueuedAt = String(left.lastProbedAt || left.discoveredAt || left.lastDiscoveredAt || "");
+      const rightQueuedAt = String(right.lastProbedAt || right.discoveredAt || right.lastDiscoveredAt || "");
+      return leftQueuedAt.localeCompare(rightQueuedAt)
+        || Number(right.candidate?.discoveryPriorityScore || 0) - Number(left.candidate?.discoveryPriorityScore || 0)
+        || left.id.localeCompare(right.id);
+    });
+}
+
 export function jobWithEffectiveValidity(job, now = new Date()) {
   const validThrough = job?.validThrough ? new Date(job.validThrough) : null;
   if (!validThrough || Number.isNaN(validThrough.getTime()) || validThrough >= new Date(now) || ["closed", "quarantined"].includes(job.status)) return job;
@@ -148,6 +182,7 @@ export class HuangqueEngine {
     registryPath = resolve(projectRoot, ".huangque/state.json"),
     artifactRoot = resolve(projectRoot, ".huangque/artifacts"),
     queryPlanPath = resolve(projectRoot, "data/huangque/national-query-plan.json"),
+    sourceChannelPlanPath = resolve(projectRoot, "data/huangque/source-channel-plan.json"),
     catalogPath = resolve(projectRoot, "data/huangque/public-source-catalog.json"),
     existingSnapshotPath = resolve(projectRoot, "app/data/job-data.json"),
     verifiedSourceSeedsPath = resolve(projectRoot, "data/huangque/verified-source-seeds.json"),
@@ -159,6 +194,7 @@ export class HuangqueEngine {
     this.projectRoot = projectRoot;
     this.registryPath = registryPath;
     this.queryPlanPath = queryPlanPath;
+    this.sourceChannelPlanPath = sourceChannelPlanPath;
     this.catalogPath = catalogPath;
     this.existingSnapshotPath = existingSnapshotPath;
     this.verifiedSourceSeedsPath = verifiedSourceSeedsPath;
@@ -211,8 +247,19 @@ export class HuangqueEngine {
     };
   }
 
-  async bootstrapExistingSources() {
-    const bootstrapPath = await pathExists(this.existingSnapshotPath)
+  async sourceCoverage() {
+    return analyzeSourceCoverage({
+      projectRoot: this.projectRoot,
+      registry: this.registry,
+      queryPlanPath: this.queryPlanPath,
+      channelPlanPath: this.sourceChannelPlanPath,
+    });
+  }
+
+  async bootstrapExistingSources({ verifiedSeedsOnly = false } = {}) {
+    const bootstrapPath = verifiedSeedsOnly
+      ? await pathExists(this.verifiedSourceSeedsPath) ? this.verifiedSourceSeedsPath : null
+      : await pathExists(this.existingSnapshotPath)
       ? this.existingSnapshotPath
       : await pathExists(this.verifiedSourceSeedsPath) ? this.verifiedSourceSeedsPath : null;
     if (!bootstrapPath) {
@@ -440,6 +487,7 @@ export class HuangqueEngine {
       const input = await runDiscoveryProviders(tasks, {
         providers: effectiveProviders,
         catalogPath: this.catalogPath,
+        channelPlanPath: this.sourceChannelPlanPath,
         importedInput,
         now: this.now(),
         baidu: {
@@ -509,8 +557,46 @@ export class HuangqueEngine {
       if (!source) throw Object.assign(new Error(`来源不存在：${effectiveSourceId}`), { code: "SOURCE_NOT_FOUND" });
       const probe = await probeCandidate(source.candidate, { now: this.now(), fetchOptions: { ...this.fetchOptions, requestPhase: "probe" } });
       await this.registry.recordProbe(source.id, probe, run.id);
-      await this.registry.finishRun(run.id, { status: probe.verificationState === "verified" ? "completed" : "completed_with_findings", stats: { verified: probe.verificationState === "verified" ? 1 : 0 }, errors: probe.errors, output: { sourceIds: [source.id] } });
-      return { runId: run.id, sourceId: source.id, probe };
+      let clueDiscovery = null;
+      if (probe.sourceClues?.length) {
+        const directoryParent = source.candidate?.sourceType === "official_source_directory";
+        const clueInput = {
+          schemaVersion: "huangque.discovery-input.v1",
+          metadata: { project: "黄雀", scope: "全国", provider: "source_spider", observedAt: probe.probedAt },
+          queries: [{
+            id: `source-spider:${source.id}`,
+            query: `${source.name || source.id} 中国 招聘来源外链`,
+            channel: "source_spider",
+            results: probe.sourceClues.map((clue, index) => {
+              let governmentTarget = false;
+              try { governmentTarget = new URL(clue.url).hostname === "gov.cn" || new URL(clue.url).hostname.endsWith(".gov.cn"); }
+              catch { governmentTarget = false; }
+              return {
+                title: clue.title || `来源外链 ${index + 1}`,
+                snippet: `${source.name || source.id} 的公开招聘页面链接；仅作为新候选，必须另行探测和审核。`,
+                url: clue.url,
+                rank: index + 1,
+                providerEvidence: {
+                  kind: clue.evidenceKind,
+                  parentSourceId: source.id,
+                  parentUrl: clue.parentUrl,
+                  authority: directoryParent && governmentTarget ? "official_government_directory_link" : null,
+                },
+              };
+            }),
+          }],
+        };
+        clueDiscovery = discoverSourceCandidates(clueInput, { knownSnapshot: knownSnapshotFromRegistry(state), observedAt: probe.probedAt });
+        await this.registry.upsertCandidates(clueDiscovery, run.id);
+      }
+      const discoveredSourceIds = clueDiscovery?.candidates.map((candidate) => candidate.id) || [];
+      await this.registry.finishRun(run.id, {
+        status: probe.verificationState === "verified" ? "completed" : "completed_with_findings",
+        stats: { verified: probe.verificationState === "verified" ? 1 : 0, sourceClues: probe.sourceClues?.length || 0, sourcesDiscovered: discoveredSourceIds.length },
+        errors: probe.errors,
+        output: { sourceIds: [source.id, ...discoveredSourceIds] },
+      });
+      return { runId: run.id, sourceId: source.id, probe, discoveredSourceIds };
     } catch (error) {
       await this.registry.finishRun(run.id, { status: "failed", errors: [{ code: error.code || "PROBE_FAILED", message: error.message }] });
       throw error;
@@ -560,6 +646,7 @@ export class HuangqueEngine {
       sourcesRequested: sourceIds.length,
       sourcesSucceeded: results.length,
       sourcesFailed: errors.length,
+      sourcesIncomplete: results.filter((result) => result.pagination?.complete === false).length,
       jobsObserved: results.reduce((sum, item) => sum + item.storage.received, 0),
       jobsNew: results.reduce((sum, item) => sum + item.storage.new, 0),
       jobsUpdated: results.reduce((sum, item) => sum + item.storage.updated, 0),
@@ -569,7 +656,8 @@ export class HuangqueEngine {
       observationId: artifact.observationId,
       contentHash: artifact.contentHash,
     }))), ...failedArtifacts];
-    await this.registry.finishRun(run.id, { status: errors.length ? "completed_with_errors" : "completed", stats, errors, output: { sourceIds, artifacts } });
+    const collectionEvidence = results.map(collectionEvidenceSummary);
+    await this.registry.finishRun(run.id, { status: errors.length ? "completed_with_errors" : stats.sourcesIncomplete ? "completed_with_findings" : "completed", stats, errors, output: { sourceIds, artifacts, collectionEvidence } });
     const localControlFailure = errors.find((error) => isLocalControlError(error));
     if (localControlFailure) {
       throw Object.assign(new Error(localControlFailure.message), { code: localControlFailure.code, runId: run.id, sourceId: localControlFailure.sourceId });
@@ -592,17 +680,24 @@ export class HuangqueEngine {
     cityCode = null,
   } = {}) {
     const discovery = await this.discoverSources({ providers, bucketIds, maxQueries, force, provinceCode, cityCode });
-    const probeCandidates = discovery.discovery.candidates
-      .filter((candidate) => candidate.status === "ready_for_probe")
-      .slice(0, Math.max(0, maxProbes));
+    const probeState = await this.registry.snapshot();
+    const probeBacklog = readyProbeBacklog(probeState, this.now());
+    const probeLimit = Math.max(0, Math.floor(Number(maxProbes) || 0));
+    const probeCandidates = probeBacklog.slice(0, probeLimit);
     const probes = [];
-    for (const candidate of probeCandidates) probes.push(await this.probeSource({ sourceId: candidate.id }));
+    for (const source of probeCandidates) probes.push(await this.probeSource({ sourceId: source.id }));
     const collection = collectApproved ? await this.collectJobs({ commit }) : null;
     return {
       schemaVersion: "huangque.pipeline.v1",
       discoveryRunId: discovery.runId,
       discovered: discovery.discovery.stats,
       probes: probes.map((item) => ({ runId: item.runId, sourceId: item.sourceId, verificationState: item.probe.verificationState, counts: item.probe.counts })),
+      probeQueue: {
+        eligibleSources: probeBacklog.length,
+        selectedSources: probeCandidates.length,
+        remainingSources: Math.max(0, probeBacklog.length - probeCandidates.length),
+        selectedSourceIds: probeCandidates.map((source) => source.id),
+      },
       collection,
       approvalBoundary: "新来源即使探测成功，也只进入 pending；必须由人工审核后才可采集。",
     };
@@ -653,9 +748,16 @@ export class HuangqueEngine {
         commit: commitApproved,
         dueSources: dueSources.length,
         completedSources: runs.length,
+        incompleteSources: runs.reduce((sum, run) => sum + Number(run.stats?.sourcesIncomplete || 0), 0),
         safetyDowngradedSources: safetyDowngrades.length,
         failedSources: errors.length,
         runIds: runs.map((run) => run.runId),
+        sourceRuns: runs.map((run) => ({
+          runId: run.runId,
+          stats: run.stats,
+          errors: run.errors,
+          evidence: run.results.map(collectionEvidenceSummary),
+        })),
         safetyDowngrades,
         errors,
       },
@@ -804,13 +906,13 @@ export class HuangqueEngine {
         discovery: ["BaiduWebSearchProvider", "CommonCrawlCdxProvider", "OfficialCatalogProvider", "Imported/UserSubmissionProvider", "cadence query plan"],
         probe: ["HTTPS only", "DNS pinning", "cross-origin redirect blocked", "per-hop robots redirect guard", "timeout", "response size", "login/challenge detection", "ATS/JSON-LD/HTML listing inspection"],
         registry: ["candidate/probed/approved/rejected lifecycle", "optimistic revision", "cross-process file lock", "bounded event/run/evidence retention", "source relations", "file store"],
-        collection: ["Lever", "Greenhouse", "Ashby", "NCSS flexible JSON", "全国及地方公共就业", "JobPosting JSON-LD", "RSS/Atom", "Sitemap XML", "government HTML listing"],
+        collection: ["Lever", "Greenhouse", "Ashby", "ByteDance/Feishu Recruitment public search APIs", "NCSS flexible JSON", "全国及地方公共就业", "JobPosting JSON-LD", "RSS/Atom", "Sitemap XML", "government HTML listing"],
         jobs: ["huangque.job.v2 structured workLocations", "34 province-level and 365 second-level classifications", "multi-location preservation", "cross-source canonical apply URL dedupe", "persistent soft duplicate review queue", "content version history", "authoritative complete-feed missing thresholds", "three evidence scores"],
       },
       agent: {
         transport: "MCP stdio NDJSON",
         protocols: ["2026-07-28", "2025-11-25", "2025-06-18", "2025-03-26"],
-        tools: ["huangque.run_pipeline", "huangque.get_run", "huangque.status", "huangque.discover_sources", "huangque.submit_source", "huangque.probe_source", "huangque.list_sources", "huangque.list_jobs", "huangque.list_regions", "huangque.get_source_graph", "huangque.review_source", "huangque.collect_jobs", "huangque.run_due", "huangque.export_hosted_projection", "huangque.audit"],
+        tools: ["huangque.run_pipeline", "huangque.get_run", "huangque.status", "huangque.source_coverage", "huangque.discover_sources", "huangque.submit_source", "huangque.probe_source", "huangque.list_sources", "huangque.list_jobs", "huangque.list_regions", "huangque.get_source_graph", "huangque.review_source", "huangque.collect_jobs", "huangque.run_due", "huangque.export_hosted_projection", "huangque.audit"],
         cli: "node scripts/huangque/cli.mjs",
         deterministicCore: true,
       },

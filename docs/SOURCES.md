@@ -10,22 +10,54 @@ Search results and archives never replace the final source evidence.
 
 ## Audited standalone seeds
 
-`data/huangque/verified-source-seeds.json` makes a clean public clone functional without publishing jobs. It contains eight public, explicitly reviewed source identities and an empty `jobs` array:
+`data/huangque/verified-source-seeds.json` makes a clean public clone functional without publishing jobs. It contains nine public, explicitly reviewed source identities and an empty `jobs` array:
 
 - Xsolla and WeRide public Lever boards;
 - Speechify and Fusion Worldwide public Greenhouse boards;
 - Sensor Tower, adjoe, and Voodoo public Ashby boards;
+- ByteDance's employer-controlled public experienced-hire board;
 - Beijing's public employment service.
 
 The manifest records its schema, review timestamp, public URL, provider, and the fact that it ships no job data. `init` imports these as verified and approved collection targets. Collection still runs through current DNS/HTTPS/robots/parser safeguards, and only jobs with a defensible China workplace survive normalization. A board's presence in the seed file does not imply that it currently has a China opening.
 
 This file is the one reviewed-bootstrap exception to normal discovery flow. New search/catalog/user candidates are never auto-approved. Seed changes require code review and must not contain jobs, credentials, cookies, or raw responses.
 
+## Hybrid source spider and measurable coverage
+
+Oriole does not depend on one search engine or one hand-written site list. Its source spider is a controlled funnel:
+
+1. versioned official directories and audited seeds supply authoritative starting points;
+2. Baidu, Common Crawl, the 19-employer watchlist, and all 365 second-level region dimensions supply bounded discovery tasks that may yield public URLs;
+3. URL identity logic collapses detail pages into stable source roots and recognizes supported ATS/custom public recruitment systems;
+4. a bounded, persistent probe backlog checks HTTPS, DNS, redirects, robots, login/challenge signals, response budgets, and collection schema; transient failures retry after 24 hours;
+5. verified candidates wait for human approval; weaker rediscovery evidence cannot downgrade or overwrite stronger evidence;
+6. official directories and employer pages may emit bounded cross-origin source/ATS handoff clues, but every target becomes a separate unapproved candidate;
+7. approved sources are collected on their own cadence, normalized by workplace, strongly deduplicated, and retained with evidence;
+8. `npm run coverage` or MCP tool `huangque.source_coverage` reports what remains missing instead of claiming exhaustive web coverage.
+
+The versioned plan in `data/huangque/source-channel-plan.json` measures nine complementary channel classes:
+
+| Channel | Purpose | Default cadence |
+| --- | --- | --- |
+| Employer career sites | Primary, employer-controlled job source | 24 h |
+| Public ATS | Stable public tenant/API source | 6 h |
+| Government/public employment | National, provincial, and municipal official jobs | 12 h |
+| Universities, parks, and associations | Local and sector gap filling | 24 h |
+| Baidu official Search API | Keyword discovery radar | plan-driven |
+| Common Crawl URL Index | Controlled `site:` URL/history gap filling | 7 d |
+| Official public directories | Authoritative source discovery | 7 d |
+| Sitemap, RSS, and Atom | Structured navigation or incremental feeds | 24 h |
+| User submissions/imports | Event-driven public clues under the same review gate | on demand |
+
+This is intentionally measurable rather than rhetorically “complete”: the current denominator is nine channel classes, 19 explicitly bounded major-employer targets, 34 province-level regions, and 365 second-level regions. A target is not counted as covered merely because a search result exists; collection coverage requires a verified, approved, enabled source.
+
+The coverage report reads the versioned plan, source lifecycle/review state, query dimensions, and active jobs' structured work locations. It deliberately does **not** read a collection run's `pagination.complete` value or turn pagination into a coverage score. Inspect Registry `collectionEvidence` and daily `sourceRuns` separately to determine whether a particular bounded collection was complete.
+
 ## Included discovery providers
 
 ### Official public catalog
 
-The bundled discovery catalog is `data/huangque/public-source-catalog.json`. It is a maintained directory list, not a claim of exhaustive national coverage. The first release includes:
+The bundled discovery catalog is `data/huangque/public-source-catalog.json`. It is a maintained directory list, not a claim of exhaustive national coverage. The current catalog includes:
 
 - China Public Recruitment (`job.mohrss.gov.cn`);
 - National College Student Employment Service (`ncss.cn`);
@@ -33,6 +65,9 @@ The bundled discovery catalog is `data/huangque/public-source-catalog.json`. It 
 - central state-owned enterprise recruitment (`sasac.gov.cn`);
 - the State Council's local department directory (`gov.cn`), used to discover provincial/municipal employment departments;
 - Beijing public employment and public-institution seeds as tested local examples.
+- ByteDance's official experienced-hire board.
+
+The official-catalog provider also turns the other 18 entries in the versioned 19-employer watchlist into executable candidates. A clean run therefore sees 8 direct catalog entries plus 18 non-duplicate watchlist entries. These employer roots enter the persistent probe queue; they do not count as covered and cannot produce jobs until their endpoint and parser are verified and a human approves the source.
 
 National entries declare all 34 province-level region codes as their intended discovery coverage. Local sources discovered from those directories still require their own probe and approval.
 
@@ -85,6 +120,7 @@ The plan is versioned and tracks completed task IDs. A bucket advances its caden
 After probe and approval, the collector can normalize:
 
 - Lever, Greenhouse, and Ashby public boards;
+- ByteDance and compatible Feishu Recruitment public search APIs;
 - flexible public JSON used by NCSS and government employment endpoints;
 - Schema.org `JobPosting` JSON-LD;
 - RSS and Atom feeds;
@@ -92,6 +128,14 @@ After probe and approval, the collector can normalize:
 - bounded public HTML job listings.
 
 Unsupported systems such as authenticated Workday instances may still be discovered as candidates, but they are not collected unless a safe public endpoint and adapter are added.
+
+### ByteDance and Feishu Recruitment boundary
+
+The ByteDance adapter follows the anonymous public website flow (`portal-channel: office`, `portal_type: 2`). Feishu Recruitment SaaS tenants use their separate public flow (`portal-channel: saas-career`, `portal_type: 6`). Both obtain an in-memory CSRF token and matching cookie from the same-origin public CSRF endpoint, then send bounded POST requests to the same-origin public job-search endpoint. Tokens and cookies are never written to the Registry, artifacts, logs, catalog, or source evidence. The normalized records retain the official job ID, title, publisher, all declared work cities, category, recruitment type, publish/expiry times, description, salary fields, and official detail URL.
+
+The collector stops safely on CAPTCHA/risk-control responses, authentication requirements, `401`/`403`, persistent `405`, `429`, schema drift, robots denial, or response-budget exhaustion. It does not forge signatures, solve sliders, reuse a human session, or bypass access controls. A specific CSRF-expiry `405` may cause one fresh anonymous handshake and one retry; all other challenge behavior fails closed and remains visible in run evidence.
+
+Large sources are deliberately bounded per run: at most 50 pages, 5,000 rows, and 24 MB of responses. If an upstream advertises more rows—or returns an early gap/repeated page—the run stores the safely observed rows as `pagination.complete: false`, exposes `advertisedTotal`, increments `sourcesIncomplete`, and never advances missing-job closure counters. ByteDance discovery currently covers the experienced/social portal only; this release does not claim that one run captures all ByteDance jobs, campus hiring, internships, or the entire web. Pagination/parser/HTTP/storage summaries are persisted in the Registry run and daily report so this limitation is independently visible.
 
 ## Source inclusion policy
 
