@@ -75,8 +75,8 @@ test("Baidu opens a circuit on the first upstream daily-quota response", async (
           }), { status: 200, headers: { "content-type": "application/json" } });
         }
         return new Response(JSON.stringify({
-          error_code: "QUOTA_USER_DAILY_FREE",
-          error_msg: "Daily free quota per user for Web Search exceeded",
+          code: "QUOTA_USER_DAILY_FREE",
+          message: "Daily free quota per user for Web Search exceeded",
         }), { status: 200, headers: { "content-type": "application/json" } });
       },
     },
@@ -91,11 +91,66 @@ test("Baidu opens a circuit on the first upstream daily-quota response", async (
   assert.equal(output.metadata.upstreamQuotaExhausted, true);
   assert.equal(output.metadata.haltedReason, "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED");
   assert.equal(output.metadata.unattemptedTaskCount, 1);
+  assert.equal(output.exhausted, false);
   assert.deepEqual(output.metadata.completedTaskIds, ["q1"]);
   assert.deepEqual(output.metadata.failedTaskIds, ["q2"]);
   assert.equal(output.warnings.length, 1);
   assert.equal(discoveryExecutionStatus([{ ...output, status: output.providerStatus }], { taskCount: 3 }), "partial");
   assert.ok(!JSON.stringify(output).includes("test-secret"));
+});
+
+test("Baidu redacts an API key echoed by an untrusted upstream error", async () => {
+  const apiKey = "red-team-secret";
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], {
+    apiKey,
+    maxQueries: 1,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => new Response(JSON.stringify({
+        error_code: "UPSTREAM_REJECTED",
+        error_msg: `request contained Authorization: Bearer ${apiKey}; raw=${apiKey}`,
+      }), { status: 200, headers: { "content-type": "application/json" } }),
+    },
+  });
+
+  const serialized = JSON.stringify(output);
+  assert.equal(output.providerStatus, "failed");
+  assert.equal(output.metadata.failedTaskIds[0], "q1");
+  assert.ok(serialized.includes("[REDACTED]"));
+  assert.ok(!serialized.includes(apiKey));
+});
+
+test("Baidu redacts credentials from successful payload fields and drops credentialed URLs", async () => {
+  const apiKey = "red-team-success-secret";
+  const output = await runBaiduProvider([{ id: "q1", query: "北京 招聘" }], {
+    apiKey,
+    maxQueries: 1,
+    fetchOptions: {
+      skipDns: true,
+      fetchImpl: async () => new Response(JSON.stringify({
+        request_id: `request-${apiKey}`,
+        references: [
+          {
+            title: `title-${apiKey}`,
+            url: "https://jobs.example.com/list",
+            snippet: `Authorization: Bearer ${apiKey}`,
+          },
+          {
+            title: "unsafe URL",
+            url: `https://jobs.example.com/list?token=${apiKey}`,
+          },
+        ],
+      }), { status: 200, headers: { "content-type": "application/json" } }),
+    },
+  });
+
+  const serialized = JSON.stringify(output);
+  assert.equal(output.providerStatus, "ok");
+  assert.equal(output.hits.length, 1);
+  assert.equal(output.warnings.length, 1);
+  assert.ok(serialized.includes("[REDACTED]"));
+  assert.ok(!serialized.includes(apiKey));
+  assert.ok(!serialized.includes("token="));
 });
 
 test("Common Crawl with no eligible site task is not reported as an online success", async () => {

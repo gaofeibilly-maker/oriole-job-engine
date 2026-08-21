@@ -32,7 +32,7 @@ function result(status, provider, hits = [], warnings = [], metadata = {}) {
     provider,
     providerStatus: status,
     hits,
-    exhausted: true,
+    exhausted: !(Number.isInteger(metadata.unattemptedTaskCount) && metadata.unattemptedTaskCount > 0),
     warnings,
     metadata,
   };
@@ -73,6 +73,42 @@ export function buildBaiduRequest(query, { topK = 20, city = null, recentWindow 
 function isBaiduUpstreamDailyQuotaCode(value) {
   const code = String(value || "").trim().toUpperCase();
   return code.includes("QUOTA") && code.includes("DAILY");
+}
+
+function isBaiduErrorPayload(payload, responseOk) {
+  if (!responseOk || payload?.error || payload?.error_code) return true;
+  if (!Object.prototype.hasOwnProperty.call(payload || {}, "code")) return false;
+  const code = String(payload.code ?? "").trim();
+  if (!code) return false;
+  if (/^\d+$/.test(code)) return Number(code) >= 400;
+  return !new Set(["OK", "SUCCESS"]).has(code.toUpperCase());
+}
+
+function redactBaiduText(value, apiKey) {
+  let output = String(value ?? "");
+  const exactSecret = String(apiKey || "");
+  if (exactSecret) output = output.split(exactSecret).join("[REDACTED]");
+  return output
+    .replace(/\bBearer\s+[^\s,;"'<>]+/gi, "Bearer [REDACTED]")
+    .replace(/\bbce-v3\/[^\s,;"'<>]+/gi, "[REDACTED]");
+}
+
+function redactBaiduDiagnostic(value, apiKey) {
+  return redactBaiduText(value, apiKey).slice(0, 2_000);
+}
+
+function containsBaiduCredential(value, apiKey) {
+  const input = String(value ?? "");
+  return redactBaiduText(input, apiKey) !== input;
+}
+
+function redactBaiduOutput(value, apiKey) {
+  if (typeof value === "string") return redactBaiduText(value, apiKey);
+  if (Array.isArray(value)) return value.map((item) => redactBaiduOutput(item, apiKey));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, redactBaiduOutput(item, apiKey)]));
+  }
+  return value;
 }
 
 export async function runBaiduProvider(tasks, {
@@ -146,9 +182,11 @@ export async function runBaiduProvider(tasks, {
       } catch {
         throw new Error(`百度返回非 JSON（HTTP ${response.status}）`);
       }
-      if (!response.ok || payload.error || payload.error_code || payload.code >= 400) {
-        const code = payload.error_code || payload.code || response.status;
-        const error = new Error(`百度 API 错误 ${code}：${payload.error_msg || payload.message || response.status}`);
+      if (isBaiduErrorPayload(payload, response.ok)) {
+        const code = payload.error_code ?? payload.code ?? response.status;
+        const safeCode = redactBaiduDiagnostic(code, apiKey);
+        const safeMessage = redactBaiduDiagnostic(payload.error_msg ?? payload.message ?? response.status, apiKey);
+        const error = new Error(`百度 API 错误 ${safeCode}：${safeMessage}`);
         if (isBaiduUpstreamDailyQuotaCode(code)) error.code = "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED";
         throw error;
       }
@@ -159,6 +197,10 @@ export async function runBaiduProvider(tasks, {
       }
       for (const reference of references) {
         if (!reference?.url) continue;
+        if (containsBaiduCredential(reference.url, apiKey)) {
+          warnings.push(`${task.id}：百度结果 URL 含疑似凭据回显，已安全丢弃。`);
+          continue;
+        }
         hits.push(normalizeHit("baidu", task, reference, discoveredAt, "search_result", {
           requestId: payload.request_id || response.headers["x-request-id"] || null,
           score: reference.rerank_score ?? null,
@@ -169,27 +211,28 @@ export async function runBaiduProvider(tasks, {
       completedTaskIds.push(task.id);
     } catch (error) {
       if (isLocalControlError(error)) throw error;
+      const safeErrorMessage = redactBaiduDiagnostic(error.message, apiKey);
       if (["BAIDU_DAILY_BUDGET_EXHAUSTED", "BAIDU_BUDGET_RESERVATION_FAILED"].includes(error.code)) {
-        warnings.push(error.message);
+        warnings.push(safeErrorMessage);
         budgetExhausted = true;
         haltedReason = error.code;
         break;
       }
       if (error.code === "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED") {
         failedTaskIds.push(task.id);
-        warnings.push(`${task.id}：${error.message}；本轮百度任务已熔断，剩余任务留待额度恢复后重试。`);
+        warnings.push(`${task.id}：${safeErrorMessage}；本轮百度任务已熔断，剩余任务留待额度恢复后重试。`);
         upstreamQuotaExhausted = true;
         haltedReason = error.code;
         break;
       }
       failedTaskIds.push(task.id);
-      warnings.push(`${task.id}：${error.message}`);
+      warnings.push(`${task.id}：${safeErrorMessage}`);
     }
   }
   const providerStatus = failedTaskIds.length > 0 || haltedReason
     ? completedTaskIds.length > 0 ? "partial" : "failed"
     : "ok";
-  return result(providerStatus, "baidu", hits, warnings, {
+  return redactBaiduOutput(result(providerStatus, "baidu", hits, warnings, {
     requestCount,
     queryCount,
     selectedTaskCount: selectedTasks.length,
@@ -205,7 +248,7 @@ export async function runBaiduProvider(tasks, {
       limit: dailyBudget.limit,
       remaining: dailyBudget.remaining,
     } : null,
-  });
+  }), apiKey);
 }
 
 export function extractSitePattern(query) {
