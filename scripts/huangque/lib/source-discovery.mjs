@@ -683,6 +683,17 @@ function classifyGroup(group, observedAt, known) {
 
   const labels = unique(group.results.map((result) => result.title));
   const observedPublisher = group.results.map((result) => result.providerEvidence?.publisher).find(Boolean) || null;
+  const employerTargets = [...new Map(group.results.flatMap((result) => {
+    const id = result.dimensions?.employerTargetId || result.providerEvidence?.employerTargetId;
+    if (!id) return [];
+    return [[String(id), {
+      id: String(id),
+      name: result.dimensions?.employerName || result.providerEvidence?.publisher || null,
+      tier: result.dimensions?.tier || null,
+      industry: result.dimensions?.industry || null,
+      regionCode: result.dimensions?.regionCode || null,
+    }]];
+  })).values()];
   const name = isAts
     ? `${identity.tenant} · ${identity.provider}`
     : labels[0] || url.hostname;
@@ -692,7 +703,11 @@ function classifyGroup(group, observedAt, known) {
     id: stableId("huangque", identity.sourceKey),
     name,
     publisher: observedPublisher || identity.tenant || null,
-    publisherKey: observedPublisher ? `publisher:${stableId("name", observedPublisher)}` : `host:${url.hostname}`,
+    publisherKey: employerTargets.length === 1
+      ? `employer:${employerTargets[0].id}`
+      : observedPublisher ? `publisher:${stableId("name", observedPublisher)}` : `host:${url.hostname}`,
+    employerTargetIds: employerTargets.map((target) => target.id),
+    employerTargets,
     sourceKey: identity.sourceKey,
     entryUrl: canonicalizeUrl(primary.url),
     sourceRootUrl: effectiveSourceRootUrl,

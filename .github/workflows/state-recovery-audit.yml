@@ -1,0 +1,128 @@
+name: Oriole state recovery audit
+
+on:
+  schedule:
+    - cron: "47 20 * * 6"
+  workflow_dispatch:
+
+concurrency:
+  # Recovery receipts write the same durable branch as both update workflows.
+  group: oriole-state-writer
+  queue: max
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  restore-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: source
+      - uses: actions/checkout@v6
+        with:
+          ref: oriole-state
+          path: state
+      - name: Capture the exact durable-state head for the later lease
+        working-directory: state
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_SHA="$(git rev-parse HEAD)"
+          REMOTE_SHA="$(git ls-remote --exit-code origin refs/heads/oriole-state | awk '{print $1}')"
+          test "${REMOTE_SHA}" = "${EXPECTED_SHA}"
+          echo "ORIOLE_STATE_EXPECTED_SHA=${EXPECTED_SHA}" >> "${GITHUB_ENV}"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22.13.0"
+      - name: Copy the complete durable state into an isolated directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -d state/state-data
+          test ! -e state/state-data/registry.json
+          test -f state/state-data/registry.json.gz
+          test -f state/state-data/registry.bundle-manifest.json
+          FORBIDDEN="$(find state/state-data \( -type l -o -name 'registry.json' -o -name '*.lock' -o -name '*.tmp' -o -name '*.backup' \) -print -quit)"
+          if [[ -n "${FORBIDDEN}" ]]; then
+            echo "Durable state contains a forbidden transient or symlink: ${FORBIDDEN}" >&2
+            exit 1
+          fi
+          mkdir -p "${RUNNER_TEMP}/oriole-recovery/state-data"
+          cp -a state/state-data/. "${RUNNER_TEMP}/oriole-recovery/state-data/"
+          # Human-readable log evidence; the v2 receipt independently hashes
+          # the complete tree and verifies the bundle in Node.
+          sha256sum state/state-data/registry.json.gz state/state-data/registry.bundle-manifest.json
+      - name: Unpack and verify Registry only inside the isolated copy
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/huangque/state-bundle.mjs unpack --state-dir "${RUNNER_TEMP}/oriole-recovery/state-data"
+      - name: Start a fresh Agent read against the restored Registry
+        working-directory: source
+        env:
+          HUANGQUE_RUNTIME_ROOT: ${{ runner.temp }}/oriole-recovery/state-data
+          HUANGQUE_REGISTRY_PATH: ${{ runner.temp }}/oriole-recovery/state-data/registry.json
+          HUANGQUE_ARTIFACT_ROOT: ${{ runner.temp }}/oriole-recovery/artifacts
+          HUANGQUE_EMPLOYER_UNIVERSE_PATH: ${{ runner.temp }}/oriole-recovery/state-data/employer-universe.json
+        run: |
+          npm run --silent status > "${RUNNER_TEMP}/oriole-recovery/status.json"
+      - name: Generate a machine-verifiable recovery receipt
+        working-directory: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/huangque/state-recovery-receipt.mjs \
+            --source-state-dir "${GITHUB_WORKSPACE}/state/state-data" \
+            --restored-state-dir "${RUNNER_TEMP}/oriole-recovery/state-data" \
+            --status-report "${RUNNER_TEMP}/oriole-recovery/status.json" \
+            --output "${GITHUB_WORKSPACE}/state/state-data/latest-state-recovery.json" \
+            --repository "${GITHUB_REPOSITORY}" \
+            --workflow "${GITHUB_WORKFLOW}" \
+            --run-id "${GITHUB_RUN_ID}" \
+            --run-attempt "${GITHUB_RUN_ATTEMPT}" \
+            --run-number "${GITHUB_RUN_NUMBER}" \
+            --commit-sha "${GITHUB_SHA}" \
+            --state-commit-sha "${ORIOLE_STATE_EXPECTED_SHA}" \
+            --ref "${GITHUB_REF}" \
+            --event-name "${GITHUB_EVENT_NAME}"
+      - name: Persist receipt and compact oriole-state to one leased root commit
+        working-directory: state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e state-data/registry.json
+          FORBIDDEN="$(find state-data \( -type l -o -name 'registry.json' -o -name '*.lock' -o -name '*.tmp' -o -name '*.backup' \) -print -quit)"
+          if [[ -n "${FORBIDDEN}" ]]; then
+            echo "Refusing to persist forbidden state path: ${FORBIDDEN}" >&2
+            exit 1
+          fi
+          git config user.name "Oriole State Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -- state-data/latest-state-recovery.json
+          STAGED="$(git diff --cached --name-only)"
+          if [[ "${STAGED}" != "state-data/latest-state-recovery.json" ]]; then
+            echo "Only latest-state-recovery.json may be staged, got: ${STAGED}" >&2
+            exit 1
+          fi
+          test -z "$(git diff --name-only)"
+          test -z "$(git ls-files --others --exclude-standard)"
+          TREE="$(git write-tree)"
+          NEW_ROOT_COMMIT="$(printf '%s\n' "state: recovery audit ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" | git commit-tree "${TREE}")"
+          test "$(git rev-list --parents -n 1 "${NEW_ROOT_COMMIT}" | wc -w)" -eq 1
+          git push --force-with-lease=refs/heads/oriole-state:${ORIOLE_STATE_EXPECTED_SHA} \
+            origin "${NEW_ROOT_COMMIT}:refs/heads/oriole-state"
+      - name: Upload recovery evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: oriole-state-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            state/state-data/latest-state-recovery.json
+            state/state-data/registry.bundle-manifest.json
+            ${{ runner.temp }}/oriole-recovery/status.json
+          if-no-files-found: error
+          retention-days: 30

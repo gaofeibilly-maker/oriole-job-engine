@@ -10,9 +10,70 @@ export const HOSTED_PROJECTION_LIMITS = Object.freeze({
   d1RowBytes: HOSTED_D1_ROW_MAX_BYTES,
 });
 
+export const HOSTED_JOB_FRESHNESS_TTL_MS = 14 * 24 * 60 * 60 * 1_000;
+const HOSTED_FRESHNESS_CLOCK_SKEW_MS = 5 * 60 * 1_000;
+const SOURCE_CHECK_COMMIT_CORRELATION_MS = 15 * 60 * 1_000;
+const PER_JOB_FRESHNESS_PROVIDERS = new Set(["bytedance", "feishurecruitment"]);
+
 function timestamp(value) {
   const parsed = new Date(value || 0).getTime();
   return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function normalizedProvider(source) {
+  return String(source?.candidate?.provider || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function requiresPerJobFreshness(source) {
+  const collection = source?.collection;
+  const strategies = `${source?.candidate?.collectionStrategy || ""} ${source?.probe?.strategy || ""}`;
+  return PER_JOB_FRESHNESS_PROVIDERS.has(normalizedProvider(source))
+    || collection?.resume?.schemaVersion === "huangque.collection-resume.v1"
+    || /(?:cursor|offset|pag(?:e|ed|ination))/i.test(strategies);
+}
+
+function isRecent(value, now, ttlMs) {
+  const observedAt = timestamp(value);
+  if (!observedAt || !now) return false;
+  const age = now - observedAt;
+  return age >= -HOSTED_FRESHNESS_CLOCK_SKEW_MS && age <= ttlMs;
+}
+
+function correlatedTimestamp(checkValue, committedValue) {
+  const checkAt = timestamp(checkValue);
+  const committedAt = timestamp(committedValue);
+  if (!checkAt || !committedAt) return null;
+  return Math.abs(checkAt - committedAt) <= SOURCE_CHECK_COMMIT_CORRELATION_MS
+    ? checkValue
+    : committedValue;
+}
+
+function sourceWideFreshnessEvidence(source) {
+  if (requiresPerJobFreshness(source)) return null;
+  const collection = source?.collection || {};
+  const successfulCheckAt = collection.lastSuccessfulCheckAt;
+  if (!successfulCheckAt) return null;
+  const committed304 = Number(collection.httpValidator?.status) === 304 && collection.lastNotModifiedAt;
+  if (committed304) {
+    const observedAt = correlatedTimestamp(successfulCheckAt, collection.lastNotModifiedAt);
+    return observedAt ? { basis: "source_http_304", observedAt } : null;
+  }
+  const authoritativeFull = collection.missingAdvanceSuppressed === false && collection.lastCollectedAt;
+  if (authoritativeFull) {
+    const observedAt = correlatedTimestamp(successfulCheckAt, collection.lastCollectedAt);
+    return observedAt ? { basis: "source_authoritative_full_collection", observedAt } : null;
+  }
+  return null;
+}
+
+function supportFreshnessEvidence(source, job, now, ttlMs) {
+  const observation = job?.sourceObservations?.[source.id];
+  if (observation && isRecent(observation.lastObservedAt, now, ttlMs)) {
+    return { basis: "job_source_observation", observedAt: observation.lastObservedAt };
+  }
+  const sourceWide = sourceWideFreshnessEvidence(source);
+  if (sourceWide && isRecent(sourceWide.observedAt, now, ttlMs)) return sourceWide;
+  return null;
 }
 
 function sourcePriority(source) {
@@ -94,8 +155,15 @@ function jobPriority(job) {
   return [state, -Number(job.activeScore || 0), -Number(job.authenticityScore || 0), -timestamp(job.lastObservedAt || job.observedAt || job.updatedAt), String(job.id)];
 }
 
-export function buildHostedProjection(state, { limits = HOSTED_PROJECTION_LIMITS, generatedAt = new Date().toISOString() } = {}) {
+export function buildHostedProjection(state, {
+  limits = HOSTED_PROJECTION_LIMITS,
+  generatedAt = new Date().toISOString(),
+  freshnessTtlMs = HOSTED_JOB_FRESHNESS_TTL_MS,
+} = {}) {
   if (!state || state.schemaVersion !== "huangque.registry.v1") throw new TypeError("huangque.registry.v1 snapshot required");
+  const projectionTime = timestamp(generatedAt);
+  if (!projectionTime) throw new TypeError("generatedAt must be a valid projection timestamp");
+  if (!Number.isFinite(freshnessTtlMs) || freshnessTtlMs <= 0) throw new TypeError("freshnessTtlMs must be a positive number");
   const sortedSources = [...(state.sources || [])].sort((left, right) => compareTuple(sourcePriority(left), sourcePriority(right)));
   const selectedSourcePairs = sortedSources
     .map((source) => ({ source, compact: compactSource(source) }))
@@ -107,11 +175,39 @@ export function buildHostedProjection(state, { limits = HOSTED_PROJECTION_LIMITS
   const activeSourceIds = new Set(selectedSources
     .filter((source) => source.lifecycle === "approved" && source.reviewStatus === "approved" && source.verificationState === "verified" && source.collectionEnabled === true)
     .map((source) => source.id));
+  const sourcesById = new Map(selectedSources.map((source) => [source.id, source]));
   const sourceRoots = new Map(selectedSources.map((source) => [source.id, source.candidate?.sourceRootUrl]).filter(([, root]) => root));
+  const freshnessStats = { eligibleActiveJobs: 0, freshJobs: 0, excludedWithoutFreshSupport: 0 };
+  const freshJobSourceIds = new Map();
   const projectedJobs = (state.jobs || []).flatMap((job) => {
-    const resolved = resolveHostedJob(job, activeSourceIds, sourceRoots, generatedAt);
-    if (!resolved.sourceId || ["closed", "quarantined"].includes(resolved.job.status)) return [];
-    const compact = compactJob(resolved.job, selectedSourceIds);
+    if (job?.status !== "confirmed_active") return [];
+    freshnessStats.eligibleActiveJobs += 1;
+    const supportIds = [...new Set([job?.sourceId, ...(Array.isArray(job?.sourceIds) ? job.sourceIds : [])])]
+      .filter((sourceId) => activeSourceIds.has(sourceId));
+    const evidenceBySource = new Map(supportIds.flatMap((sourceId) => {
+      const source = sourcesById.get(sourceId);
+      const evidence = source ? supportFreshnessEvidence(source, job, projectionTime, freshnessTtlMs) : null;
+      return evidence ? [[sourceId, evidence]] : [];
+    }));
+    if (evidenceBySource.size === 0) {
+      freshnessStats.excludedWithoutFreshSupport += 1;
+      return [];
+    }
+    const resolved = resolveHostedJob(job, new Set(evidenceBySource.keys()), sourceRoots, generatedAt);
+    if (!resolved.sourceId || resolved.job.status !== "confirmed_active") return [];
+    const freshness = evidenceBySource.get(resolved.sourceId);
+    const freshSourceIds = new Set(evidenceBySource.keys());
+    const compact = compactJob({
+      ...resolved.job,
+      hostedFreshness: {
+        schemaVersion: "huangque.hosted-job-freshness.v1",
+        basis: freshness.basis,
+        observedAt: freshness.observedAt,
+        maximumAgeDays: freshnessTtlMs / (24 * 60 * 60 * 1_000),
+      },
+    }, freshSourceIds);
+    freshJobSourceIds.set(String(compact.id), freshSourceIds);
+    freshnessStats.freshJobs += 1;
     return fitsD1Row(compact, limits) ? [compact] : [];
   }).sort((left, right) => compareTuple(jobPriority(left), jobPriority(right)));
   let jobs = projectedJobs.slice(0, limits.jobs);
@@ -122,7 +218,11 @@ export function buildHostedProjection(state, { limits = HOSTED_PROJECTION_LIMITS
   const edgesForJobs = (selectedJobs) => {
     const selectedJobIds = new Set(selectedJobs.map((job) => String(job.id)));
     return projectedEdges
-      .filter((edge) => edge.type !== "lists_job" || selectedJobIds.has(String(edge.to || "").replace(/^job:/, "")))
+      .filter((edge) => {
+        if (edge.type !== "lists_job") return true;
+        const jobId = String(edge.to || "").replace(/^job:/, "");
+        return selectedJobIds.has(jobId) && freshJobSourceIds.get(jobId)?.has(edge.from);
+      })
       .slice(0, limits.edges);
   };
   let edges = edgesForJobs(jobs);
@@ -149,7 +249,14 @@ export function buildHostedProjection(state, { limits = HOSTED_PROJECTION_LIMITS
       hostedProjection: {
         schemaVersion: "huangque.hosted-projection.v1",
         generatedAt,
-        policy: "approved/reviewable sources first; displayable jobs by status, score and observation time",
+        policy: "approved/reviewable sources first; confirmed_active jobs require fresh source-scoped evidence",
+        freshnessPolicy: {
+          schemaVersion: "huangque.hosted-freshness-policy.v1",
+          maximumAgeDays: freshnessTtlMs / (24 * 60 * 60 * 1_000),
+          cursorSources: "fresh per-job sourceObservations only; a partial source success never renews unseen jobs",
+          sourceWideChecks: "non-cursor sources only; requires committed authoritative full collection or HTTP 304 evidence correlated with lastSuccessfulCheckAt",
+          stats: freshnessStats,
+        },
         limits,
         original: { sources: state.sources?.length || 0, edges: state.edges?.length || 0, runs: state.runs?.length || 0, jobs: state.jobs?.length || 0 },
       },

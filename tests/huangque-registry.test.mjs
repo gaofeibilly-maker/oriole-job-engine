@@ -54,6 +54,97 @@ function sourceJob(sourceId, externalId) {
   };
 }
 
+function httpValidator({ status = 200, checkedAt = "2026-08-20T00:00:00.000Z", etag = '"jobs-v1"' } = {}) {
+  return {
+    schemaVersion: "huangque.http-validator.v1",
+    method: "GET",
+    requestUrl: "https://conditional.example.com/jobs",
+    finalUrl: "https://conditional.example.com/jobs",
+    etag,
+    lastModified: "Wed, 20 Aug 2026 00:00:00 GMT",
+    contentHash: "c".repeat(64),
+    checkedAt,
+    status,
+  };
+}
+
+test("304 Registry commits preserve jobs and can never advance missing state", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-not-modified-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  await registry.importApprovedSource(candidate("conditional"));
+  const initialRun = await registry.createRun("conditional-get-test");
+  await registry.storeJobs("conditional", [sourceJob("conditional", "one")], {
+    commit: true,
+    runId: initialRun.id,
+    httpValidatorCheckpoint: httpValidator(),
+  });
+  const before = await registry.snapshot();
+  const beforeJob = structuredClone(before.jobs[0]);
+  const beforeCollectedAt = before.sources[0].collection.lastCollectedAt;
+
+  const notModifiedRun = await registry.createRun("conditional-get-test");
+  const result = await registry.storeJobs("conditional", [], {
+    commit: true,
+    runId: notModifiedRun.id,
+    allowMissingAdvance: false,
+    markMissingNeedsReview: false,
+    notModified: true,
+    httpValidatorCheckpoint: httpValidator({ status: 304, checkedAt: "2026-08-21T00:00:00.000Z" }),
+  });
+  assert.equal(result.notModified, true);
+  assert.equal(result.unchanged, 1);
+  assert.equal(result.missing, 0);
+
+  const after = await registry.snapshot();
+  assert.deepEqual(after.jobs[0], beforeJob);
+  assert.equal(after.sources[0].collection.lastCollectedAt, beforeCollectedAt);
+  assert.equal(after.sources[0].collection.lastSuccessfulCheckAt, "2026-08-21T00:00:00.000Z");
+  assert.equal(after.sources[0].collection.lastNotModifiedAt, "2026-08-21T00:00:00.000Z");
+  assert.equal(after.sources[0].collection.httpValidator.status, 304);
+  assert.equal(after.sources[0].collection.missing, 0);
+  assert.equal(after.events.filter((event) => event.type === "source_not_modified").length, 1);
+});
+
+test("unsafe or ambiguous not-modified checkpoints fail before mutation", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-invalid-not-modified-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  await registry.importApprovedSource(candidate("conditional"));
+
+  await assert.rejects(() => registry.storeJobs("conditional", [], {
+    commit: true,
+    notModified: true,
+    allowMissingAdvance: true,
+    httpValidatorCheckpoint: httpValidator({ status: 304 }),
+  }), (error) => error.code === "INVALID_NOT_MODIFIED_COMMIT");
+  await assert.rejects(() => registry.storeJobs("conditional", [], {
+    commit: true,
+    notModified: true,
+    allowMissingAdvance: false,
+    httpValidatorCheckpoint: { ...httpValidator({ status: 304 }), etag: "bad\r\nheader", lastModified: null },
+  }), (error) => error.code === "INVALID_HTTP_VALIDATOR_CHECKPOINT");
+  await assert.rejects(() => registry.storeJobs("conditional", [], {
+    commit: true,
+    notModified: true,
+    allowMissingAdvance: false,
+    httpValidatorCheckpoint: { ...httpValidator({ status: 304 }), etag: "bad\r\nheader" },
+  }), (error) => error.code === "INVALID_HTTP_VALIDATOR_CHECKPOINT");
+  await assert.rejects(() => registry.storeJobs("conditional", [], {
+    commit: true,
+    notModified: true,
+    allowMissingAdvance: false,
+    httpValidatorCheckpoint: httpValidator({ status: 200 }),
+  }), (error) => error.code === "INVALID_NOT_MODIFIED_COMMIT");
+  await assert.rejects(() => registry.storeJobs("conditional", [], {
+    commit: true,
+    notModified: false,
+    allowMissingAdvance: false,
+    httpValidatorCheckpoint: httpValidator({ status: 304 }),
+  }), (error) => error.code === "INVALID_NOT_MODIFIED_COMMIT");
+  const state = await registry.snapshot();
+  assert.equal(state.jobs.length, 0);
+  assert.equal(state.sources[0].collection ?? null, null);
+});
+
 test("file lock preserves updates from independent registry instances", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-lock-"));
   const path = join(directory, "state.json");
@@ -535,4 +626,29 @@ test("one expired source cannot close a canonical job still active at another so
   assert.equal(job.validThrough, null);
   assert.equal(job.activeScore, 98);
   assert.equal(job.freshnessState, "source_validity_conflict");
+});
+
+test("successful provider checkpoints survive bounded run-history pruning", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-provider-checkpoint-"));
+  const registry = new JsonRegistry(join(directory, "state.json"), { now: () => new Date("2026-08-21T00:00:00.000Z") });
+  const providerRun = await registry.createRun("discovery");
+  await registry.finishRun(providerRun.id, {
+    status: "partial",
+    providerRuns: [{
+      provider: "baidu",
+      status: "ok",
+      hits: 3,
+      metadata: { requestCount: 1, completedTaskIds: ["must-not-bloat-checkpoint"] },
+    }],
+  });
+  await registry.transaction((state, at) => {
+    for (let index = 0; index < 60; index += 1) {
+      state.runs.unshift({ id: `later-${index}`, kind: "collection", status: "completed", createdAt: at, updatedAt: at, completedAt: at, input: {}, stats: {}, providerRuns: [], errors: [], output: {} });
+    }
+  });
+  const state = await registry.snapshot();
+  assert.equal(state.runs.length, 50);
+  assert.equal(state.runs.some((run) => run.id === providerRun.id), false);
+  assert.deepEqual(state.providerObservations.baidu.metadata, { requestCount: 1 });
+  assert.equal(state.providerObservations.baidu.parentRunStatus, "partial");
 });

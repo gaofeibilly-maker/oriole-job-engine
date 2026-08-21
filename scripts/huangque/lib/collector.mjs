@@ -77,6 +77,90 @@ const TRANSIENT_COLLECTION_ERRORS = new Set(["FETCH_FAILED", "TIMEOUT", "DNS_FAI
 const OFFSET_PAGINATION_PROVIDERS = new Set(["ByteDance", "FeishuRecruitment"]);
 const MAX_CURSOR_OFFSET = 50_000_000;
 const MAX_CURSOR_GENERATION = 1_000_000_000;
+const HTTP_VALIDATOR_SCHEMA_VERSION = "huangque.http-validator.v1";
+const MAX_RETRY_AFTER_MS = 2_000;
+
+function safeValidatorHeader(value, maximumLength = 1_024) {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  if (!normalized || normalized.length > maximumLength || /[\u0000-\u001f\u007f]/.test(normalized)) return null;
+  return normalized;
+}
+
+function safeEtag(value) {
+  const normalized = safeValidatorHeader(value);
+  return normalized && /^(?:W\/)?"[^"\r\n]*"$/.test(normalized) ? normalized : null;
+}
+
+function safeLastModified(value) {
+  const normalized = safeValidatorHeader(value, 128);
+  if (!normalized || Number.isNaN(Date.parse(normalized))) return null;
+  return normalized;
+}
+
+function storedHttpValidator(source, request) {
+  if (request.method !== "GET") return null;
+  const stored = source?.collection?.httpValidator;
+  if (stored?.schemaVersion !== HTTP_VALIDATOR_SCHEMA_VERSION || stored.method !== "GET") return null;
+  let requestUrl;
+  try { requestUrl = new URL(request.url).toString(); } catch { return null; }
+  if (stored.requestUrl !== requestUrl) return null;
+  const etag = safeEtag(stored.etag);
+  const lastModified = safeLastModified(stored.lastModified);
+  return etag || lastModified ? { ...stored, etag, lastModified } : null;
+}
+
+/**
+ * Attach validators only to the exact GET resource that produced them. An
+ * explicit request-level conditional header always wins over Registry state.
+ */
+export function withConditionalGet(source, request) {
+  const stored = storedHttpValidator(source, request);
+  if (!stored) return { request, conditional: null };
+  const headers = new Headers(request.headers || {});
+  if (stored.etag && !headers.has("if-none-match")) headers.set("if-none-match", stored.etag);
+  if (stored.lastModified && !headers.has("if-modified-since")) headers.set("if-modified-since", stored.lastModified);
+  const conditional = headers.has("if-none-match") || headers.has("if-modified-since") ? stored : null;
+  return {
+    request: { ...request, headers: Object.fromEntries(headers.entries()) },
+    conditional,
+  };
+}
+
+function validatorCheckpoint(request, response, previous = null) {
+  if (request.method !== "GET") return undefined;
+  const etag = safeEtag(response.headers?.etag) || (response.status === 304 ? safeEtag(previous?.etag) : null);
+  const lastModified = safeLastModified(response.headers?.["last-modified"])
+    || (response.status === 304 ? safeLastModified(previous?.lastModified) : null);
+  if (!etag && !lastModified) return null;
+  return {
+    schemaVersion: HTTP_VALIDATOR_SCHEMA_VERSION,
+    method: "GET",
+    requestUrl: new URL(request.url).toString(),
+    finalUrl: new URL(response.finalUrl).toString(),
+    etag,
+    lastModified,
+    contentHash: response.status === 304 ? previous?.contentHash || null : response.contentHash,
+    checkedAt: response.fetchedAt,
+    status: response.status,
+  };
+}
+
+/** Parse Retry-After while preventing an upstream response from creating an
+ * unbounded sleep. Invalid values are ignored and valid waits are capped. */
+export function retryAfterDelayMs(value, now = Date.now()) {
+  const normalized = safeValidatorHeader(value, 128);
+  if (!normalized) return null;
+  let milliseconds;
+  if (/^\d+$/.test(normalized)) milliseconds = Number(normalized) * 1_000;
+  else {
+    const target = Date.parse(normalized);
+    if (Number.isNaN(target)) return null;
+    milliseconds = Math.max(0, target - Number(now));
+  }
+  if (!Number.isFinite(milliseconds) || milliseconds < 0) return null;
+  return Math.min(MAX_RETRY_AFTER_MS, Math.floor(milliseconds));
+}
 
 function nonnegativeSafeInteger(raw, label, code, maximum) {
   const value = Number(raw);
@@ -159,7 +243,15 @@ function resolveCursor(source, requestedOffset, requestedGeneration, fingerprint
 async function fetchCollectionPage(url, { retryTransient = false, ...options }, attempts = 2) {
   let lastError = null;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
-    try { return await safeFetch(url, options); }
+    try {
+      const response = await safeFetch(url, options);
+      const retryAfter = retryAfterDelayMs(response.headers?.["retry-after"]);
+      if (retryTransient && [429, 503].includes(response.status) && retryAfter !== null && attempt < attempts) {
+        if (retryAfter > 0) await new Promise((resolveDelay) => setTimeout(resolveDelay, retryAfter));
+        continue;
+      }
+      return response;
+    }
     catch (error) {
       lastError = error;
       if (!retryTransient || !TRANSIENT_COLLECTION_ERRORS.has(error?.code) || attempt === attempts) throw error;
@@ -242,6 +334,8 @@ export async function collectApprovedSource(registry, sourceId, {
   const responses = [];
   const artifacts = [];
   const rawPageSignatures = new Set();
+  let firstGetRequest = null;
+  let firstGetValidatorCheckpoint = undefined;
   let rowsObserved = 0;
   let headRefreshRows = 0;
   let tailRowsObserved = 0;
@@ -257,6 +351,13 @@ export async function collectApprovedSource(registry, sourceId, {
     const isHeadRefresh = offsetPaginated && effectiveStartOffset > 0 && page === 1;
     const requestOffset = isHeadRefresh ? 0 : effectiveStartOffset + tailRowsObserved;
     let request = collectionPage(candidate, endpoint, page, publicSession.headers, requestOffset);
+    let conditional = null;
+    if (page === 1 && request.method === "GET") {
+      const prepared = withConditionalGet(source, request);
+      request = prepared.request;
+      conditional = prepared.conditional;
+      firstGetRequest = request;
+    }
     let response = await fetchCollectionPage(request.url, {
       ...fetchOptions,
       method: request.method,
@@ -291,6 +392,78 @@ export async function collectApprovedSource(registry, sourceId, {
         artifacts.push(artifact);
       } catch (error) {
         throw Object.assign(new Error(`第 ${page} 页原始响应工件写入失败：${error.message}`), { code: "ARTIFACT_STORE_FAILED", cause: error });
+      }
+    }
+    if (page === 1 && request.method === "GET") {
+      if (response.status === 304 && !conditional) {
+        throw withArtifactEvidence(Object.assign(new Error("来源返回 304，但本次请求没有可验证的持久条件请求头"), { code: "UNEXPECTED_NOT_MODIFIED", page }), artifacts);
+      }
+      firstGetValidatorCheckpoint = validatorCheckpoint(request, response, conditional);
+      if (response.status === 304) {
+        const result = await registry.storeJobs(sourceId, [], {
+          commit,
+          runId,
+          allowMissingAdvance: false,
+          markMissingNeedsReview: false,
+          notModified: true,
+          httpValidatorCheckpoint: firstGetValidatorCheckpoint,
+          expectedSourceRevision: source.revision,
+        });
+        return {
+          schemaVersion: "huangque.collection.v1",
+          runId,
+          sourceId,
+          sourceRevision: source.revision,
+          commit,
+          endpoint,
+          fetchedAt: response.fetchedAt,
+          http: {
+            status: response.status,
+            finalUrl: response.finalUrl,
+            contentType: response.contentType,
+            bytes: response.bytes,
+            contentHash: conditional.contentHash || response.contentHash,
+            redirectChain: response.redirectChain,
+            pages: 1,
+            notModified: true,
+          },
+          robots,
+          session: publicSession.evidence ? { ...publicSession.evidence, refreshes: publicSessionRefreshes } : null,
+          artifact,
+          artifacts,
+          pagination: {
+            complete: false,
+            pages: 1,
+            maxPages,
+            stopReason: "http_304_not_modified",
+            advertisedTotal: null,
+            startOffset: effectiveStartOffset,
+            observedEndOffset: effectiveStartOffset,
+            nextOffset: effectiveStartOffset,
+            overlapRows,
+            cycleEndReached: false,
+            headRefreshRows: 0,
+            tailRowsObserved: 0,
+            cursorFingerprint,
+            cursorGeneration: cursor.generation,
+          },
+          parser: "http_304_not_modified",
+          parserStats: { observedRows: 0, headRefreshRows: 0, tailRowsObserved: 0, beijingRows: 0 },
+          dedupe: { stats: { input: 0, unique: 0 }, exactDuplicates: [], duplicateCandidates: [], identityConflicts: [] },
+          storage: {
+            received: 0,
+            new: 0,
+            updated: 0,
+            unchanged: result.unchanged || 0,
+            missing: 0,
+            missingAdvanceSuppressed: true,
+            missingReviewOnly: false,
+            missingThreshold: 2,
+            notModified: true,
+          },
+          validators: firstGetValidatorCheckpoint,
+          jobs: [],
+        };
       }
     }
     const nextBytes = responses.reduce((sum, item) => sum + item.bytes, 0) + response.bytes;
@@ -460,6 +633,7 @@ export async function collectApprovedSource(registry, sourceId, {
       markMissingNeedsReview,
       missingThreshold,
       collectionCheckpoint,
+      httpValidatorCheckpoint: firstGetRequest ? firstGetValidatorCheckpoint : undefined,
       expectedSourceRevision: source.revision,
     });
   } catch (error) {
@@ -524,7 +698,9 @@ export async function collectApprovedSource(registry, sourceId, {
       missingAdvanceSuppressed: !allowMissingAdvance,
       missingReviewOnly: markMissingNeedsReview,
       missingThreshold,
+      notModified: false,
     },
+    validators: firstGetRequest ? firstGetValidatorCheckpoint : null,
     jobs: deduped.jobs,
   };
 }

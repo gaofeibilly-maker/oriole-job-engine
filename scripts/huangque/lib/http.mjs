@@ -4,7 +4,7 @@ import { isIP } from "node:net";
 import { request as httpsRequest } from "node:https";
 import { canonicalizeUrl, isPrivateOrLocalHost } from "./source-discovery.mjs";
 
-export const HUANGQUE_USER_AGENT = "HuangqueJobSourceAgent/1.1.1 (+public-source-audit; respects robots.txt)";
+export const HUANGQUE_USER_AGENT = "HuangqueJobSourceAgent/2.0.0 (+public-source-audit; respects robots.txt)";
 
 export class NetworkSafetyError extends Error {
   constructor(message, code = "NETWORK_SAFETY_BLOCK") {
@@ -16,7 +16,7 @@ export class NetworkSafetyError extends Error {
 
 const LOCAL_CONTROL_ERROR_CODES = new Set([
   "RATE_LIMITED", "TOOL_DEADLINE_EXCEEDED", "OUTBOUND_CONTEXT_REQUIRED",
-  "REGISTRY_LOCK_TIMEOUT", "ARTIFACT_STORE_FAILED",
+  "REGISTRY_LOCK_TIMEOUT", "SOURCE_SPIDER_LOCK_TIMEOUT", "ARTIFACT_STORE_FAILED",
   "ENOSPC", "EACCES", "EMFILE", "ENFILE", "EIO", "EROFS",
 ]);
 

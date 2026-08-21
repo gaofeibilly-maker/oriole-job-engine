@@ -1,11 +1,35 @@
 import assert from "node:assert/strict";
-import { mkdtemp, readFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
-import { collectionDueState, HuangqueEngine, jobWithEffectiveValidity, schedulerObservationIsLive } from "../scripts/huangque/lib/engine.mjs";
+import { collectionDueState, HuangqueEngine, jobWithEffectiveValidity, schedulerObservationIsLive, writeJsonAtomically } from "../scripts/huangque/lib/engine.mjs";
 
 const projectRoot = resolve(new URL("..", import.meta.url).pathname);
+
+test("atomic JSON export preserves the previous good file when replacement fails", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-atomic-export-"));
+  const outputPath = join(directory, "hosted-snapshot.json");
+  const previous = "{\"revision\":\"known-good\"}\n";
+  await writeFile(outputPath, previous);
+  await assert.rejects(() => writeJsonAtomically(outputPath, { revision: "new" }, {
+    rename: async () => { throw Object.assign(new Error("injected rename failure"), { code: "EIO" }); },
+  }), (error) => error.code === "EIO");
+  assert.equal(await readFile(outputPath, "utf8"), previous);
+  assert.deepEqual((await readdir(directory)).sort(), ["hosted-snapshot.json"]);
+});
+
+test("concurrent atomic JSON exports use isolated temporary files", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-concurrent-export-"));
+  const outputPath = join(directory, "hosted-snapshot.json");
+  await Promise.all([
+    writeJsonAtomically(outputPath, { writer: "one" }),
+    writeJsonAtomically(outputPath, { writer: "two" }),
+    writeJsonAtomically(outputPath, { writer: "three" }),
+  ]);
+  assert.ok(["one", "two", "three"].includes(JSON.parse(await readFile(outputPath, "utf8")).writer));
+  assert.deepEqual((await readdir(directory)).sort(), ["hosted-snapshot.json"]);
+});
 
 function fixtureNetwork(payloadRef) {
   return async (url) => {
@@ -88,6 +112,50 @@ test("end-to-end source submission requires probe and human approval before idem
   assert.ok(!registryText.includes("super-secret"));
 });
 
+test("hosted export advances its freshness clock even when Registry state is unchanged", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-export-clock-"));
+  const payloadRef = { value: [{
+    id: "clock-job",
+    text: "Freshness Clock Engineer",
+    categories: { location: "Beijing, China", department: "Engineering", commitment: "Full-time" },
+    hostedUrl: "https://jobs.lever.co/novel-company/clock-job",
+    applyUrl: "https://jobs.lever.co/novel-company/clock-job/apply",
+    createdAt: Date.parse("2026-08-20T00:00:00Z"),
+    descriptionPlain: "Build systems in Beijing.",
+  }] };
+  let current = new Date("2026-08-20T00:00:00.000Z");
+  const engine = new HuangqueEngine({
+    projectRoot,
+    registryPath: join(directory, "state.json"),
+    artifactRoot: join(directory, "artifacts"),
+    now: () => current,
+    fetchOptions: { fetchImpl: fixtureNetwork(payloadRef), skipDns: true },
+  });
+  const submitted = await engine.submitSource({ url: "https://jobs.lever.co/novel-company", title: "Novel Company Beijing jobs" });
+  const sourceId = submitted.discovery.candidates[0].id;
+  await engine.probeSource({ sourceId });
+  const source = (await engine.listSources({})).sources.find((item) => item.id === sourceId);
+  await engine.reviewSource({
+    sourceId,
+    decision: "approve",
+    reason: "回归测试的公开接口与中国岗位已核验",
+    reviewedBy: "test",
+    expectedRevision: source.revision,
+    confirmation: true,
+  });
+  await engine.collectJobs({ sourceId, commit: true });
+  const registryUpdatedAt = (await engine.registry.snapshot()).metadata.updatedAt;
+
+  current = new Date("2026-09-10T00:00:00.000Z");
+  const outputPath = join(directory, "hosted.json");
+  await engine.exportHostedProjection({ outputPath });
+  const projection = JSON.parse(await readFile(outputPath, "utf8"));
+  assert.equal(registryUpdatedAt, "2026-08-20T00:00:00.000Z");
+  assert.equal(projection.metadata.hostedProjection.generatedAt, "2026-09-10T00:00:00.000Z");
+  assert.equal(projection.jobs.length, 0);
+  assert.equal(projection.metadata.hostedProjection.freshnessPolicy.stats.excludedWithoutFreshSupport, 1);
+});
+
 test("fake ATS tenant and login wall never become verified", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-fail-"));
   const fetchImpl = async (url) => {
@@ -146,7 +214,7 @@ test("probing an official directory emits cross-origin recruitment links as unap
   assert.ok(discovered.candidate.decision.reasonCodes.includes("OFFICIAL_GOVERNMENT_DIRECTORY_LINK"));
 });
 
-test("pipeline and runDue drain the persistent ready-for-probe backlog without auto-approval", async () => {
+test("pipeline drains the probe backlog while the independent job updater never probes candidates", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-probe-backlog-"));
   const fetchImpl = async (url) => {
     if (url.endsWith("/robots.txt")) return new Response("User-agent: *\nAllow: /\n", { headers: { "content-type": "text/plain" } });
@@ -202,7 +270,13 @@ test("pipeline and runDue drain the persistent ready-for-probe backlog without a
   });
   assert.deepEqual(first.probes.map((probe) => probe.sourceId), ["lever-high"]);
 
-  const second = await engine.runDue({ commitApproved: false, maxQueries: 0, maxProbes: 1, maxCollections: 0 });
+  const jobOnly = await engine.runDue({ commitApproved: false, maxCollections: 0 });
+  assert.equal(jobOnly.status, "no_work");
+  assert.equal(jobOnly.dueSources, 0);
+  let state = await engine.registry.snapshot();
+  assert.equal(state.sources.find((source) => source.id === "lever-medium").lifecycle, "candidate");
+
+  const second = await engine.runPipeline({ maxQueries: 0, maxProbes: 1 });
   assert.deepEqual(second.probeQueue, {
     eligibleSources: 2,
     selectedSources: 1,
@@ -210,9 +284,8 @@ test("pipeline and runDue drain the persistent ready-for-probe backlog without a
     selectedSourceIds: ["lever-medium"],
   });
   assert.deepEqual(second.probes.map((probe) => probe.sourceId), ["lever-medium"]);
-  assert.equal(second.collection.dueSources, 0);
 
-  const state = await engine.registry.snapshot();
+  state = await engine.registry.snapshot();
   const high = state.sources.find((source) => source.id === "lever-high");
   const medium = state.sources.find((source) => source.id === "lever-medium");
   const low = state.sources.find((source) => source.id === "lever-low");
@@ -721,8 +794,8 @@ test("due collection safety-downgrades a source whose robots policy requires aut
   };
   await engine.registry.importApprovedSource(candidate);
   const result = await engine.runDue({ commitApproved: true, maxQueries: 0, maxProbes: 0, maxCollections: 1 });
-  assert.equal(result.collection.failedSources, 0);
-  assert.equal(result.collection.safetyDowngradedSources, 1);
+  assert.equal(result.failedSources, 0);
+  assert.equal(result.safetyDowngradedSources, 1);
   const source = (await engine.registry.snapshot()).sources.find((item) => item.id === candidate.id);
   assert.equal(source.lifecycle, "probed");
   assert.equal(source.verificationState, "access_restricted");

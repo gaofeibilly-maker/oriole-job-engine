@@ -26,8 +26,8 @@ This file is the one reviewed-bootstrap exception to normal discovery flow. New 
 
 Oriole does not depend on one search engine or one hand-written site list. Its source spider is a controlled funnel:
 
-1. versioned official directories and audited seeds supply authoritative starting points;
-2. Baidu, Common Crawl, the 19-employer watchlist, and all 365 second-level region dimensions supply bounded discovery tasks that may yield public URLs;
+1. four bounded official-authority inputs, the 19-employer reviewed priority inventory, and audited seeds supply authoritative starting points;
+2. the persistent queue covers all 5,425 checked-in employer targets; Baidu, controlled Common Crawl queries, employer roots, and all 365 second-level region dimensions may yield public URLs;
 3. URL identity logic collapses detail pages into stable source roots and recognizes supported ATS/custom public recruitment systems;
 4. a bounded, persistent probe backlog checks HTTPS, DNS, redirects, robots, login/challenge signals, response budgets, and collection schema; transient failures retry after 24 hours;
 5. verified candidates wait for human approval; weaker rediscovery evidence cannot downgrade or overwrite stronger evidence;
@@ -49,7 +49,7 @@ The versioned plan in `data/huangque/source-channel-plan.json` measures nine com
 | Sitemap, RSS, and Atom | Structured navigation or incremental feeds | 24 h |
 | User submissions/imports | Event-driven public clues under the same review gate | on demand |
 
-This is intentionally measurable rather than rhetorically “complete”: the current denominator is nine channel classes, 19 explicitly bounded major-employer targets, 34 province-level regions, and 365 second-level regions. A target is not counted as covered merely because a search result exists; collection coverage requires a verified, approved, enabled source.
+This is intentionally measurable rather than rhetorically “complete”: the current denominator is nine channel classes, 5,425 deduplicated employer targets, 19 explicitly reviewed priority employers, 34 province-level regions, and 365 second-level regions. The employer artifact currently contains 1,699 live SSE Main Board records, 615 live SSE STAR records, 3,001 live CNINFO Shenzhen disclosure publishers, 99 SASAC snapshot records, and 19 curated records before deduplication. CNINFO is explicitly scoped as current plus historical publishers under the documented filter, and the SASAC records are explicitly the `2026-07-11` snapshot because the live request failed during this build. A target is not counted as covered merely because a search result exists; collection coverage requires a verified, approved, enabled source.
 
 The coverage report reads the versioned plan, source lifecycle/review state, query dimensions, and active jobs' structured work locations. It deliberately does **not** read a collection run's `pagination.complete` value, the persisted resume cursor, or a rotation cycle and turn them into a coverage score. Inspect Registry `collectionEvidence`, source `collection.resume`, and daily `sourceRuns` separately to understand bounded collection progress.
 

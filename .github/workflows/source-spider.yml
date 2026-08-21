@@ -1,20 +1,20 @@
-name: Oriole daily nationwide update
+name: Oriole source spider
 
 on:
   schedule:
-    # GitHub cron is UTC. 16:17 UTC = 00:17 Asia/Shanghai on the next local day.
-    # The non-zero minute avoids GitHub's documented top-of-hour congestion.
-    - cron: "17 16 * * *"
+    # 02:30 Asia/Shanghai every day: bounded employer-source discovery.
+    - cron: "30 18 * * *"
+    # 03:30 Asia/Shanghai every Sunday: deeper gap scan.
+    - cron: "30 19 * * 6"
   workflow_dispatch:
     inputs:
-      force:
-        description: Run again even if the current Beijing-date marker exists
+      deep:
+        description: Run the weekly deep-scan budget now
         required: false
         type: boolean
         default: false
 
 concurrency:
-  # Every writer shares one persistent-state lock across workflows.
   group: oriole-state-writer
   queue: max
   cancel-in-progress: false
@@ -23,13 +23,13 @@ permissions:
   contents: write
 
 jobs:
-  update:
+  discover:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     env:
       TZ: Asia/Shanghai
       HUANGQUE_BAIDU_API_KEY: ${{ secrets.HUANGQUE_BAIDU_API_KEY }}
-      HUANGQUE_DAILY_MAX_COLLECTIONS: "100"
+      HUANGQUE_BAIDU_DAILY_BUDGET: "300"
     steps:
       - uses: actions/checkout@v6
         with:
@@ -47,22 +47,25 @@ jobs:
         run: |
           set -euo pipefail
           node source/scripts/huangque/state-bundle.mjs unpack --state-dir state/state-data
-      - name: Run once for the current Beijing date
+      - name: Run bounded employer source spider
         env:
-          FORCE_DAILY: ${{ inputs.force || false }}
           HUANGQUE_RUNTIME_ROOT: ${{ github.workspace }}/state/state-data
           HUANGQUE_REGISTRY_PATH: ${{ github.workspace }}/state/state-data/registry.json
           HUANGQUE_ARTIFACT_ROOT: ${{ runner.temp }}/oriole-artifacts
           HUANGQUE_EMPLOYER_UNIVERSE_PATH: ${{ github.workspace }}/state/state-data/employer-universe.json
-        shell: bash
+          HUANGQUE_SOURCE_SPIDER_STATE_PATH: ${{ github.workspace }}/state/state-data/source-spider-state.json
+          HUANGQUE_SOURCE_SPIDER_MAX_EMPLOYERS: ${{ (github.event.schedule == '30 19 * * 6' || inputs.deep) && '150' || '100' }}
+          HUANGQUE_SOURCE_SPIDER_MAX_PROBES: ${{ (github.event.schedule == '30 19 * * 6' || inputs.deep) && '40' || '20' }}
+          DEEP_SCAN: ${{ github.event.schedule == '30 19 * * 6' || inputs.deep || false }}
         working-directory: source
+        shell: bash
         run: |
-          if [[ "$FORCE_DAILY" == "true" ]]; then
-            npm run daily -- --force
+          if [[ "$DEEP_SCAN" == "true" ]]; then
+            npm run source-spider -- --deep
           else
-            npm run daily
+            npm run source-spider
           fi
-      - name: Persist complete Registry and receipts
+      - name: Persist spider queue, Registry and receipt
         if: always()
         working-directory: state
         shell: bash
@@ -87,23 +90,21 @@ jobs:
           stage_path state-data/registry.json
           stage_path state-data/registry.json.gz
           stage_path state-data/registry.bundle-manifest.json
-          stage_path state-data/latest-job-update.json
-          stage_path state-data/latest-audit.json
-          stage_path state-data/hosted-snapshot.json
-          stage_path state-data/job-updates
+          stage_path state-data/source-spider-state.json
+          stage_path state-data/latest-source-spider.json
+          stage_path state-data/source-spider-runs
           if ! git diff --cached --quiet; then
-            git commit -m "state: job update ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+            git commit -m "state: source spider ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
             git push origin HEAD:oriole-state
           fi
-      - name: Upload run and audit evidence
+      - name: Upload source-discovery evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: oriole-daily-${{ github.run_id }}-${{ github.run_attempt }}
+          name: oriole-source-spider-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            state/state-data/latest-job-update.json
-            state/state-data/latest-audit.json
-            state/state-data/hosted-snapshot.json
+            state/state-data/latest-source-spider.json
+            state/state-data/source-spider-state.json
             state/state-data/registry.json.gz
             state/state-data/registry.bundle-manifest.json
             ${{ runner.temp }}/oriole-artifacts

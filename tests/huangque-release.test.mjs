@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import test from "node:test";
 
 const projectRoot = resolve(new URL("..", import.meta.url).pathname);
-const expectedVersion = "1.1.1";
+const expectedVersion = "2.0.0";
 
 test("package, lockfile, CLI and changelog identify the same release", async () => {
   const packageJson = JSON.parse(await readFile(resolve(projectRoot, "package.json"), "utf8"));
