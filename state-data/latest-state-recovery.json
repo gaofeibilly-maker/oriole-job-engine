@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "huangque.state-recovery.v2",
+  "status": "completed",
+  "trigger": "github_actions",
+  "completedAt": "2026-08-21T09:12:18.441Z",
+  "github": {
+    "repository": "gaofeibilly-maker/oriole-job-engine",
+    "workflow": "Oriole state recovery audit",
+    "runId": "32466690885",
+    "runAttempt": 1,
+    "runNumber": 2,
+    "commitSha": "e19ebe5770cf01108adaad000ca75e00fbe84ff6",
+    "stateCommitSha": "3b52a5ba957ec3f2d603790921de263b714395db",
+    "ref": "refs/heads/main",
+    "eventName": "workflow_dispatch"
+  },
+  "registryBundle": {
+    "manifest": {
+      "artifact": "state-data/registry.bundle-manifest.json",
+      "schemaVersion": "huangque.state-bundle-manifest.v1",
+      "packedAt": "2026-08-21T08:51:42.162Z",
+      "sha256": "8e8ae1569b120a8deda194d9798005f03887e75ed9d7a81301500914568f263b",
+      "bytes": 525
+    },
+    "compressed": {
+      "artifact": "state-data/registry.json.gz",
+      "encoding": "gzip",
+      "sha256": "50b60420fdef60150ec15155330f1ed4cef77da6a2ee03d98172e9529b139673",
+      "bytes": 9398202,
+      "maxBytes": 94371840
+    },
+    "restoredRegistry": {
+      "persistedInSourceBranch": false,
+      "schemaVersion": "huangque.registry.v1",
+      "revision": 436,
+      "sha256": "1b169d5c0ea9639195f5fd5c6b1ee77a6fef48914b4be84c7ae2ac65adde1b17",
+      "bytes": 81575120
+    }
+  },
+  "stateInventory": {
+    "snapshotPhase": "copied_state_before_new_recovery_receipt",
+    "excludedEphemeralFiles": [
+      "registry.json"
+    ],
+    "source": {
+      "fileCount": 10,
+      "totalBytes": 25796694,
+      "sha256": "6c143d13ef366e262fbdf605c3e047b725f13a51276ef7cae7b19f1c9ebc9c73"
+    },
+    "restored": {
+      "fileCount": 10,
+      "totalBytes": 25796694,
+      "sha256": "6c143d13ef366e262fbdf605c3e047b725f13a51276ef7cae7b19f1c9ebc9c73"
+    },
+    "files": [
+      {
+        "path": "employer-universe.json",
+        "bytes": 5348534,
+        "sha256": "fe83fdb121dfc43c7987951d03c885c8d93c54edd9c4869d779fe1c72b286373"
+      },
+      {
+        "path": "hosted-snapshot.json",
+        "bytes": 2655184,
+        "sha256": "9edc3273adcc771b94344ab1bcc6a83e10687e2ea06342ca4778a025b9ddb6a4"
+      },
+      {
+        "path": "job-updates/2026-08-21.json",
+        "bytes": 17122,
+        "sha256": "365fdfde6ddc4b514097e3aa04d38185d0d293d17d816e2d0242b1ecaf9ed0e8"
+      },
+      {
+        "path": "latest-audit.json",
+        "bytes": 8094161,
+        "sha256": "1613ca8301024b9708316601dc4da33e1166d0c53ce751d5d17e5aa6aae9ab6b"
+      },
+      {
+        "path": "latest-job-update.json",
+        "bytes": 17122,
+        "sha256": "365fdfde6ddc4b514097e3aa04d38185d0d293d17d816e2d0242b1ecaf9ed0e8"
+      },
+      {
+        "path": "latest-source-spider.json",
+        "bytes": 84358,
+        "sha256": "dfcb3038adf128a3a5c2cfdd7f470b7f4217e8de1b73bdc43bca0652f7ac992a"
+      },
+      {
+        "path": "registry.bundle-manifest.json",
+        "bytes": 525,
+        "sha256": "8e8ae1569b120a8deda194d9798005f03887e75ed9d7a81301500914568f263b"
+      },
+      {
+        "path": "registry.json.gz",
+        "bytes": 9398202,
+        "sha256": "50b60420fdef60150ec15155330f1ed4cef77da6a2ee03d98172e9529b139673"
+      },
+      {
+        "path": "source-spider-runs/2026-08-21-deep.json",
+        "bytes": 84358,
+        "sha256": "dfcb3038adf128a3a5c2cfdd7f470b7f4217e8de1b73bdc43bca0652f7ac992a"
+      },
+      {
+        "path": "source-spider-state.json",
+        "bytes": 97128,
+        "sha256": "b6d6553f1cad917786293536a24f12a17b36f5b72af4bd5b76c0a26902b5c977"
+      }
+    ],
+    "matched": true
+  },
+  "employerUniverse": {
+    "artifact": "state-data/employer-universe.json",
+    "schemaVersion": "huangque.employer-universe.v1",
+    "generatedAt": "2026-08-21T08:28:53.015Z",
+    "complete": true,
+    "targets": 5425,
+    "sources": 5,
+    "sha256": "fe83fdb121dfc43c7987951d03c885c8d93c54edd9c4869d779fe1c72b286373",
+    "bytes": 5348534
+  },
+  "sourceSpiderState": {
+    "artifact": "state-data/source-spider-state.json",
+    "schemaVersion": "huangque.source-spider-state.v1",
+    "revision": 1,
+    "updatedAt": "2026-08-21T08:46:15.154Z",
+    "targets": 150,
+    "runs": 1,
+    "sha256": "b6d6553f1cad917786293536a24f12a17b36f5b72af4bd5b76c0a26902b5c977",
+    "bytes": 97128
+  },
+  "latestReceipts": {
+    "jobUpdate": {
+      "present": true,
+      "artifact": "state-data/latest-job-update.json",
+      "schemaVersion": "huangque.job-update-receipt.v1",
+      "status": "partial",
+      "completedAt": "2026-08-21T08:34:38.999Z",
+      "failedAt": null,
+      "sha256": "365fdfde6ddc4b514097e3aa04d38185d0d293d17d816e2d0242b1ecaf9ed0e8",
+      "bytes": 17122
+    },
+    "sourceSpider": {
+      "present": true,
+      "artifact": "state-data/latest-source-spider.json",
+      "schemaVersion": "huangque.source-spider-run.v1",
+      "status": "partial",
+      "completedAt": "2026-08-21T08:46:15.154Z",
+      "failedAt": null,
+      "sha256": "dfcb3038adf128a3a5c2cfdd7f470b7f4217e8de1b73bdc43bca0652f7ac992a",
+      "bytes": 84358
+    }
+  },
+  "agentStatus": {
+    "schemaVersion": "huangque.status.v1",
+    "sha256": "58542273982817505982dcb3ff7e74124fba790671d780f56aa38db761195adf",
+    "bytes": 29524,
+    "summary": {
+      "registryRevision": 436,
+      "sources": 130,
+      "sourceCounts": {
+        "candidate": 100,
+        "probed": 24,
+        "approved": 6,
+        "rejected": 0
+      },
+      "jobs": 5167,
+      "graphEdges": 5741,
+      "runs": 32
+    }
+  },
+  "verification": {
+    "registryBundleVerified": true,
+    "completeInventoryMatched": true,
+    "employerUniverseValid": true,
+    "sourceSpiderStateValid": true,
+    "optionalLatestReceiptsValid": true,
+    "statusMatchedRegistry": true,
+    "sourcePlaintextRegistryAbsent": true,
+    "transientStateFilesAbsent": true
+  }
+}

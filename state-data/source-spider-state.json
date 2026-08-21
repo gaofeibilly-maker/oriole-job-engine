@@ -1,0 +1,3283 @@
+{
+  "schemaVersion": "huangque.source-spider-state.v1",
+  "revision": 1,
+  "createdAt": "2026-08-21T08:14:54.158Z",
+  "updatedAt": "2026-08-21T08:46:15.154Z",
+  "targets": {
+    "employer-cn-81baf57e05f112764536": {
+      "frontier": [
+        {
+          "url": "https://zhaopin.jd.com/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-81baf57e05f112764536",
+          "url": "https://zhaopin.jd.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "INSECURE_PROTOCOL",
+          "error": "网络探测只允许 HTTPS"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-9627013afa8b62",
+        "huangque-1e45357b76cdcd",
+        "huangque-9274eae11ed7cf"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-1980df0d53239e236f89": {
+      "frontier": [
+        {
+          "url": "https://job.sinopec.com/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-1980df0d53239e236f89",
+          "url": "https://job.sinopec.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_fetch_failed_fail_closed"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-2d0dd4c4aca4a1"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-3e91ef83817d7d6f1f30": {
+      "frontier": [
+        {
+          "url": "https://we.dji.com/zh-CN/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-3e91ef83817d7d6f1f30",
+          "url": "https://we.dji.com/zh-CN/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_fetch_failed_fail_closed"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-b4169f792a5b22",
+        "huangque-80ca0ed27ab8e1"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-455ece81de5605d85e54": {
+      "frontier": [
+        {
+          "url": "https://talent.baidu.com/static/index.html",
+          "depth": 1,
+          "parentUrl": "https://talent.baidu.com/"
+        }
+      ],
+      "visitedUrls": [
+        "https://talent.baidu.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-455ece81de5605d85e54",
+          "url": "https://talent.baidu.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://talent.baidu.com/jobs/social",
+          "httpStatus": 200,
+          "contentHash": "d6046d0868f31be16b56a71c900b882f8b3cb90b154b5431847155f12600011b",
+          "links": 4,
+          "artifact": {
+            "observationId": "observation-d6046d0868f31be1-933361b3-01e3-4472-8415-ee2fdb9bf045",
+            "contentHash": "d6046d0868f31be16b56a71c900b882f8b3cb90b154b5431847155f12600011b"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": "2026-08-21T08:35:16.659Z",
+      "nextDueAt": "2026-08-28T08:35:16.659Z",
+      "coverage": "verified_pending_review",
+      "discoveredSourceIds": [
+        "huangque-bec04093023ef5",
+        "huangque-b9d9b2cd13567f",
+        "huangque-967abf1d4cbecf"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-47c1e53c427aafb4556b": {
+      "frontier": [],
+      "visitedUrls": [
+        "https://talent.alibaba.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-47c1e53c427aafb4556b",
+          "url": "https://talent.alibaba.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://talent.alibaba.com/",
+          "httpStatus": 200,
+          "contentHash": "da17e1276c33283bcb6c288216b6e8383f2c08ff61b6fbfb9191882d1db61f20",
+          "links": 1,
+          "artifact": {
+            "observationId": "observation-da17e1276c33283b-75852804-29ca-4c2e-920f-bf5e436479ee",
+            "contentHash": "da17e1276c33283bcb6c288216b6e8383f2c08ff61b6fbfb9191882d1db61f20"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-b57b7ecd4a0918",
+        "huangque-7f6cb4b3d91322"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-522d3edeb64a7ca45f5e": {
+      "frontier": [],
+      "visitedUrls": [
+        "https://hr.xiaomi.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-522d3edeb64a7ca45f5e",
+          "url": "https://hr.xiaomi.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://hr.xiaomi.com/",
+          "httpStatus": 200,
+          "contentHash": "ea4805d5039bf2b8fd269ab2a9e64bb568eb702ca85cd3256a5ad565502fde4a",
+          "links": 0,
+          "artifact": {
+            "observationId": "observation-ea4805d5039bf2b8-26e653b5-cda8-432f-84eb-4e35b6fb2639",
+            "contentHash": "ea4805d5039bf2b8fd269ab2a9e64bb568eb702ca85cd3256a5ad565502fde4a"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-57343ee8df0864",
+        "huangque-afa8c1da40af89"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-536bc8fc40cad38c2256": {
+      "frontier": [
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/Home",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/Perks",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/Culture",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/Locations",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/University",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/EarlyCareer",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/Internship",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/de_DE/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/es_ES/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/fr_FR/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/pt_BR/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/zh_CN/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/zh_TW/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/ja_JP/careers",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/careers/SearchJobs",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/RecommendationMethods",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/TalentCommunity?jobId=78103",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/careers/SearchJobs?jobRecordsPerPage=10",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/SearchJobs",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers/FAQ",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/css/swiper.css?v=1784923147",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/favicon-16x16.png",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/favicon-32x32.png",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/favicon-48x48.png",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/favicon-96x96.png",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/favicon-192x192.png",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/favicon-512x512.png",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/favicon.ico",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/apple-touch-icon.png",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/images/favicon/site.webmanifest",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/ASSET/portal/jquery/UI/1.13.2/jquery-ui.min.css?version=10.80.104-stable",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portalpacks/web/assets/session-popup._xa4D8v5.css",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portalpacks/web/assets/index.CoB8YEta.css",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portalpacks/web/assets/body.DiZTVA8I.css",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portalpacks/web/assets/vendor-fortawesome-fontawesome-svg-core.DuaSt5cF.css",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/ASSET/wizard/portal/jquery/plugin/select2/select2.min.css?version=10.80.104-stable",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portalpacks/web/assets/wizard-legacy.j-Jhqbdw.css",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/css/library__theme.css?v=1784923147",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/tiny-slider/tiny-slider.css?v=1784923147",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/css/specifics.css?v=1784923147",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/css/specific--corporate.css?v=1784923147",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/tooltip/tooltip.css?v=1784923147",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/select2/select2.css?v=1784923147",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portal/4/favicon.ico",
+          "depth": 1,
+          "parentUrl": "https://jobs.lenovo.com/"
+        }
+      ],
+      "visitedUrls": [
+        "https://jobs.lenovo.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-536bc8fc40cad38c2256",
+          "url": "https://jobs.lenovo.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://jobs.lenovo.com/en_US/careers",
+          "httpStatus": 200,
+          "contentHash": "96911cc9b5d68c8a412185495bedcd924bc19c7f91d67e7f338590bcc9b460c0",
+          "links": 47,
+          "artifact": {
+            "observationId": "observation-96911cc9b5d68c8a-bee8a258-3225-4052-8e75-490c349adde0",
+            "contentHash": "96911cc9b5d68c8a412185495bedcd924bc19c7f91d67e7f338590bcc9b460c0"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": "2026-08-21T08:35:16.659Z",
+      "nextDueAt": "2026-08-28T08:35:16.659Z",
+      "coverage": "verified_pending_review",
+      "discoveredSourceIds": [
+        "huangque-5cff62c169391f"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-53874092e000069bfeda": {
+      "frontier": [],
+      "visitedUrls": [
+        "https://careers.tencent.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-53874092e000069bfeda",
+          "url": "https://careers.tencent.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://careers.tencent.com/",
+          "httpStatus": 200,
+          "contentHash": "ebf89d7e97795d14ab857865261ef2ca3b486174b62e29c7281be25e382993dd",
+          "links": 0,
+          "artifact": {
+            "observationId": "observation-ebf89d7e97795d14-28f5d74d-060a-4852-99f8-37388bf1b4e7",
+            "contentHash": "ebf89d7e97795d14ab857865261ef2ca3b486174b62e29c7281be25e382993dd"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-90b01af9dfeabd"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-6f1a9695e1b7b7cd534d": {
+      "frontier": [
+        {
+          "url": "https://talent.catl.com/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-6f1a9695e1b7b7cd534d",
+          "url": "https://talent.catl.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "TOO_MANY_REDIRECTS",
+          "error": "重定向次数超过上限"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-ce214019b95a06",
+        "huangque-e8dd5b86693925"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-797301040f888505b435": {
+      "frontier": [
+        {
+          "url": "https://job.zte.com.cn/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-797301040f888505b435",
+          "url": "https://job.zte.com.cn/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "TOO_MANY_REDIRECTS",
+          "error": "重定向次数超过上限"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-893c491f49b061"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-82eaaba81d9dcc54deab": {
+      "frontier": [
+        {
+          "url": "https://career.huawei.com/-/media/plugin/bfc701593d6acafd42dd77dd254a8090/logo_ico.png",
+          "depth": 1,
+          "parentUrl": "https://career.huawei.com/"
+        },
+        {
+          "url": "https://career.huawei.com/cn",
+          "depth": 1,
+          "parentUrl": "https://career.huawei.com/"
+        },
+        {
+          "url": "https://career.huawei.com/-/media/plugin/243bea05d7aa09831da4ea9b1edaa63b/common.min.css",
+          "depth": 1,
+          "parentUrl": "https://career.huawei.com/"
+        },
+        {
+          "url": "https://career.huawei.com/'%20+%20window.$aioCdnPrefix%20+%20window.$aioList[i]%20+%20'/'%20+%20(window.gConfig.isMobile%20?+%27m%27+%3A+%27pc%27%29+++%27%2Findex.css=",
+          "depth": 1,
+          "parentUrl": "https://career.huawei.com/"
+        }
+      ],
+      "visitedUrls": [
+        "https://career.huawei.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-82eaaba81d9dcc54deab",
+          "url": "https://career.huawei.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://career.huawei.com/cn",
+          "httpStatus": 200,
+          "contentHash": "c8d4f874566a6ffdfdbe7ab735bf9dd8b5c9b0d3534e9aaef53b7dcff7a261b6",
+          "links": 4,
+          "artifact": {
+            "observationId": "observation-c8d4f874566a6ffd-3f5c8359-be47-4eb1-8242-917b9bead8ae",
+            "contentHash": "c8d4f874566a6ffdfdbe7ab735bf9dd8b5c9b0d3534e9aaef53b7dcff7a261b6"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-c85ad429196fe0"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-8368d634ea16e5381057": {
+      "frontier": [
+        {
+          "url": "https://recruit.midea.com/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-8368d634ea16e5381057",
+          "url": "https://recruit.midea.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_fetch_failed_fail_closed"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-e6bc265160d5a9"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-8d0fc70cea9187c629e6": {
+      "frontier": [
+        {
+          "url": "https://job.10086.cn/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-8d0fc70cea9187c629e6",
+          "url": "https://job.10086.cn/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_fetch_failed_fail_closed"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-2a9081bfb43795"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-99569f1207db2504e5f1": {
+      "frontier": [
+        {
+          "url": "https://www.cnpc.com.cn/cnpc/jrwm/jrwm_index.shtml",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-99569f1207db2504e5f1",
+          "url": "https://www.cnpc.com.cn/cnpc/jrwm/jrwm_index.shtml",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "CRAWL_HTTP_ERROR",
+          "error": "HTTP 412"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-f4a8bf7cbdd078",
+        "huangque-33db2e1c70a931",
+        "huangque-f3aa42764982c1",
+        "huangque-09c4602c6744ef",
+        "huangque-5803c474be7236",
+        "huangque-03a898e2261ed1",
+        "huangque-6ac1141d1c9d2d",
+        "huangque-bf1eeefbd2a7b9",
+        "huangque-5e411967d003f8",
+        "huangque-a0833473bb61f6",
+        "huangque-dbae1f084b431b",
+        "huangque-7a81e4dd7bd429",
+        "huangque-28821b0017dbbd",
+        "huangque-f447fb21d581fa",
+        "huangque-5763ac291ba5a4",
+        "huangque-506770c58563ef",
+        "huangque-99e2c3679512b6",
+        "huangque-0adaec0bb16e4f",
+        "huangque-8d83c5785228fc",
+        "huangque-5a1218acc31227",
+        "huangque-456459c92256d9",
+        "huangque-1712f84340370e",
+        "huangque-2f694bc7cf068d",
+        "huangque-ed29a2a4751f6f",
+        "huangque-0aa3e10b3172be",
+        "huangque-cba97a2b12a793",
+        "huangque-b3ca35c6c4e80f",
+        "huangque-e2a44174a50ee2",
+        "huangque-6fc3160fdc03c4",
+        "huangque-b4fb6c8f9cb669",
+        "huangque-e52cf14463ffda"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-ac31d2f3d5bd3696e4ba": {
+      "frontier": [
+        {
+          "url": "https://zhaopin.sgcc.com.cn/sgcchr/static/home.html",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-ac31d2f3d5bd3696e4ba",
+          "url": "https://zhaopin.sgcc.com.cn/sgcchr/static/home.html",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_unavailable_fail_closed"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-97432f5db7c7f6"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-c580a626b8f7287ce023": {
+      "frontier": [
+        {
+          "url": "https://job.byd.com/portal/pc/",
+          "depth": 0,
+          "parentUrl": null
+        }
+      ],
+      "visitedUrls": [],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-c580a626b8f7287ce023",
+          "url": "https://job.byd.com/portal/pc/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "failed",
+          "code": "TOO_MANY_REDIRECTS",
+          "error": "重定向次数超过上限"
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-03a2887d9ad9f3"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-cd6362472aea60ef45d5": {
+      "frontier": [],
+      "visitedUrls": [
+        "https://zhaopin.meituan.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-cd6362472aea60ef45d5",
+          "url": "https://zhaopin.meituan.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://zhaopin.meituan.com/web/home",
+          "httpStatus": 200,
+          "contentHash": "5a80160bcf998ac7b0e9efffa1661ebc0779fc8c9c1f90f0519d3fa57636a4fe",
+          "links": 0,
+          "artifact": {
+            "observationId": "observation-5a80160bcf998ac7-ddd6fcd9-dc0a-427e-8a7b-607edabd3a1d",
+            "contentHash": "5a80160bcf998ac7b0e9efffa1661ebc0779fc8c9c1f90f0519d3fa57636a4fe"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "discovered",
+      "discoveredSourceIds": [
+        "huangque-1161ee0f7dcc19",
+        "huangque-fabeab56ce3c6f",
+        "huangque-e8660a76362ff7"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-f62acd304e5754d98cd0": {
+      "frontier": [
+        {
+          "url": "https://maker.haier.net/client/global/index.html",
+          "depth": 1,
+          "parentUrl": "https://maker.haier.net/client"
+        },
+        {
+          "url": "https://maker.haier.net/client/job/index",
+          "depth": 1,
+          "parentUrl": "https://maker.haier.net/client"
+        },
+        {
+          "url": "https://maker.haier.net/client/library/doctor",
+          "depth": 1,
+          "parentUrl": "https://maker.haier.net/client"
+        },
+        {
+          "url": "https://maker.haier.net/client/techtalent/index.html",
+          "depth": 1,
+          "parentUrl": "https://maker.haier.net/client"
+        },
+        {
+          "url": "https://maker.haier.net/client",
+          "depth": 1,
+          "parentUrl": "https://maker.haier.net/client"
+        },
+        {
+          "url": "https://maker.haier.net/client/campus/index",
+          "depth": 1,
+          "parentUrl": "https://maker.haier.net/client"
+        },
+        {
+          "url": "https://maker.haier.net/client/job/index.html",
+          "depth": 1,
+          "parentUrl": "https://maker.haier.net/client"
+        }
+      ],
+      "visitedUrls": [
+        "https://maker.haier.net/client"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-f62acd304e5754d98cd0",
+          "url": "https://maker.haier.net/client",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://maker.haier.net/client",
+          "httpStatus": 200,
+          "contentHash": "c83bbd3cbf431d6a6989fbcb1f1e45fcc89a2871d2be6c0da3a54afe257df064",
+          "links": 7,
+          "artifact": {
+            "observationId": "observation-c83bbd3cbf431d6a-65558aff-1cc2-42b2-a923-c473b980a5e6",
+            "contentHash": "c83bbd3cbf431d6a6989fbcb1f1e45fcc89a2871d2be6c0da3a54afe257df064"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": "2026-08-21T08:35:16.659Z",
+      "nextDueAt": "2026-08-28T08:35:16.659Z",
+      "coverage": "verified_pending_review",
+      "discoveredSourceIds": [
+        "huangque-1e6994543305c0",
+        "huangque-c987b908479a37",
+        "huangque-cbd9b95ea2a32f",
+        "huangque-cc655793045338",
+        "huangque-31b8debca6c64a",
+        "huangque-d2813d70bb66b2",
+        "huangque-2b65e5ea6ded61",
+        "huangque-faacd0ed9285d5",
+        "huangque-bb52bd4df90ef3",
+        "huangque-e420d95f4f7ec8",
+        "huangque-b5b56a830204ed",
+        "huangque-8ced12a67fb818",
+        "huangque-0140e9ef47ec1e"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-04dbd8c537a9c50275aa": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-04e5d9879d71cfbdb893": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-053c2094dd7edaaf7906": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-05e7dbb03fdc8e244925": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-11c53daee48e80a37568": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-12715a0a6636f33b8565": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-146ebe674ddc21330530": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-1554913c7eea6bb8a6b8": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-1a0621504c900b90f31b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-1e04d8f69bdcfa80dc2c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-2000e5d3685a46c2b7f1": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-23afd37bff6940ddeeab": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-2844911acb7887ff4b36": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-28ca4f286a7eaafa1626": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-2af580ac2b8fa767bd89": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-2d8c8fe90b44ffc4e3b5": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-3074fc06485c0031c6e6": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-31df2e474c432962d586": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-3379d9abc2195094b13a": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-3753d2fc2b7c6497032b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-3859d395565f2b715171": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-39df5a0854ff041263b2": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-3a01e74fd9ed46e37e5b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-3f29e5c395cd6d33527a": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-4175adb6b83212865adc": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-44aa18831dc68639f271": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-46b1443196ec5d1467e7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-4830d7510dee94319158": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-483cef00fa20fa792b44": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-4a31c5f65e8fa3cf0a86": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-4b0952d7d0a24f0c4048": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-51819db1f65a51ecaeca": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-53949b00107798bf8d84": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-54d8e632be58b004b334": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-56befd7faed50938097c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-59f4930d11dae18e3286": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-5da9e883c7b9245c3a8c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-5e49687b521f62537b61": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-5eb70b88b998c94c2d7b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-6704106065f4d30e0309": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-6b1bfea6536ce80fdcae": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-6cd7f3741aa36e1bdb47": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-74595a84110048adbd2f": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-74d08f31c7a29f6e3804": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-7584a62a7bb0dcdd4be5": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-790bc011691f723158e7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-7b2fecd720297a1e7352": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-7c40b523ee4f059d2283": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-845c407cb593f4336bd9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-85fb6c1c99c4fb76a5c9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-867e8d12a19a864ce031": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-8fac9f69cd71e950a01d": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-92c28f1b875cf58b1280": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-939f5a0e12a3bdd28dd4": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-9438658b462f207c5074": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-949a2ec1cfc4d8b6fea5": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-950a3d340efecbba6f43": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-98a8538a91709c3464d2": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-996fae5200aab13d1580": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-998c1eecb56076d93eec": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-9ad496bac07faf085834": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-a01294e0bc37226d2f8f": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-a5755317ddf36f90c4b2": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-a72d5dce7dc1288c67ed": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-a84553862864f20f6894": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-a9fe3444aeda402eb7b6": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-ac1137c112372ac23d85": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-b0ffb23058febc74338a": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-b2996e8707f86b2d2fc1": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-b99784dc1f7483f0b022": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-bc2e8e3ad31697a21d5a": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-c123a3be89ce61409c4b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-c1df3791aa0888e8b8a3": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-c3afffa0e59f942486b8": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-c3b62f1444e2e4bcc83e": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-c3c7a8999d60bcb874e9": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-c42f781b0ed11ced35e7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-cb2de14ec839485a3e14": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-ccd52b44372b99745a4e": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-cf83c64d6aec481d0a36": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d04dabd97ab3f7ff4d65": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d1218b3fa291a27d81d0": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d4c84e223f3482c3d3b5": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d5e1516a8838490f1aeb": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d620947064668aece256": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-dabc3cd185f5f1941fcc": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-de3f2d91dc6c4887dd23": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-e53094408fab871ddbe8": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-e5b788bb22734b091879": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-e5e275122bd9123a2b56": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-e914309f02e35df5fced": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-efe4eda9702491f1c234": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-f827388f6767f71fac7c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-f82e5246fa91761d5e1b": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-f8631a20ba17b2fed716": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-fb09c7bbd414a0ec064e": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-fb395421132f5d7f6eea": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-ff39a91f8e1e26dbfb96": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-055a753b87d4beb134f3": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-0ada852c29205a89a56d": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-10f4a04a46b6528fee43": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-1f4d721b635887602c27": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-44467431f287c6168cbb": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-70cfb717cd9b882c7cb6": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-84b12e1a84257bf054a5": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-9774e4f590d19ee2468c": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d444b3cf85930b0c6513": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d7e3abccbb4be0820617": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-d7e7514f081585b38e03": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-e6e28b81cebcaf87a676": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-702c213feab1671de4c5": {
+      "frontier": [],
+      "visitedUrls": [
+        "https://jobs.bytedance.com/"
+      ],
+      "crawlEvidence": [
+        {
+          "employerTargetId": "employer-cn-702c213feab1671de4c5",
+          "url": "https://jobs.bytedance.com/",
+          "depth": 0,
+          "fetchedAt": "2026-08-21T08:35:16.659Z",
+          "status": "ok",
+          "finalUrl": "https://jobs.bytedance.com/",
+          "httpStatus": 200,
+          "contentHash": "b79c71799144a4ed00f6475a3b1039791d5ec1c1f7f153067852a0d621a97cd8",
+          "links": 0,
+          "artifact": {
+            "observationId": "observation-b79c71799144a4ed-ca1a5784-3513-43ab-a26f-4283b3d9010c",
+            "contentHash": "b79c71799144a4ed00f6475a3b1039791d5ec1c1f7f153067852a0d621a97cd8"
+          }
+        }
+      ],
+      "attempts": 1,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": "2026-08-21T08:35:16.659Z",
+      "nextDueAt": "2026-09-20T08:35:16.659Z",
+      "coverage": "approved",
+      "discoveredSourceIds": [
+        "bytedance-official-careers"
+      ],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-0003e74a7fce1fa82fc4": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00135daa971f7eeddad7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-001ea6dfdaf27b8a79fe": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00213eb026bbbb5f1e10": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00229490b95b89b07504": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-0025698d4520b99eeeb6": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-0029c62e8162713314b7": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00440c48c465c8c6eb53": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-004c997cef7db041147e": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-004de3c96bcf565a3de1": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-004fb15f384c8bd7dc66": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-0068642e22b707f20f74": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-007fa3a6da6565811659": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-0084eab3d648e6696501": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-0085c0f14cfdcf29c42a": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-008913a668c45e7c88f4": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-009112663b4a36b2db48": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00b85cb41c6008f5d5e3": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00b9cc20dc0a6d73a989": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00bc6136946cbcfcda11": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    },
+    "employer-cn-00bdece1e44524ca6ac6": {
+      "frontier": [],
+      "visitedUrls": [],
+      "crawlEvidence": [],
+      "attempts": 1,
+      "consecutiveFailures": 1,
+      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
+      "lastSuccessAt": null,
+      "nextDueAt": "2026-08-22T08:35:16.659Z",
+      "coverage": "missing",
+      "discoveredSourceIds": [],
+      "providerStatuses": {
+        "imported": "ok",
+        "baidu": "failed",
+        "common_crawl": "ok"
+      }
+    }
+  },
+  "runs": [
+    {
+      "id": "run-26fac64a-073d-42b2-adf7-15accd8a36af",
+      "at": "2026-08-21T08:46:15.154Z",
+      "scheduledDate": "2026-08-21",
+      "mode": "weekly_deep",
+      "selectedTargets": 150,
+      "discoveredSources": 77,
+      "probes": 18,
+      "status": "completed_with_findings",
+      "trigger": "github_actions",
+      "githubRunId": "32463453086",
+      "onlineEvidence": {
+        "present": true,
+        "successfulProviders": [
+          "common_crawl"
+        ],
+        "successfulCrawlPages": 9,
+        "verifiedProbes": 3,
+        "note": "本地 imported 目标根只证明队列工作；不能替代真实网络成功证据。"
+      },
+      "registryCommittedAt": "2026-08-21T08:46:16.376Z"
+    }
+  ]
+}
