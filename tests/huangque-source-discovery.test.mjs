@@ -48,7 +48,7 @@ test("ATS board, detail and API URLs resolve to one tenant source", () => {
       tenant: "appier",
       sourceKey: "ats:greenhouse:appier",
       sourceRootUrl: "https://job-boards.greenhouse.io/appier",
-      publicApiUrl: "https://boards-api.greenhouse.io/v1/boards/appier/jobs?content=true",
+      publicApiUrl: "https://boards-api.greenhouse.io/v1/boards/appier/jobs?content=false",
     },
   );
 });

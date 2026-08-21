@@ -205,7 +205,7 @@ export function detectAts(value) {
       tenant,
       sourceKey: `ats:greenhouse:${tenant.toLowerCase()}`,
       sourceRootUrl: `https://job-boards.greenhouse.io/${tenant}`,
-      publicApiUrl: `https://boards-api.greenhouse.io/v1/boards/${tenant}/jobs?content=true`,
+      publicApiUrl: `https://boards-api.greenhouse.io/v1/boards/${tenant}/jobs?content=false`,
     };
   }
   if (host === "boards-api.greenhouse.io" && /^\/v1\/boards\//.test(url.pathname)) {
@@ -216,7 +216,7 @@ export function detectAts(value) {
       tenant,
       sourceKey: `ats:greenhouse:${tenant.toLowerCase()}`,
       sourceRootUrl: `https://job-boards.greenhouse.io/${tenant}`,
-      publicApiUrl: `https://boards-api.greenhouse.io/v1/boards/${tenant}/jobs?content=true`,
+      publicApiUrl: `https://boards-api.greenhouse.io/v1/boards/${tenant}/jobs?content=false`,
     };
   }
 

@@ -15,7 +15,7 @@ The script:
 3. safely probes a bounded number of candidates;
 4. collects only sources that were already verified and human-approved;
 5. writes a portable projection and machine-readable audit;
-6. records `.huangque/daily/YYYY-MM-DD.json` atomically.
+6. records a dated archive, then atomically commits `.huangque/latest-daily.json` as the authoritative completion receipt.
 
 If that date already completed, another invocation exits successfully without repeating the run. Use `npm run daily -- --force` only for an intentional replay.
 
@@ -27,7 +27,7 @@ If that date already completed, another invocation exits successfully without re
 - cron: "0 16 * * *"
 ```
 
-GitHub cron uses UTC. `16:00 UTC` is `00:00 Asia/Shanghai` on the following calendar day. Scheduled jobs can be delayed by platform queues; Oriole's local-date marker still prevents duplicates.
+GitHub cron uses UTC. `16:00 UTC` is `00:00 Asia/Shanghai` on the following calendar day. Scheduled jobs can be delayed by platform queues; the completed Beijing date in `.huangque/latest-daily.json` still prevents duplicates. A dated archive is evidence, not the idempotency authority.
 
 The workflow has one non-cancelling concurrency group, restores the latest `.huangque` cache, runs the Agent, saves a new cache key, and uploads the latest run/audit/projection as a 30-day artifact. Repository caches are operational convenience, not guaranteed permanent storage. A production deployment should mount persistent storage and back it up.
 

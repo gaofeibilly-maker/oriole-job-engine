@@ -3,7 +3,7 @@ import { mkdtemp, readFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
-import { collectionDueState, HuangqueEngine, jobWithEffectiveValidity } from "../scripts/huangque/lib/engine.mjs";
+import { collectionDueState, HuangqueEngine, jobWithEffectiveValidity, schedulerObservationIsLive } from "../scripts/huangque/lib/engine.mjs";
 
 const projectRoot = resolve(new URL("..", import.meta.url).pathname);
 
@@ -146,6 +146,107 @@ test("NCSS collection paginates until a short terminal page", async () => {
   assert.equal(result.results[0].pagination.stopReason, "short_terminal_page");
 });
 
+test("collection retries one transient network failure without weakening safety checks", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-transient-retry-"));
+  let apiAttempts = 0;
+  const fetchImpl = async (url) => {
+    if (url.endsWith("/robots.txt")) return new Response("User-agent: *\nAllow: /\n", { headers: { "content-type": "text/plain" } });
+    apiAttempts += 1;
+    if (apiAttempts === 1) throw Object.assign(new Error("connection reset"), { code: "ECONNRESET" });
+    return new Response(JSON.stringify([{
+      id: "retry-job",
+      text: "Beijing Reliability Engineer",
+      categories: { location: "Beijing, China" },
+      hostedUrl: "https://jobs.lever.co/retry-company/retry-job",
+      applyUrl: "https://jobs.lever.co/retry-company/retry-job/apply",
+    }]), { headers: { "content-type": "application/json" } });
+  };
+  const engine = new HuangqueEngine({
+    projectRoot,
+    registryPath: join(directory, "state.json"),
+    artifactRoot: join(directory, "artifacts"),
+    fetchOptions: { fetchImpl, skipDns: true },
+  });
+  const candidate = {
+    id: "lever-retry-company",
+    sourceKey: "ats:lever:retry-company",
+    name: "Retry Company",
+    provider: "Lever",
+    tenant: "retry-company",
+    sourceType: "official_ats",
+    sourceRootUrl: "https://jobs.lever.co/retry-company",
+    publicApiUrl: "https://api.lever.co/v0/postings/retry-company?mode=json",
+    scopeSignals: ["北京"],
+  };
+  await engine.registry.importApprovedSource(candidate);
+  const result = await engine.collectJobs({ sourceId: candidate.id, commit: false });
+  assert.equal(apiAttempts, 2);
+  assert.equal(result.stats.jobsObserved, 1);
+});
+
+test("Greenhouse collection forces the bounded listing payload", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-greenhouse-bounded-"));
+  let requestedUrl = null;
+  const fetchImpl = async (url) => {
+    if (url.endsWith("/robots.txt")) return new Response("User-agent: *\nAllow: /\n", { headers: { "content-type": "text/plain" } });
+    requestedUrl = url;
+    return new Response(JSON.stringify({ jobs: [] }), { headers: { "content-type": "application/json" } });
+  };
+  const engine = new HuangqueEngine({
+    projectRoot,
+    registryPath: join(directory, "state.json"),
+    artifactRoot: join(directory, "artifacts"),
+    fetchOptions: { fetchImpl, skipDns: true },
+  });
+  const candidate = {
+    id: "greenhouse-bounded",
+    sourceKey: "ats:greenhouse:bounded",
+    name: "Bounded Board",
+    provider: "Greenhouse",
+    sourceType: "official_ats",
+    sourceRootUrl: "https://job-boards.greenhouse.io/bounded",
+    publicApiUrl: "https://boards-api.greenhouse.io/v1/boards/bounded/jobs?content=true",
+    scopeSignals: ["全国"],
+  };
+  await engine.registry.importApprovedSource(candidate);
+  await engine.collectJobs({ sourceId: candidate.id, commit: false });
+  assert.equal(new URL(requestedUrl).searchParams.get("content"), "false");
+});
+
+test("due collection safety-downgrades a source whose robots policy requires authentication", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-robots-downgrade-"));
+  const fetchImpl = async (url) => {
+    if (url.endsWith("/robots.txt")) return new Response("authentication required", { status: 401, headers: { "content-type": "text/plain" } });
+    throw new Error(`unexpected fixture URL ${url}`);
+  };
+  const engine = new HuangqueEngine({
+    projectRoot,
+    registryPath: join(directory, "state.json"),
+    artifactRoot: join(directory, "artifacts"),
+    fetchOptions: { fetchImpl, skipDns: true },
+  });
+  const candidate = {
+    id: "lever-robots-auth",
+    sourceKey: "ats:lever:robots-auth",
+    name: "Robots Auth Board",
+    provider: "Lever",
+    sourceType: "official_ats",
+    sourceRootUrl: "https://jobs.lever.co/robots-auth",
+    publicApiUrl: "https://api.lever.co/v0/postings/robots-auth?mode=json",
+    scopeSignals: ["全国"],
+  };
+  await engine.registry.importApprovedSource(candidate);
+  const result = await engine.runDue({ commitApproved: true, maxQueries: 0, maxProbes: 0, maxCollections: 1 });
+  assert.equal(result.collection.failedSources, 0);
+  assert.equal(result.collection.safetyDowngradedSources, 1);
+  const source = (await engine.registry.snapshot()).sources.find((item) => item.id === candidate.id);
+  assert.equal(source.lifecycle, "probed");
+  assert.equal(source.verificationState, "access_restricted");
+  assert.equal(source.collectionEnabled, false);
+  assert.equal(source.probe.robots.status, 401);
+  assert.equal(source.probe.evidence[0].kind, "robots");
+});
+
 test("non-authoritative HTML listings ingest jobs but never advance missing counters", async () => {
   const directory = await mkdtemp(join(tmpdir(), "huangque-html-missing-"));
   let includeSecond = true;
@@ -179,6 +280,15 @@ test("approved source collection cadence uses persisted nextDueAt", () => {
   assert.equal(collectionDueState(source, new Date("2026-08-20T05:59:59.000Z")).due, false);
   assert.equal(collectionDueState(source, new Date("2026-08-20T06:00:00.000Z")).due, true);
   assert.equal(collectionDueState(source, new Date("2026-08-20T06:00:00.000Z")).cadenceHours, 6);
+});
+
+test("scheduler evidence requires the current GitHub run and post-pipeline stage", () => {
+  const env = { GITHUB_ACTIONS: "true", GITHUB_RUN_ID: "run-42" };
+  const observation = { trigger: "github_actions", stage: "post_pipeline_finalization", runId: "run-42", scheduledDate: "2026-08-21" };
+  assert.equal(schedulerObservationIsLive(observation, env), true);
+  assert.equal(schedulerObservationIsLive({ ...observation, runId: "other" }, env), false);
+  assert.equal(schedulerObservationIsLive({ ...observation, stage: "starting" }, env), false);
+  assert.equal(schedulerObservationIsLive(observation, { ...env, GITHUB_ACTIONS: "false" }), false);
 });
 
 test("portable reads close a job after validThrough even without another collection", () => {

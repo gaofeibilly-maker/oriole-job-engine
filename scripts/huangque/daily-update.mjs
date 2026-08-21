@@ -33,9 +33,10 @@ async function atomicJson(path, value) {
 }
 
 const scheduledDate = beijingDate();
-const markerPath = resolve(projectRoot, `.huangque/daily/${scheduledDate}.json`);
-const previous = await readJsonIfPresent(markerPath);
-if (previous?.status === "completed" && !force) {
+const dailyPath = resolve(projectRoot, `.huangque/daily/${scheduledDate}.json`);
+const latestPath = resolve(projectRoot, ".huangque/latest-daily.json");
+const previous = await readJsonIfPresent(latestPath);
+if (previous?.status === "completed" && previous?.scheduledDate === scheduledDate && !force) {
   process.stdout.write(`${JSON.stringify({ skipped: true, reason: "already_completed_for_beijing_date", scheduledDate, previous }, null, 2)}\n`);
   process.exit(0);
 }
@@ -53,12 +54,22 @@ try {
     maxCollections: Number(process.env.HUANGQUE_DAILY_MAX_COLLECTIONS || 100),
   });
   const projection = await engine.exportHostedProjection();
-  const audit = await engine.audit({ outputPath: resolve(projectRoot, ".huangque/latest-audit.json") });
   const collectionFailed = Number(pipeline.collection?.failedSources || 0) > 0;
+  const trigger = process.env.GITHUB_ACTIONS === "true" ? "github_actions" : "manual";
+  const audit = await engine.audit({
+    outputPath: resolve(projectRoot, ".huangque/latest-audit.json"),
+    schedulerObservation: {
+      trigger,
+      stage: "post_pipeline_finalization",
+      runId: process.env.GITHUB_RUN_ID || null,
+      runAttempt: process.env.GITHUB_RUN_ATTEMPT || null,
+      scheduledDate,
+    },
+  });
   const report = {
     schemaVersion: "huangque.daily-run.v1",
     timezone: "Asia/Shanghai",
-    trigger: process.env.GITHUB_ACTIONS === "true" ? "github_actions" : "manual",
+    trigger,
     scheduledDate,
     scheduledLocalTime: "00:00",
     startedAt,
@@ -68,8 +79,10 @@ try {
     projection,
     audit: audit.result,
   };
-  await atomicJson(markerPath, report);
-  await atomicJson(resolve(projectRoot, ".huangque/latest-daily.json"), report);
+  // The dated archive is prepared first; latest-daily is the authoritative,
+  // idempotency-driving commit and is written atomically only after audit.
+  await atomicJson(dailyPath, report);
+  await atomicJson(latestPath, report);
   if (collectionFailed) {
     process.stderr.write(`黄雀每日更新有 ${pipeline.collection.failedSources} 个到期来源采集失败；已保存证据，同一天允许重试。\n`);
     process.stderr.write(`${JSON.stringify(report, null, 2)}\n`);
@@ -89,7 +102,8 @@ try {
     status: "failed",
     error: { code: error.code || "DAILY_UPDATE_FAILED", message: error.message },
   };
-  await atomicJson(resolve(projectRoot, ".huangque/latest-daily.json"), report);
+  await atomicJson(dailyPath, report);
+  await atomicJson(latestPath, report);
   process.stderr.write(`黄雀每日更新失败 [${report.error.code}]：${report.error.message}\n`);
   process.exitCode = 1;
 }

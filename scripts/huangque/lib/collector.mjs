@@ -20,7 +20,31 @@ function collectionPage(candidate, endpoint, page) {
     url.searchParams.set("limit", String(pageSize));
     return { url: url.toString(), paginated: true, pageSize, method: "GET" };
   }
+  if (candidate.provider === "Greenhouse") {
+    const url = new URL(endpoint);
+    // Greenhouse's optional `content=true` payload can exceed ten megabytes on
+    // large boards. The job-source engine only needs the bounded listing
+    // fields and canonical detail URL; the detail page remains the source of
+    // the full description.
+    url.searchParams.set("content", "false");
+    return { url: url.toString(), paginated: false, pageSize: null, method: "GET" };
+  }
   return { url: endpoint, paginated: false, pageSize: null, method: "GET" };
+}
+
+const TRANSIENT_COLLECTION_ERRORS = new Set(["FETCH_FAILED", "TIMEOUT", "DNS_FAILURE", "DNS_TIMEOUT"]);
+
+async function fetchCollectionPage(url, { retryTransient = false, ...options }, attempts = 2) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try { return await safeFetch(url, options); }
+    catch (error) {
+      lastError = error;
+      if (!retryTransient || !TRANSIENT_COLLECTION_ERRORS.has(error?.code) || attempt === attempts) throw error;
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 100 * attempt));
+    }
+  }
+  throw lastError;
 }
 
 function advertisedTotal(payload) {
@@ -67,7 +91,17 @@ export async function collectApprovedSource(registry, sourceId, {
   const candidate = source.candidate;
   const endpoint = source.probe?.collectionEndpoint || candidate.publicApiUrl || candidate.sourceRootUrl;
   const robots = await fetchRobotsPolicy(endpoint, fetchOptions);
-  if (!robots.allowed) throw Object.assign(new Error("robots.txt 已禁止访问，采集停止"), { code: "ROBOTS_DISALLOWED" });
+  if (!robots.allowed) {
+    const code = robots.reason === "robots_disallowed"
+      ? "ROBOTS_DISALLOWED"
+      : [401, 403].includes(robots.status) ? "ROBOTS_ACCESS_RESTRICTED" : "ROBOTS_UNAVAILABLE";
+    const message = code === "ROBOTS_DISALLOWED"
+      ? "robots.txt 明确禁止访问，采集停止"
+      : code === "ROBOTS_ACCESS_RESTRICTED"
+        ? `robots.txt 返回 HTTP ${robots.status}，无法确认采集许可，来源自动停用等待复核`
+        : "robots.txt 暂时无法核验，采集按安全策略停止并留待重试";
+    throw Object.assign(new Error(message), { code, robots });
+  }
   const observedAt = new Date(now).toISOString();
   const maxPages = 20;
   const maxCollectionRows = 5_000;
@@ -81,11 +115,12 @@ export async function collectApprovedSource(registry, sourceId, {
   let stopReason = "single_page";
   for (let page = 1; page <= maxPages; page += 1) {
     const request = collectionPage(candidate, endpoint, page);
-    const response = await safeFetch(request.url, {
+    const response = await fetchCollectionPage(request.url, {
       ...fetchOptions,
       method: request.method,
       headers: request.headers,
       body: request.body,
+      retryTransient: ["GET", "HEAD"].includes(request.method) || candidate.provider === "BeijingPublicEmployment",
       maxBytes: 8_000_000,
       redirectGuard: ({ to }) => robotsAllowsRules(robots.rules || [], to),
     });

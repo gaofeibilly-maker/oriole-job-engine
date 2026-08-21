@@ -58,6 +58,8 @@ Default paths:
 .huangque/latest-audit.json
 ```
 
+`latest-daily.json` is the authoritative atomic completion receipt used for daily idempotency. Files under `.huangque/daily/` are dated evidence archives and never cause a run to be skipped by themselves.
+
 For production, place Registry and artifact paths on persistent storage by setting `HUANGQUE_REGISTRY_PATH` and `HUANGQUE_ARTIFACT_ROOT`. The GitHub Actions workflow uses a cache and audit artifacts as a convenient reference deployment; a cache is not a substitute for a production database or backup.
 
 ## Source lifecycle

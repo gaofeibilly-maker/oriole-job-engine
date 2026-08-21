@@ -134,6 +134,14 @@ export function jobWithEffectiveValidity(job, now = new Date()) {
   };
 }
 
+export function schedulerObservationIsLive(observation, env = process.env) {
+  return env?.GITHUB_ACTIONS === "true"
+    && Boolean(env?.GITHUB_RUN_ID)
+    && observation?.trigger === "github_actions"
+    && observation?.stage === "post_pipeline_finalization"
+    && String(observation?.runId || "") === String(env.GITHUB_RUN_ID);
+}
+
 export class HuangqueEngine {
   constructor({
     projectRoot,
@@ -544,7 +552,7 @@ export class HuangqueEngine {
             error: { code: error.code || "COLLECTION_FAILED", message: error.message },
           }).catch(() => undefined);
         }
-        errors.push({ sourceId: id, code: error.code || "COLLECTION_FAILED", message: error.message });
+        errors.push({ sourceId: id, code: error.code || "COLLECTION_FAILED", message: error.message, robots: error.robots || null });
         if (isLocalControlError(error)) break;
       }
     }
@@ -567,7 +575,7 @@ export class HuangqueEngine {
       throw Object.assign(new Error(localControlFailure.message), { code: localControlFailure.code, runId: run.id, sourceId: localControlFailure.sourceId });
     }
     if (sourceId && results.length === 0 && errors.length === 1) {
-      throw Object.assign(new Error(errors[0].message), { code: errors[0].code, runId: run.id, sourceId });
+      throw Object.assign(new Error(errors[0].message), { code: errors[0].code, runId: run.id, sourceId, robots: errors[0].robots || null });
     }
     return { runId: run.id, commit, stats, errors, results };
   }
@@ -611,11 +619,31 @@ export class HuangqueEngine {
       .slice(0, Math.max(0, Number(maxCollections) || 0));
     const runs = [];
     const errors = [];
+    const safetyDowngrades = [];
     for (const { source } of dueSources) {
       try {
         runs.push(await this.collectJobs({ sourceId: source.id, commit: commitApproved }));
       } catch (error) {
         if (isLocalControlError(error)) throw error;
+        if (["ROBOTS_DISALLOWED", "ROBOTS_ACCESS_RESTRICTED"].includes(error.code)) {
+          const verificationState = error.code === "ROBOTS_DISALLOWED" ? "blocked_robots" : "access_restricted";
+          await this.registry.recordProbe(source.id, {
+            schemaVersion: "huangque.probe.v1",
+            sourceId: source.id,
+            probedAt: new Date(this.now()).toISOString(),
+            verificationState,
+            collectable: false,
+            strategy: "none",
+            robots: error.robots || null,
+            evidence: error.robots ? [{ kind: "robots", ...error.robots }] : [],
+            errors: [{ code: error.code, message: error.message }],
+            edges: [],
+            sampleJobs: [],
+            counts: { total: 0, china: 0, beijing: 0 },
+          }, error.runId || null);
+          safetyDowngrades.push({ sourceId: source.id, code: error.code, message: error.message, runId: error.runId || null });
+          continue;
+        }
         errors.push({ sourceId: source.id, code: error.code || "COLLECTION_FAILED", message: error.message, runId: error.runId || null });
       }
     }
@@ -625,8 +653,10 @@ export class HuangqueEngine {
         commit: commitApproved,
         dueSources: dueSources.length,
         completedSources: runs.length,
+        safetyDowngradedSources: safetyDowngrades.length,
         failedSources: errors.length,
         runIds: runs.map((run) => run.runId),
+        safetyDowngrades,
         errors,
       },
     };
@@ -718,7 +748,7 @@ export class HuangqueEngine {
     };
   }
 
-  async audit({ outputPath = null } = {}) {
+  async audit({ outputPath = null, schedulerObservation = null } = {}) {
     const [state, status, plan] = await Promise.all([this.registry.snapshot(), this.status(), readJson(this.queryPlanPath, "查询计划")]);
     const [dailyScriptPresent, dailyWorkflowPresent, dailyWorkflowText, latestDaily] = await Promise.all([
       pathExists(resolve(this.projectRoot, "scripts/huangque/daily-update.mjs")),
@@ -730,7 +760,9 @@ export class HuangqueEngine {
       && dailyWorkflowPresent
       && /cron:\s*["']0 16 \* \* \*["']/.test(dailyWorkflowText)
       && /TZ:\s*Asia\/Shanghai/.test(dailyWorkflowText);
-    const schedulerLive = latestDaily?.status === "completed" && latestDaily?.trigger === "github_actions";
+    const currentSchedulerLive = schedulerObservationIsLive(schedulerObservation);
+    const schedulerLive = currentSchedulerLive || latestDaily?.status === "completed" && latestDaily?.trigger === "github_actions";
+    const schedulerLiveDate = currentSchedulerLive ? schedulerObservation.scheduledDate : latestDaily?.scheduledDate;
     const activeSourceIds = new Set(state.sources.filter((source) => source.lifecycle === "approved" && source.collectionEnabled).map((source) => source.id));
     const planTaskIds = new Set(expandQueryPlan(plan).map((task) => task.id));
     const providerRuns = state.runs.flatMap((run) => run.providerRuns || []);
@@ -752,7 +784,7 @@ export class HuangqueEngine {
       { id: "common_crawl_live", passed: providerRuns.some((run) => run.provider === "common_crawl" && run.status === "ok" && Boolean(run.metadata?.indexId)), detail: "要求 Registry 中存在 Common Crawl URL Index 的真实索引记录" },
       { id: "official_catalog_imported", passed: providerRuns.some((run) => run.provider === "official_catalog" && run.status === "ok" && Number(run.hits || 0) > 0), detail: "版本化全国官方公开目录已导入；这不等于每个目录链接都完成本轮在线探测" },
       { id: "external_scheduler", passed: schedulerConfigured, detail: schedulerConfigured ? "已解析并确认 cron 0 16 * * * + Asia/Shanghai，即北京时间每日 00:00" : "每日脚本或 GitHub Actions 的时区/cron 配置不完整" },
-      { id: "scheduler_live", passed: schedulerLive, detail: schedulerLive ? `GitHub Actions 最近成功日期：${latestDaily.scheduledDate}` : "尚未在当前 Registry 看到 GitHub Actions 成功运行记录；发布后需检查首轮 Actions" },
+      { id: "scheduler_live", passed: schedulerLive, detail: schedulerLive ? `GitHub Actions 已执行到安全收尾阶段；最近日期：${schedulerLiveDate}` : "尚未在当前 Registry 看到 GitHub Actions 成功运行记录；发布后需检查首轮 Actions" },
     ];
     const report = {
       schemaVersion: "huangque.audit.v1",
