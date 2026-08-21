@@ -76,6 +76,7 @@ try {
       runId: process.env.GITHUB_RUN_ID || null,
       runAttempt: process.env.GITHUB_RUN_ATTEMPT || null,
       scheduledDate,
+      status: update.status,
     },
   });
   const report = {

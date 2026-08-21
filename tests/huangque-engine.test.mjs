@@ -878,8 +878,11 @@ test("the bounded job scheduler reports a committed incomplete segment as comple
 
 test("scheduler evidence requires the current GitHub run and post-pipeline stage", () => {
   const env = { GITHUB_ACTIONS: "true", GITHUB_RUN_ID: "run-42" };
-  const observation = { trigger: "github_actions", stage: "post_pipeline_finalization", runId: "run-42", scheduledDate: "2026-08-21" };
+  const observation = { trigger: "github_actions", stage: "post_pipeline_finalization", status: "completed_with_findings", runId: "run-42", scheduledDate: "2026-08-21" };
   assert.equal(schedulerObservationIsLive(observation, env), true);
+  assert.equal(schedulerObservationIsLive({ ...observation, status: "partial" }, env), false);
+  assert.equal(schedulerObservationIsLive({ ...observation, status: "failed" }, env), false);
+  assert.equal(schedulerObservationIsLive({ ...observation, status: undefined }, env), false);
   assert.equal(schedulerObservationIsLive({ ...observation, runId: "other" }, env), false);
   assert.equal(schedulerObservationIsLive({ ...observation, stage: "starting" }, env), false);
   assert.equal(schedulerObservationIsLive(observation, { ...env, GITHUB_ACTIONS: "false" }), false);
