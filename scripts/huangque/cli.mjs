@@ -3,11 +3,21 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFile } from "node:fs/promises";
 import { HuangqueEngine } from "./lib/engine.mjs";
+import { huangqueToolResultOutcome } from "./lib/agent-tools.mjs";
 
 const defaultProjectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const booleanOptions = new Set(["help", "force", "confirm", "commit", "collectApproved", "deep"]);
+const executionToolByCommand = new Map([
+  ["discover", "huangque.discover_sources"],
+  ["collect", "huangque.collect_jobs"],
+  ["pipeline", "huangque.run_pipeline"],
+  ["source-spider", "huangque.run_source_spider"],
+  ["job-update", "huangque.run_job_update"],
+  ["run-due", "huangque.run_due"],
+]);
 
 function usage() {
-  return `黄雀 1.1.1：岗位垂类的信息源归集引擎
+  return `黄雀 2.0.0：岗位垂类的信息源归集引擎
 
 用法：node scripts/huangque/cli.mjs <command> [options]
 
@@ -22,7 +32,9 @@ function usage() {
   review --source <id>         approve/reject（需 revision/reviewer/reason/confirm）
   collect [--source <id>]      采集 approved 来源；默认 preview，--commit 才写入
   pipeline                     发现→探测；新来源不会自动批准
-  run-due                      按 cadence 运行；默认预览，--commit 才写岗位库
+  source-spider                按持久队列寻源；--deep 提高深扫预算
+  job-update                   只更新到期的 approved 岗位源
+  run-due                      job-update 的兼容别名
   jobs                         查询黄雀岗位库（可按省市代码筛选）
   regions                      查询全国省级—地级二级地区目录
   graph                        查询有证据的招聘源图谱关系
@@ -41,12 +53,36 @@ function parse(argv) {
   for (let index = 1; index < argv.length; index += 1) {
     const arg = argv[index];
     if (!arg.startsWith("--")) { options._.push(arg); continue; }
-    const key = arg.slice(2).replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+    const rawOption = arg.slice(2);
+    const equalsAt = rawOption.indexOf("=");
+    const rawKey = equalsAt === -1 ? rawOption : rawOption.slice(0, equalsAt);
+    const inlineValue = equalsAt === -1 ? undefined : rawOption.slice(equalsAt + 1);
+    const key = rawKey.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
     const next = argv[index + 1];
-    if (!next || next.startsWith("--")) options[key] = true;
+    if (booleanOptions.has(key)) {
+      const explicitValue = inlineValue !== undefined
+        ? inlineValue
+        : next === "true" || next === "false"
+          ? next
+          : undefined;
+      if (inlineValue === undefined && explicitValue !== undefined) index += 1;
+      if (explicitValue === undefined) {
+        if (next && !next.startsWith("--")) {
+          throw Object.assign(new Error(`布尔选项 --${rawKey} 只接受 true 或 false`), { code: "INVALID_BOOLEAN" });
+        }
+        options[key] = true;
+      } else if (explicitValue === "true") options[key] = true;
+      else if (explicitValue === "false") options[key] = false;
+      else throw Object.assign(new Error(`布尔选项 --${rawKey} 只接受 true 或 false`), { code: "INVALID_BOOLEAN" });
+    } else if (inlineValue !== undefined) options[key] = inlineValue;
+    else if (!next || next.startsWith("--")) options[key] = true;
     else { options[key] = next; index += 1; }
   }
   return { command, options };
+}
+
+function enabled(value) {
+  return value === true;
 }
 
 function list(value) {
@@ -65,6 +101,8 @@ async function main() {
   const artifactRoot = options.artifactRoot || process.env.HUANGQUE_ARTIFACT_ROOT;
   if (registryPath) engineOptions.registryPath = resolve(registryPath);
   if (artifactRoot) engineOptions.artifactRoot = resolve(artifactRoot);
+  if (process.env.HUANGQUE_EMPLOYER_UNIVERSE_PATH) engineOptions.employerUniversePath = resolve(process.env.HUANGQUE_EMPLOYER_UNIVERSE_PATH);
+  if (process.env.HUANGQUE_SOURCE_SPIDER_STATE_PATH) engineOptions.sourceSpiderStatePath = resolve(process.env.HUANGQUE_SOURCE_SPIDER_STATE_PATH);
   const engine = new HuangqueEngine(engineOptions);
   let output;
   if (command === "init") output = await engine.bootstrapExistingSources();
@@ -77,7 +115,7 @@ async function main() {
       bucketIds: list(options.buckets),
       maxQueries: Number(options.maxQueries || 40),
       importedInput,
-      force: Boolean(options.force),
+      force: enabled(options.force),
       provinceCode: options.provinceCode,
       cityCode: options.cityCode,
     });
@@ -90,22 +128,29 @@ async function main() {
     reason: options.reason,
     reviewedBy: options.reviewer,
     expectedRevision: Number(options.revision),
-    confirmation: Boolean(options.confirm),
+    confirmation: enabled(options.confirm),
   });
-  else if (command === "collect") output = await engine.collectJobs({ sourceId: options.source || null, commit: Boolean(options.commit) });
+  else if (command === "collect") output = await engine.collectJobs({ sourceId: options.source || null, commit: enabled(options.commit) });
   else if (command === "pipeline") output = await engine.runPipeline({
     providers: list(options.providers),
     bucketIds: list(options.buckets),
     maxQueries: Number(options.maxQueries || 20),
     maxProbes: Number(options.maxProbes || 10),
-    collectApproved: Boolean(options.collectApproved),
-    commit: Boolean(options.commit),
-    force: Boolean(options.force),
+    collectApproved: enabled(options.collectApproved),
+    commit: enabled(options.commit),
+    force: enabled(options.force),
     provinceCode: options.provinceCode,
     cityCode: options.cityCode,
   });
-  else if (command === "run-due") output = await engine.runDue({ commitApproved: Boolean(options.commit), maxQueries: Number(options.maxQueries || 20), maxProbes: Number(options.maxProbes || 10), maxCollections: Number(options.maxCollections || 20) });
-  else if (command === "jobs") output = await engine.listJobs({ status: options.status, provinceCode: options.provinceCode, cityCode: options.cityCode, limit: Number(options.limit || 100), cursor: Number(options.cursor || 0) });
+  else if (command === "source-spider") output = await engine.runSourceSpider({
+    maxEmployers: Number(options.maxEmployers || 100),
+    maxProbes: Number(options.maxProbes || 20),
+    maxCrawlPages: Number(options.maxCrawlPages || 20),
+    deep: enabled(options.deep),
+  });
+  else if (command === "job-update") output = await engine.runJobUpdate({ commitApproved: enabled(options.commit), maxCollections: Number(options.maxCollections || 100) });
+  else if (command === "run-due") output = await engine.runDue({ commitApproved: enabled(options.commit), maxCollections: Number(options.maxCollections || 20) });
+  else if (command === "jobs") output = await engine.listJobs({ status: options.status || "confirmed_active", provinceCode: options.provinceCode, cityCode: options.cityCode, limit: Number(options.limit || 100), cursor: Number(options.cursor || 0) });
   else if (command === "regions") output = await engine.listRegions({ provinceCode: options.provinceCode });
   else if (command === "graph") output = await engine.getSourceGraph({ sourceId: options.source, relationType: options.relationType, limit: Number(options.limit || 200), cursor: Number(options.cursor || 0) });
   else if (command === "get-run") output = await engine.getRun(options.run);
@@ -113,6 +158,8 @@ async function main() {
   else if (command === "audit") output = await engine.audit({ outputPath: options.output ? resolve(options.output) : null });
   else throw Object.assign(new Error(`未知命令：${command}`), { code: "UNKNOWN_COMMAND" });
   process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
+  const executionTool = executionToolByCommand.get(command);
+  if (executionTool && huangqueToolResultOutcome(executionTool, output).isError) process.exitCode = 1;
 }
 
 main().catch((error) => {

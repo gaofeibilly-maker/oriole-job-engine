@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import { mkdtemp } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
-import { collectApprovedSource } from "../scripts/huangque/lib/collector.mjs";
+import { collectApprovedSource, retryAfterDelayMs } from "../scripts/huangque/lib/collector.mjs";
+import { JsonRegistry } from "../scripts/huangque/lib/registry.mjs";
 
 function byteDanceSource({ collection = null, approvedAt = "2026-08-19T00:00:00.000Z" } = {}) {
   return {
@@ -73,6 +77,107 @@ async function collectFixture({ source = byteDanceSource(), startOffset = undefi
   });
   return { result, registry, offsets };
 }
+
+test("GET collection persists validators, retries bounded Retry-After, and treats 304 as unchanged", async () => {
+  const directory = await mkdtemp(join(tmpdir(), "huangque-conditional-get-"));
+  const registry = new JsonRegistry(join(directory, "state.json"));
+  const sourceId = "greenhouse-conditional";
+  await registry.importApprovedSource({
+    id: sourceId,
+    sourceKey: "ats:greenhouse:conditional",
+    name: "Conditional Greenhouse",
+    publisher: "示例公司",
+    provider: "Greenhouse",
+    tenant: "conditional",
+    sourceType: "official_ats",
+    sourceRootUrl: "https://job-boards.greenhouse.io/conditional",
+    publicApiUrl: "https://boards-api.greenhouse.io/v1/boards/conditional/jobs",
+  });
+
+  let apiAttempts = 0;
+  const fetchImpl = async (url, options = {}) => {
+    if (String(url).endsWith("/robots.txt")) {
+      return new Response("User-agent: *\nAllow: /\n", { headers: { "content-type": "text/plain" } });
+    }
+    apiAttempts += 1;
+    if (apiAttempts === 1) {
+      return new Response("busy", { status: 429, headers: { "content-type": "text/plain", "retry-after": "0" } });
+    }
+    if (apiAttempts === 2) {
+      assert.equal(new Headers(options.headers).has("if-none-match"), false);
+      return new Response(JSON.stringify({ jobs: [{
+        id: 123,
+        title: "上海工程师",
+        location: { name: "上海" },
+        absolute_url: "https://job-boards.greenhouse.io/conditional/jobs/123",
+      }] }), {
+        headers: {
+          "content-type": "application/json",
+          etag: 'W/"board-v1"',
+          "last-modified": "Wed, 20 Aug 2026 00:00:00 GMT",
+        },
+      });
+    }
+    const headers = new Headers(options.headers);
+    assert.equal(headers.get("if-none-match"), 'W/"board-v1"');
+    assert.equal(headers.get("if-modified-since"), "Wed, 20 Aug 2026 00:00:00 GMT");
+    return new Response(null, {
+      status: 304,
+      headers: { etag: 'W/"board-v1"', "last-modified": "Wed, 20 Aug 2026 00:00:00 GMT" },
+    });
+  };
+
+  const firstRun = await registry.createRun("conditional-get-test");
+  const first = await collectApprovedSource(registry, sourceId, {
+    commit: true,
+    runId: firstRun.id,
+    fetchOptions: { fetchImpl, skipDns: true },
+  });
+  assert.equal(first.http.status, 200);
+  assert.equal(first.storage.new, 1);
+  assert.equal(first.storage.notModified, false);
+  assert.equal(apiAttempts, 2);
+  let state = await registry.snapshot();
+  const firstCollection = state.sources[0].collection;
+  assert.equal(firstCollection.httpValidator.etag, 'W/"board-v1"');
+  assert.equal(firstCollection.httpValidator.lastModified, "Wed, 20 Aug 2026 00:00:00 GMT");
+  assert.match(firstCollection.httpValidator.contentHash, /^[a-f0-9]{64}$/);
+  assert.equal(state.jobs[0].status, "confirmed_active");
+  assert.equal(state.jobs[0].sourceObservations[sourceId].consecutiveMissing, 0);
+
+  const secondRun = await registry.createRun("conditional-get-test");
+  const second = await collectApprovedSource(registry, sourceId, {
+    commit: true,
+    runId: secondRun.id,
+    fetchOptions: { fetchImpl, skipDns: true },
+  });
+  assert.equal(second.http.status, 304);
+  assert.equal(second.http.notModified, true);
+  assert.equal(second.pagination.stopReason, "http_304_not_modified");
+  assert.equal(second.storage.notModified, true);
+  assert.equal(second.storage.unchanged, 1);
+  assert.equal(second.storage.missing, 0);
+  assert.equal(second.storage.missingAdvanceSuppressed, true);
+  assert.equal(apiAttempts, 3);
+
+  state = await registry.snapshot();
+  const secondCollection = state.sources[0].collection;
+  assert.equal(secondCollection.lastCollectedAt, firstCollection.lastCollectedAt);
+  assert.equal(secondCollection.lastSuccessfulCheckAt, secondCollection.lastNotModifiedAt);
+  assert.equal(secondCollection.httpValidator.status, 304);
+  assert.equal(state.jobs.length, 1);
+  assert.equal(state.jobs[0].status, "confirmed_active");
+  assert.equal(state.jobs[0].sourceObservations[sourceId].consecutiveMissing, 0);
+  assert.equal(state.events.filter((event) => event.type === "source_not_modified").length, 1);
+});
+
+test("Retry-After parser is bounded and ignores malformed values", () => {
+  const now = Date.parse("2026-08-20T00:00:00.000Z");
+  assert.equal(retryAfterDelayMs("0", now), 0);
+  assert.equal(retryAfterDelayMs("999999", now), 2_000);
+  assert.equal(retryAfterDelayMs("Wed, 20 Aug 2026 00:00:01 GMT", now), 1_000);
+  assert.equal(retryAfterDelayMs("not-a-date", now), null);
+});
 
 test("an offset-zero full traversal is authoritative and closes its cursor cycle", async () => {
   const { result, registry, offsets } = await collectFixture({

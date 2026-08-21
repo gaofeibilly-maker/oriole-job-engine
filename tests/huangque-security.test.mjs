@@ -8,8 +8,8 @@ import { canonicalizeUrl, isPrivateOrLocalHost } from "../scripts/huangque/lib/s
 import { assertPublicRemoteUrl, fetchRobotsPolicy, HUANGQUE_USER_AGENT, robotsAllows, safeFetch } from "../scripts/huangque/lib/http.mjs";
 import { FileArtifactStore } from "../scripts/huangque/lib/artifacts.mjs";
 
-test("outbound user agent identifies the 1.1.1 release", () => {
-  assert.equal(HUANGQUE_USER_AGENT, "HuangqueJobSourceAgent/1.1.1 (+public-source-audit; respects robots.txt)");
+test("outbound user agent identifies the 2.0.0 release", () => {
+  assert.equal(HUANGQUE_USER_AGENT, "HuangqueJobSourceAgent/2.0.0 (+public-source-audit; respects robots.txt)");
 });
 
 test("URL safety rejects local suffixes, carrier NAT, mapped IPv6 and reserved ranges", () => {

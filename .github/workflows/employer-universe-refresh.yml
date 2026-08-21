@@ -1,0 +1,77 @@
+name: Oriole employer universe refresh
+
+on:
+  schedule:
+    # 01:15 Asia/Shanghai every Sunday, before the Sunday deep source scan.
+    - cron: "15 17 * * 6"
+  workflow_dispatch:
+    inputs:
+      require_live_sasac:
+        description: Fail instead of using the explicitly labelled SASAC snapshot
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: oriole-state-writer
+  queue: max
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: source
+      - name: Checkout durable Oriole state
+        uses: actions/checkout@v6
+        with:
+          ref: oriole-state
+          path: state
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22.13.0"
+      - name: Rebuild and validate the bounded employer universe
+        working-directory: source
+        env:
+          HUANGQUE_EMPLOYER_UNIVERSE_PATH: ${{ github.workspace }}/state/state-data/employer-universe.json
+          REQUIRE_LIVE_SASAC: ${{ inputs.require_live_sasac || false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$REQUIRE_LIVE_SASAC" == "true" ]]; then
+            npm run refresh-employers -- --output "$HUANGQUE_EMPLOYER_UNIVERSE_PATH" --require-live-sasac
+          else
+            npm run refresh-employers -- --output "$HUANGQUE_EMPLOYER_UNIVERSE_PATH"
+          fi
+      - name: Persist only a fully validated snapshot
+        working-directory: state
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e state-data/registry.json
+          FORBIDDEN="$(find state-data \( -type l -o -name '*.lock' -o -name '*.tmp' -o -name '*.backup' \) -print -quit)"
+          if [[ -n "${FORBIDDEN}" ]]; then
+            echo "Refusing to persist a symlink, lock, temporary, or backup path: ${FORBIDDEN}" >&2
+            exit 1
+          fi
+          git config user.name "Oriole State Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A -- state-data/employer-universe.json
+          if ! git diff --cached --quiet; then
+            git commit -m "state: employer universe ${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}"
+            git push origin HEAD:oriole-state
+          fi
+      - name: Upload refresh evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: oriole-employer-universe-${{ github.run_id }}-${{ github.run_attempt }}
+          path: state/state-data/employer-universe.json
+          if-no-files-found: error
+          retention-days: 30

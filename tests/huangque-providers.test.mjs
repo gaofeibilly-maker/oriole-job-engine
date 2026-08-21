@@ -55,6 +55,17 @@ test("Baidu missing credential is non-fatal", async () => {
   assert.equal(output.hits.length, 0);
 });
 
+test("Common Crawl with no eligible site task is not reported as an online success", async () => {
+  let fetched = false;
+  const output = await runCommonCrawlProvider([{ id: "keyword-only", query: "全国 招聘 官网" }], {
+    fetchOptions: { fetchImpl: async () => { fetched = true; throw new Error("must not fetch"); }, skipDns: true },
+  });
+  assert.equal(output.providerStatus, "not_applicable");
+  assert.equal(output.metadata.requestCount, 0);
+  assert.deepEqual(output.metadata.completedTaskIds, []);
+  assert.equal(fetched, false);
+});
+
 test("discovery tasks expose provider capability and leave Baidu-only work visibly blocked", () => {
   const plan = {
     schemaVersion: "huangque.query-plan.v1",

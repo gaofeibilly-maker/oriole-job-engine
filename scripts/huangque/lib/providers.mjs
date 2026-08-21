@@ -225,7 +225,7 @@ export async function runCommonCrawlProvider(tasks, {
 } = {}) {
   const discoveredAt = new Date(now).toISOString();
   const eligible = tasks.map((task) => ({ task, pattern: extractSitePattern(task.query) })).filter((item) => item.pattern);
-  if (eligible.length === 0) return result("ok", "common_crawl", [], ["本轮查询没有受控 site: 域名；Common Crawl 不执行正文关键词搜索。"], { completedTaskIds: [], failedTaskIds: [] });
+  if (eligible.length === 0) return result("not_applicable", "common_crawl", [], ["本轮查询没有受控 site: 域名；Common Crawl 不执行正文关键词搜索。"], { completedTaskIds: [], failedTaskIds: [], requestCount: 0, eligibleQueries: 0 });
   let indexes;
   try {
     const response = await safeFetch("https://index.commoncrawl.org/collinfo.json", { ...fetchOptions, maxBytes: 500_000 });
@@ -363,11 +363,28 @@ export function runImportedProvider(importedInput, { now = new Date() } = {}) {
   const queries = Array.isArray(importedInput.queries)
     ? importedInput.queries
     : [{ id: "imported", query: importedInput.query || "", results: importedInput.results || [] }];
-  const hits = queries.flatMap((query, queryIndex) => (query.results || []).map((entry, resultIndex) => normalizeHit("imported", {
-    id: query.id || `imported:${queryIndex + 1}`,
-    query: query.query || "",
-  }, entry, discoveredAt, "imported_result", { rank: entry.rank || resultIndex + 1 })));
-  return result("ok", "imported", hits);
+  const hits = queries.flatMap((query, queryIndex) => (query.results || []).map((entry, resultIndex) => {
+    const supplied = entry?.providerEvidence && typeof entry.providerEvidence === "object"
+      && !Array.isArray(entry.providerEvidence) ? entry.providerEvidence : {};
+    // Imported results are also used internally by the employer crawler. Keep
+    // only the bounded provenance fields needed by deterministic discovery;
+    // arbitrary imported objects, credentials and headers never enter source
+    // evidence through this adapter.
+    const evidence = Object.fromEntries([
+      "kind", "authority", "publisher", "sourcePage", "region", "regionCode",
+      "coverageRegions", "employerTargetId", "evidenceKind", "parentSourceId",
+      "parentUrl", "parentArtifact",
+    ].flatMap((key) => Object.hasOwn(supplied, key) ? [[key, supplied[key]]] : []));
+    return normalizeHit("imported", {
+      id: query.id || `imported:${queryIndex + 1}`,
+      query: query.query || "",
+      dimensions: query.dimensions || {},
+    }, entry, discoveredAt, "imported_result", { ...evidence, rank: entry.rank || resultIndex + 1 });
+  }));
+  return result("ok", "imported", hits, [], {
+    completedTaskIds: queries.map((query, queryIndex) => query.id || `imported:${queryIndex + 1}`),
+    failedTaskIds: [],
+  });
 }
 
 export async function runDiscoveryProviders(tasks, {

@@ -5,10 +5,46 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { createInterface } from "node:readline";
 import test from "node:test";
+import { callHuangqueTool, huangqueToolResultOutcome, HUANGQUE_TOOLS } from "../scripts/huangque/lib/agent-tools.mjs";
 
 const projectRoot = resolve(new URL("..", import.meta.url).pathname);
 const serverPath = join(projectRoot, "scripts/huangque/mcp-server.mjs");
 const packageVersion = JSON.parse(await readFile(join(projectRoot, "package.json"), "utf8")).version;
+
+test("MCP business outcomes never label failed or partial work as completed", async () => {
+  assert.deepEqual(huangqueToolResultOutcome("huangque.run_job_update", { status: "failed" }), {
+    completed: false, isError: true, status: "failed",
+  });
+  assert.deepEqual(huangqueToolResultOutcome("huangque.run_source_spider", { status: "partial" }), {
+    completed: false, isError: true, status: "partial",
+  });
+  assert.deepEqual(huangqueToolResultOutcome("huangque.collect_jobs", {
+    stats: { sourcesFailed: 1, sourcesSucceeded: 1, sourcesIncomplete: 0 }, errors: [{ code: "FETCH_FAILED" }],
+  }), { completed: false, isError: true, status: "partial" });
+  const discoveryOutput = await callHuangqueTool({
+    discoverSources: async () => ({
+      runId: "run-discovery",
+      status: "partial",
+      tasks: [{ id: "one" }],
+      input: { metadata: { providerRuns: [{ provider: "baidu", status: "failed" }, { provider: "official_catalog", status: "ok" }] } },
+      discovery: { stats: {} },
+    }),
+  }, "huangque.discover_sources", { max_queries: 1 });
+  assert.equal(discoveryOutput.status, "partial");
+  assert.deepEqual(huangqueToolResultOutcome("huangque.discover_sources", discoveryOutput), {
+    completed: false, isError: true, status: "partial",
+  });
+  const pipelineOutput = await callHuangqueTool({
+    runPipeline: async () => ({ status: "failed", collection: null }),
+  }, "huangque.run_pipeline", { max_queries: 1 });
+  assert.deepEqual(huangqueToolResultOutcome("huangque.run_pipeline", pipelineOutput), {
+    completed: false, isError: true, status: "failed",
+  });
+  assert.deepEqual(huangqueToolResultOutcome("huangque.run_job_update", { status: "no_work" }), {
+    completed: true, isError: false, status: "no_work",
+  });
+  assert.deepEqual(HUANGQUE_TOOLS.find((tool) => tool.name === "huangque.collect_jobs").inputSchema.required, ["source_id"]);
+});
 
 async function withServer(run, extraEnv = {}) {
   const directory = await mkdtemp(join(tmpdir(), "huangque-mcp-"));
@@ -66,6 +102,8 @@ test("legacy MCP 2025 lifecycle, tools, ping and notifications are NDJSON-clean"
       "huangque.review_source",
       "huangque.collect_jobs",
       "huangque.run_due",
+      "huangque.run_source_spider",
+      "huangque.run_job_update",
       "huangque.audit",
       "huangque.export_hosted_projection",
     ]);
@@ -90,9 +128,23 @@ test("common earlier MCP revisions negotiate on the same legacy stdio lifecycle"
       assert.equal(initialized.result.protocolVersion, protocolVersion);
       send({ jsonrpc: "2.0", method: "notifications/initialized" });
       send({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} });
-      assert.equal(JSON.parse(await next()).result.tools.length, 16);
+      assert.equal(JSON.parse(await next()).result.tools.length, 18);
     });
   }
+});
+
+test("legacy MCP negotiates an unsupported requested revision to the latest supported legacy revision", async () => {
+  await withServer(async ({ send, next }) => {
+    send({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2024-11-05", capabilities: {}, clientInfo: { name: "downgrade-test", version: "1" } } });
+    const initialized = JSON.parse(await next());
+    assert.equal(initialized.id, 1);
+    assert.equal(initialized.error, undefined);
+    assert.equal(initialized.result.protocolVersion, "2025-11-25");
+    assert.equal(initialized.result.serverInfo.version, packageVersion);
+    send({ jsonrpc: "2.0", method: "notifications/initialized" });
+    send({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} });
+    assert.equal(JSON.parse(await next()).result.tools.length, 18);
+  });
 });
 
 test("modern MCP 2026 supports server/discover and per-request metadata", async () => {
@@ -107,10 +159,11 @@ test("modern MCP 2026 supports server/discover and per-request metadata", async 
     assert.equal(discovered.id, "discover");
     assert.equal(discovered.result.resultType, "complete");
     assert.ok(discovered.result.supportedVersions.includes("2026-07-28"));
+    assert.deepEqual(discovered.result.serverInfo, { name: "huangque", version: packageVersion });
     send({ jsonrpc: "2.0", id: "list", method: "tools/list", params: { _meta: meta } });
     const listed = JSON.parse(await next());
     assert.equal(listed.result.resultType, "complete");
-    assert.equal(listed.result.tools.length, 16);
+    assert.equal(listed.result.tools.length, 18);
     assert.equal(listed.result.tools.find((tool) => tool.name === "huangque.probe_source").inputSchema.anyOf.length, 2);
     send({ jsonrpc: "2.0", id: "call", method: "tools/call", params: { _meta: meta, name: "huangque.list_sources", arguments: {} } });
     const called = JSON.parse(await next());
@@ -186,14 +239,16 @@ test("MCP rejects premature lifecycle messages, malformed metadata and schema-in
   });
 });
 
-test("MCP correlates errors, rejects unsupported versions and survives malformed framing", async () => {
+test("MCP correlates errors, reports unsupported modern versions and survives malformed framing", async () => {
   await withServer(async ({ send, next }) => {
     send("Content-Length: 2");
     assert.equal(JSON.parse(await next()).error.code, -32700);
     send({ jsonrpc: "2.0", id: 77, method: "server/discover", params: { _meta: { "io.modelcontextprotocol/protocolVersion": "2099-01-01", "io.modelcontextprotocol/clientCapabilities": {} } } });
     const versionError = JSON.parse(await next());
     assert.equal(versionError.id, 77);
-    assert.equal(versionError.error.code, -32022);
+    assert.equal(versionError.error.code, -32602);
+    assert.equal(versionError.error.data.requested, "2099-01-01");
+    assert.ok(versionError.error.data.supported.includes("2026-07-28"));
     send({ jsonrpc: "2.0", id: 78, method: "unknown", params: { _meta: { "io.modelcontextprotocol/protocolVersion": "2026-07-28", "io.modelcontextprotocol/clientCapabilities": {} } } });
     const unknown = JSON.parse(await next());
     assert.equal(unknown.id, 78);

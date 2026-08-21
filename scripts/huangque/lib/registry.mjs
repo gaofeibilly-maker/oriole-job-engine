@@ -8,6 +8,7 @@ import { registerOperationRun, throwIfOperationAborted } from "./operation-conte
 
 export const REGISTRY_SCHEMA_VERSION = "huangque.registry.v1";
 export const COLLECTION_RESUME_SCHEMA_VERSION = "huangque.collection-resume.v1";
+export const HTTP_VALIDATOR_SCHEMA_VERSION = "huangque.http-validator.v1";
 export const REGISTRY_RETENTION = Object.freeze({
   runs: 50,
   events: 1_000,
@@ -20,6 +21,65 @@ const OFFSET_RESUME_PROVIDERS = new Set(["ByteDance", "FeishuRecruitment"]);
 const COLLECTION_RESUME_SEGMENT_RETENTION = 32;
 const MAX_COLLECTION_RESUME_OFFSET = 50_000_000;
 const MAX_COLLECTION_RESUME_GENERATION = 1_000_000_000;
+
+function safeHttpHeader(value, maximumLength = 1_024) {
+  if (value === null || value === undefined) return null;
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  if (!normalized || normalized.length > maximumLength || /[\u0000-\u001f\u007f]/.test(normalized)) return null;
+  return normalized;
+}
+
+function normalizedHttpValidatorCheckpoint(value) {
+  if (value === null) return null;
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw Object.assign(new TypeError("httpValidatorCheckpoint 必须是对象或 null"), { code: "INVALID_HTTP_VALIDATOR_CHECKPOINT" });
+  }
+  let requestUrl;
+  let finalUrl;
+  try {
+    requestUrl = new URL(value.requestUrl);
+    finalUrl = new URL(value.finalUrl);
+  } catch {
+    throw Object.assign(new TypeError("HTTP 校验器 URL 无效"), { code: "INVALID_HTTP_VALIDATOR_CHECKPOINT" });
+  }
+  if (requestUrl.protocol !== "https:" || finalUrl.protocol !== "https:") {
+    throw Object.assign(new TypeError("HTTP 校验器只允许 HTTPS URL"), { code: "INVALID_HTTP_VALIDATOR_CHECKPOINT" });
+  }
+  const etagProvided = value.etag !== null && value.etag !== undefined;
+  const lastModifiedProvided = value.lastModified !== null && value.lastModified !== undefined;
+  const etag = safeHttpHeader(value.etag);
+  const lastModified = safeHttpHeader(value.lastModified, 128);
+  const validEtag = !etagProvided || Boolean(etag && /^(?:W\/)?"[^"\r\n]*"$/.test(etag));
+  const validLastModified = !lastModifiedProvided || Boolean(lastModified && !Number.isNaN(Date.parse(lastModified)));
+  const checkedAt = new Date(value.checkedAt);
+  if (value.schemaVersion !== HTTP_VALIDATOR_SCHEMA_VERSION
+    || value.method !== "GET"
+    || !validEtag
+    || !validLastModified
+    || (!etag && !lastModified)
+    || Number.isNaN(checkedAt.getTime())
+    || ![200, 203, 204, 206, 304].includes(Number(value.status))) {
+    throw Object.assign(new TypeError("HTTP 校验器格式无效"), { code: "INVALID_HTTP_VALIDATOR_CHECKPOINT" });
+  }
+  const contentHash = value.contentHash === null || value.contentHash === undefined
+    ? null
+    : String(value.contentHash);
+  if (contentHash !== null && !/^[a-f0-9]{64}$/.test(contentHash)) {
+    throw Object.assign(new TypeError("HTTP 校验器 contentHash 无效"), { code: "INVALID_HTTP_VALIDATOR_CHECKPOINT" });
+  }
+  return {
+    schemaVersion: HTTP_VALIDATOR_SCHEMA_VERSION,
+    method: "GET",
+    requestUrl: requestUrl.toString(),
+    finalUrl: finalUrl.toString(),
+    etag,
+    lastModified,
+    contentHash,
+    checkedAt: checkedAt.toISOString(),
+    status: Number(value.status),
+  };
+}
 
 const CANDIDATE_RETENTION = Object.freeze({
   queryIds: 200,
@@ -261,7 +321,7 @@ function stableEventId(type, payload, at) {
 function graphTarget(type, value) {
   const raw = String(value || "").trim();
   if (!raw) return null;
-  if (/^(?:publisher|provider|region|endpoint|entry|job):/.test(raw)) return raw;
+  if (/^(?:employer|publisher|provider|region|endpoint|entry|job):/.test(raw)) return raw;
   return `${type}:${raw}`;
 }
 
@@ -309,7 +369,19 @@ function candidateGraphEdges(candidate, runId = null) {
   const firstEvidence = candidate.evidence?.[0] || {};
   const publisher = candidate.publisher || firstEvidence.providerEvidence?.publisher || candidate.tenant;
   const edges = [];
-  if (publisher) edges.push({
+  for (const employer of candidate.employerTargets || []) edges.push({
+    type: "published_by",
+    to: graphTarget("employer", employer.id),
+    toType: "employer",
+    runId,
+    evidence: {
+      kind: "employer_target_association",
+      employer,
+      sourceUrl: candidate.sourceRootUrl,
+      observation: firstEvidence,
+    },
+  });
+  if (publisher && !(candidate.employerTargets || []).length) edges.push({
     type: "published_by",
     to: graphTarget("publisher", publisher),
     toType: "publisher",
@@ -371,6 +443,7 @@ export function createEmptyRegistry(now = new Date()) {
     jobVersions: [],
     duplicateCandidates: [],
     providerBudgets: {},
+    providerObservations: {},
     events: [],
   };
 }
@@ -383,6 +456,7 @@ export function validateRegistry(state) {
   if (!Array.isArray(state.duplicateCandidates)) state.duplicateCandidates = [];
   if (!Array.isArray(state.jobVersions)) state.jobVersions = [];
   if (!state.providerBudgets || typeof state.providerBudgets !== "object" || Array.isArray(state.providerBudgets)) state.providerBudgets = {};
+  if (!state.providerObservations || typeof state.providerObservations !== "object" || Array.isArray(state.providerObservations)) state.providerObservations = {};
   if (!state.bucketState || typeof state.bucketState !== "object") throw new TypeError("来源库 bucketState 必须是对象");
   if (!state.metadata.retention || typeof state.metadata.retention !== "object") {
     state.metadata.retention = { policy: REGISTRY_RETENTION, pruned: {}, lastAppliedAt: null };
@@ -391,7 +465,7 @@ export function validateRegistry(state) {
   for (const original of state.edges) {
     const edge = { ...original };
     if (edge.type === "collection_endpoint") edge.type = "has_endpoint";
-    if (!/^(?:publisher|provider|region|endpoint|entry|job):/.test(String(edge.to || ""))) {
+    if (!/^(?:employer|publisher|provider|region|endpoint|entry|job):/.test(String(edge.to || ""))) {
       edge.to = graphTarget(edge.type === "lists_job" ? "job" : "endpoint", edge.to);
     }
     edge.key = `${edge.from}\0${edge.type}\0${edge.to}`;
@@ -410,13 +484,17 @@ export function validateRegistry(state) {
     if (!previous || String(edge.lastObservedAt || "") > String(previous.lastObservedAt || "")) normalizedEdges.set(edge.key, edge);
   }
   state.edges = [...normalizedEdges.values()];
-  const currentPublisherTargets = new Map(state.sources
-    .filter((source) => source?.candidate?.publisher)
-    .map((source) => [source.id, graphTarget("publisher", source.candidate.publisher)]));
+  const currentPublisherTargets = new Map(state.sources.map((source) => {
+    const employerTargets = (source?.candidate?.employerTargets || []).map((target) => graphTarget("employer", target.id));
+    const targets = employerTargets.length
+      ? employerTargets
+      : source?.candidate?.publisher ? [graphTarget("publisher", source.candidate.publisher)] : [];
+    return [source.id, new Set(targets)];
+  }));
   state.edges = state.edges.filter((edge) => {
     if (edge.type !== "published_by") return true;
     const current = currentPublisherTargets.get(edge.from);
-    return !current || edge.to === current;
+    return !current?.size || current.has(edge.to);
   });
   return state;
 }
@@ -745,6 +823,27 @@ export class JsonRegistry {
       run.providerRuns = providerRuns;
       run.errors = errors;
       run.output = output;
+      if (!["failed", "cancelled", "interrupted"].includes(status)) {
+        state.providerObservations ||= {};
+        for (const providerRun of providerRuns) {
+          if (providerRun?.status !== "ok" || typeof providerRun?.provider !== "string" || !providerRun.provider) continue;
+          const metadata = providerRun.metadata && typeof providerRun.metadata === "object" && !Array.isArray(providerRun.metadata)
+            ? Object.fromEntries([
+              "requestCount", "indexId", "catalogUpdatedAt", "entries", "directoryEntries",
+              "employerWatchlistEntries", "inputTaskCount", "eligibleQueries",
+            ].flatMap((key) => Object.hasOwn(providerRun.metadata, key) ? [[key, providerRun.metadata[key]]] : []))
+            : {};
+          state.providerObservations[providerRun.provider] = {
+            provider: providerRun.provider,
+            status: "ok",
+            observedAt: at,
+            parentRunId: runId,
+            parentRunStatus: status,
+            hits: Math.max(0, Number(providerRun.hits || 0)),
+            metadata,
+          };
+        }
+      }
       state.events.unshift({ id: stableEventId("run_finished", { runId, status }, at), type: "run_finished", at, runId, status });
       return run;
     });
@@ -794,6 +893,11 @@ export class JsonRegistry {
               queryIds: [...new Set([...(source.candidate?.queryIds || []), ...(candidate.queryIds || [])])],
               discoveredUrls: [...new Set([...(source.candidate?.discoveredUrls || []), ...(candidate.discoveredUrls || [])])],
               evidence: [...(source.candidate?.evidence || []), ...(candidate.evidence || [])].slice(-50),
+              employerTargetIds: [...new Set([...(source.candidate?.employerTargetIds || []), ...(candidate.employerTargetIds || [])])],
+              employerTargets: [...new Map([
+                ...(source.candidate?.employerTargets || []),
+                ...(candidate.employerTargets || []),
+              ].map((target) => [target.id, target])).values()],
             };
           } else {
             source.candidate = mergeUnapprovedCandidate(source.candidate, candidate);
@@ -878,14 +982,29 @@ export class JsonRegistry {
   } = {}) {
     return this.transaction((state, at) => {
       let source = state.sources.find((item) => item.sourceKey === candidate.sourceKey);
+      const existingDisableIsAuthoritative = source && (
+        source.lifecycle === "rejected"
+        || source.review?.decision === "reject"
+        || source.reviewStatus === "blocked"
+        || (source.lifecycle === "probed" && source.collectionEnabled === false && source.review?.decision === "approve")
+      );
+      if (existingDisableIsAuthoritative) {
+        // A versioned seed is permission to bootstrap a new installation, not
+        // permission to undo a later human rejection or automated safety
+        // downgrade. Restoration requires a fresh verified probe and explicit
+        // opposite operator review through reviewSource().
+        return source;
+      }
       if (source?.lifecycle === "approved") {
         source.revision += 1;
         source.name = candidate.name || source.name;
         source.lastDiscoveredAt = at;
         source.candidate = { ...source.candidate, ...candidate };
-        if (candidate.publisher) {
-          const publisherTarget = graphTarget("publisher", candidate.publisher);
-          state.edges = state.edges.filter((edge) => edge.from !== source.id || edge.type !== "published_by" || edge.to === publisherTarget);
+        if (candidate.publisher || candidate.employerTargets?.length) {
+          const publisherTargets = new Set(candidate.employerTargets?.length
+            ? candidate.employerTargets.map((target) => graphTarget("employer", target.id))
+            : [graphTarget("publisher", candidate.publisher)]);
+          state.edges = state.edges.filter((edge) => edge.from !== source.id || edge.type !== "published_by" || publisherTargets.has(edge.to));
         }
         if (candidate.regions?.length) {
           const currentRegionTargets = new Set(candidate.regions.map((region) => graphTarget("region", `${region.provinceCode || "CN"}:${region.cityCode || "ALL"}`)));
@@ -993,6 +1112,7 @@ export class JsonRegistry {
         ...previous,
         lastAttemptedAt: at,
         lastSuccessfulFetchAt: success ? at : previous.lastSuccessfulFetchAt || null,
+        lastSuccessfulCheckAt: success ? at : previous.lastSuccessfulCheckAt || null,
         lastAttemptStatus: success ? "completed" : dataIntegrityFailure ? "data_integrity_failed" : "failed",
         lastAttemptCommitted: Boolean(commit),
         consecutiveFailures: failures,
@@ -1094,8 +1214,24 @@ export class JsonRegistry {
     markMissingNeedsReview = false,
     missingThreshold = 2,
     collectionCheckpoint = null,
+    httpValidatorCheckpoint = undefined,
+    notModified = false,
     expectedSourceRevision = undefined,
   } = {}) {
+    const validatorProvided = httpValidatorCheckpoint !== undefined;
+    const nextHttpValidator = validatorProvided
+      ? normalizedHttpValidatorCheckpoint(httpValidatorCheckpoint)
+      : undefined;
+    if ((notModified && (
+      jobs.length !== 0
+      || allowMissingAdvance
+      || markMissingNeedsReview
+      || collectionCheckpoint
+      || !nextHttpValidator
+      || nextHttpValidator.status !== 304
+    )) || (!notModified && nextHttpValidator?.status === 304)) {
+      throw Object.assign(new Error("304 无变更提交必须为空、禁止推进 missing/断点，并携带有效 GET 校验器"), { code: "INVALID_NOT_MODIFIED_COMMIT" });
+    }
     const state = await this.read();
     const source = state.sources.find((item) => item.id === sourceId);
     if (!source) throw Object.assign(new Error(`来源不存在：${sourceId}`), { code: "SOURCE_NOT_FOUND" });
@@ -1106,6 +1242,7 @@ export class JsonRegistry {
     const existingIds = new Set(state.jobs.map((job) => job.id));
     const externalGroups = new Map();
     const existingSourceViews = state.jobs.flatMap(sourceIdentityViews).filter((item) => item.sourceId === sourceId);
+    const existingSourceJobCount = existingSourceViews.length;
     for (const job of [...existingSourceViews, ...jobs]) {
       if (job.externalId === null || job.externalId === undefined || job.externalId === "") continue;
       const key = `${job.sourceId}\0${String(job.externalId)}`;
@@ -1126,6 +1263,9 @@ export class JsonRegistry {
       received: jobs.length,
       new: jobs.filter((job) => !existingIds.has(job.id)).length,
       updated: jobs.filter((job) => existingIds.has(job.id)).length,
+      unchanged: notModified ? existingSourceJobCount : 0,
+      missing: 0,
+      notModified: Boolean(notModified),
       jobs,
     };
     if (!commit) return preview;
@@ -1140,6 +1280,48 @@ export class JsonRegistry {
       const nextResume = collectionCheckpoint
         ? advanceCollectionResume(currentSource, collectionCheckpoint, at, runId)
         : null;
+      if (notModified) {
+        const unchanged = draft.jobs.flatMap(sourceIdentityViews).filter((item) => item.sourceId === sourceId).length;
+        currentSource.revision += 1;
+        currentSource.collection = {
+          ...(currentSource.collection || {}),
+          httpValidator: nextHttpValidator,
+          lastCheckedAt: nextHttpValidator.checkedAt,
+          lastSuccessfulCheckAt: nextHttpValidator.checkedAt,
+          lastNotModifiedAt: nextHttpValidator.checkedAt,
+          runId,
+          inserted: 0,
+          updated: 0,
+          unchanged,
+          missing: 0,
+          missingAdvanceSuppressed: true,
+          missingReviewOnly: false,
+        };
+        draft.events.unshift({
+          id: stableEventId("source_not_modified", { sourceId, unchanged, runId }, at),
+          type: "source_not_modified",
+          at,
+          checkedAt: nextHttpValidator.checkedAt,
+          runId,
+          sourceId,
+          unchanged,
+          missing: 0,
+          checkpointAdvanced: false,
+        });
+        return {
+          sourceId,
+          commit: true,
+          received: 0,
+          new: 0,
+          updated: 0,
+          unchanged,
+          missing: 0,
+          notModified: true,
+          jobs: [],
+          collectionResume: null,
+          httpValidator: nextHttpValidator,
+        };
+      }
       let inserted = 0;
       let updated = 0;
       let unchanged = 0;
@@ -1410,6 +1592,15 @@ export class JsonRegistry {
         delete nextCollection.cycle;
         nextCollection.resume = nextResume;
       }
+      if (validatorProvided) {
+        if (nextHttpValidator) {
+          nextCollection.httpValidator = nextHttpValidator;
+          nextCollection.lastCheckedAt = nextHttpValidator.checkedAt;
+          nextCollection.lastSuccessfulCheckAt = nextHttpValidator.checkedAt;
+        } else {
+          delete nextCollection.httpValidator;
+        }
+      }
       currentSource.collection = {
         ...nextCollection,
         lastCollectedAt: at,
@@ -1443,8 +1634,10 @@ export class JsonRegistry {
         updated,
         unchanged,
         missing,
+        notModified: false,
         jobs,
         collectionResume: nextResume,
+        httpValidator: nextHttpValidator ?? null,
       };
     });
   }
