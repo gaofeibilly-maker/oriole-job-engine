@@ -839,6 +839,43 @@ test("approved source collection cadence uses persisted nextDueAt", () => {
   assert.equal(collectionDueState(source, new Date("2026-08-20T06:00:00.000Z")).cadenceHours, 6);
 });
 
+test("the bounded job scheduler reports a committed incomplete segment as completed with findings", async () => {
+  const source = {
+    id: "rotating-large-feed",
+    lifecycle: "approved",
+    collectionEnabled: true,
+    candidate: { sourceType: "official_ats" },
+    collection: { nextDueAt: "2026-08-20T00:00:00.000Z" },
+  };
+  const report = await HuangqueEngine.prototype.runJobUpdate.call({
+    now: () => new Date("2026-08-21T00:00:00.000Z"),
+    registry: { snapshot: async () => ({ sources: [source] }) },
+    collectJobs: async () => ({
+      runId: "collect-rotating-segment",
+      stats: {
+        sourcesRequested: 1,
+        sourcesSucceeded: 1,
+        sourcesFailed: 0,
+        sourcesIncomplete: 1,
+        jobsObserved: 5_000,
+      },
+      errors: [],
+      results: [{
+        sourceId: source.id,
+        fetchedAt: "2026-08-21T00:00:00.000Z",
+        pagination: { complete: false, missingAdvanceSuppressed: true },
+        storage: { received: 5_000 },
+      }],
+    }),
+  }, { commitApproved: true, maxCollections: 1 });
+
+  assert.equal(report.status, "completed_with_findings");
+  assert.equal(report.completedSources, 1);
+  assert.equal(report.incompleteSources, 1);
+  assert.equal(report.failedSources, 0);
+  assert.equal(report.sourceRuns[0].evidence[0].pagination.complete, false);
+});
+
 test("scheduler evidence requires the current GitHub run and post-pipeline stage", () => {
   const env = { GITHUB_ACTIONS: "true", GITHUB_RUN_ID: "run-42" };
   const observation = { trigger: "github_actions", stage: "post_pipeline_finalization", runId: "run-42", scheduledDate: "2026-08-21" };

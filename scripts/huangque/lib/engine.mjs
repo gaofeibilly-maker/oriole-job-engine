@@ -907,7 +907,7 @@ export class HuangqueEngine {
     }
     const incompleteSources = runs.reduce((sum, run) => sum + Number(run.stats?.sourcesIncomplete || 0), 0);
     const status = errors.length ? "failed"
-      : incompleteSources ? "partial"
+      : incompleteSources ? "completed_with_findings"
         : safetyDowngrades.length ? "completed_with_findings"
           : dueSources.length === 0 ? "no_work" : "completed";
     return {
