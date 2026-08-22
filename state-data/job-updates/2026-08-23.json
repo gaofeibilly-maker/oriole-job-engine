@@ -1,0 +1,490 @@
+{
+  "schemaVersion": "huangque.job-update-receipt.v1",
+  "timezone": "Asia/Shanghai",
+  "trigger": "github_actions",
+  "scheduledDate": "2026-08-23",
+  "scheduledLocalTime": "00:17",
+  "startedAt": "2026-08-22T16:41:02.559Z",
+  "completedAt": "2026-08-22T16:44:35.184Z",
+  "status": "completed_with_findings",
+  "warnings": [],
+  "update": {
+    "schemaVersion": "huangque.job-update.v1",
+    "startedAt": "2026-08-22T16:41:26.496Z",
+    "completedAt": "2026-08-22T16:43:37.501Z",
+    "status": "completed_with_findings",
+    "commit": true,
+    "dueSources": 6,
+    "completedSources": 6,
+    "incompleteSources": 4,
+    "safetyDowngradedSources": 0,
+    "failedSources": 0,
+    "runIds": [
+      "run-26cce229-879a-4bbd-b4b9-bb543d157d54",
+      "run-e7cccafd-07b4-4fa2-a390-1d2dffc18de8",
+      "run-44605bde-24d7-4de2-b0cc-8714d78f1a1b",
+      "run-742d2f19-025c-41a8-b256-5d65dafd1bad",
+      "run-77b35015-f591-4935-95bc-5c3d59762548",
+      "run-07dbda32-12c5-4140-94e7-e321b6ede790"
+    ],
+    "sourceRuns": [
+      {
+        "runId": "run-26cce229-879a-4bbd-b4b9-bb543d157d54",
+        "stats": {
+          "sourcesRequested": 1,
+          "sourcesSucceeded": 1,
+          "sourcesFailed": 0,
+          "sourcesIncomplete": 0,
+          "jobsObserved": 218,
+          "jobsNew": 0,
+          "jobsUpdated": 0
+        },
+        "errors": [],
+        "evidence": [
+          {
+            "sourceId": "beijing-public-employment",
+            "fetchedAt": "2026-08-22T16:41:40.983Z",
+            "endpoint": "https://fuwu.rsj.beijing.gov.cn/jycy/jycs/zyjp/getTblb",
+            "http": {
+              "status": 200,
+              "finalUrl": "https://fuwu.rsj.beijing.gov.cn/jycy/jycs/zyjp/getTblb",
+              "contentType": "application/json;charset=UTF-8",
+              "bytes": 60532,
+              "contentHash": "8d0714db25be002aab6e0bd9fb4c4fe4459ef78eff9e515ce52b8db9aa013853",
+              "redirectChain": [],
+              "pages": 3
+            },
+            "pagination": {
+              "complete": true,
+              "pages": 3,
+              "maxPages": 20,
+              "stopReason": "short_terminal_page",
+              "advertisedTotal": null,
+              "startOffset": 0,
+              "observedEndOffset": 0,
+              "nextOffset": 0,
+              "overlapRows": 0,
+              "cycleEndReached": true,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "cursorFingerprint": null,
+              "cursorGeneration": 0
+            },
+            "parser": "beijing_public_employment_json",
+            "parserStats": {
+              "observedRows": 218,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "beijingRows": 0
+            },
+            "storage": {
+              "received": 218,
+              "new": 0,
+              "updated": 0,
+              "unchanged": 218,
+              "missing": 0,
+              "missingAdvanceSuppressed": false,
+              "missingReviewOnly": false,
+              "missingThreshold": 2,
+              "notModified": false
+            },
+            "session": null
+          }
+        ]
+      },
+      {
+        "runId": "run-e7cccafd-07b4-4fa2-a390-1d2dffc18de8",
+        "stats": {
+          "sourcesRequested": 1,
+          "sourcesSucceeded": 1,
+          "sourcesFailed": 0,
+          "sourcesIncomplete": 0,
+          "jobsObserved": 18,
+          "jobsNew": 0,
+          "jobsUpdated": 0
+        },
+        "errors": [],
+        "evidence": [
+          {
+            "sourceId": "lever-xsolla",
+            "fetchedAt": "2026-08-22T16:41:55.713Z",
+            "endpoint": "https://api.lever.co/v0/postings/xsolla?mode=json",
+            "http": {
+              "status": 200,
+              "finalUrl": "https://api.lever.co/v0/postings/xsolla?mode=json",
+              "contentType": "application/json; charset=utf-8",
+              "bytes": 3052367,
+              "contentHash": "314a1863cde0f3a2518e622cd73e7c872a7dc8dc127a859a5815033a9264d8dc",
+              "redirectChain": [],
+              "pages": 1
+            },
+            "pagination": {
+              "complete": true,
+              "pages": 1,
+              "maxPages": 20,
+              "stopReason": "single_page",
+              "advertisedTotal": null,
+              "startOffset": 0,
+              "observedEndOffset": 0,
+              "nextOffset": 0,
+              "overlapRows": 0,
+              "cycleEndReached": true,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "cursorFingerprint": null,
+              "cursorGeneration": 0
+            },
+            "parser": "lever_public_api",
+            "parserStats": {
+              "observedRows": 186,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "beijingRows": 11
+            },
+            "storage": {
+              "received": 18,
+              "new": 0,
+              "updated": 0,
+              "unchanged": 18,
+              "missing": 0,
+              "missingAdvanceSuppressed": false,
+              "missingReviewOnly": false,
+              "missingThreshold": 2,
+              "notModified": false
+            },
+            "session": null
+          }
+        ]
+      },
+      {
+        "runId": "run-44605bde-24d7-4de2-b0cc-8714d78f1a1b",
+        "stats": {
+          "sourcesRequested": 1,
+          "sourcesSucceeded": 1,
+          "sourcesFailed": 0,
+          "sourcesIncomplete": 1,
+          "jobsObserved": 0,
+          "jobsNew": 0,
+          "jobsUpdated": 0
+        },
+        "errors": [],
+        "evidence": [
+          {
+            "sourceId": "lever-weride",
+            "fetchedAt": "2026-08-22T16:42:10.661Z",
+            "endpoint": "https://api.lever.co/v0/postings/weride?mode=json",
+            "http": {
+              "status": 304,
+              "finalUrl": "https://api.lever.co/v0/postings/weride?mode=json",
+              "contentType": "",
+              "bytes": 0,
+              "contentHash": "f6d68d6a8078afa15f1e74d6f5c777743e519aa85b21d7aea58437c483afcf75",
+              "redirectChain": [],
+              "pages": 1,
+              "notModified": true
+            },
+            "pagination": {
+              "complete": false,
+              "pages": 1,
+              "maxPages": 20,
+              "stopReason": "http_304_not_modified",
+              "advertisedTotal": null,
+              "startOffset": 0,
+              "observedEndOffset": 0,
+              "nextOffset": 0,
+              "overlapRows": 0,
+              "cycleEndReached": false,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "cursorFingerprint": null,
+              "cursorGeneration": 0
+            },
+            "parser": "http_304_not_modified",
+            "parserStats": {
+              "observedRows": 0,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "beijingRows": 0
+            },
+            "storage": {
+              "received": 0,
+              "new": 0,
+              "updated": 0,
+              "unchanged": 2,
+              "missing": 0,
+              "missingAdvanceSuppressed": true,
+              "missingReviewOnly": false,
+              "missingThreshold": 2,
+              "notModified": true
+            },
+            "session": null
+          }
+        ]
+      },
+      {
+        "runId": "run-742d2f19-025c-41a8-b256-5d65dafd1bad",
+        "stats": {
+          "sourcesRequested": 1,
+          "sourcesSucceeded": 1,
+          "sourcesFailed": 0,
+          "sourcesIncomplete": 1,
+          "jobsObserved": 600,
+          "jobsNew": 405,
+          "jobsUpdated": 0
+        },
+        "errors": [],
+        "evidence": [
+          {
+            "sourceId": "bytedance-official-careers",
+            "fetchedAt": "2026-08-22T16:42:57.972Z",
+            "endpoint": "https://jobs.bytedance.com/api/v1/search/job/posts",
+            "http": {
+              "status": 200,
+              "finalUrl": "https://jobs.bytedance.com/api/v1/search/job/posts",
+              "contentType": "application/json; charset=utf-8",
+              "bytes": 2898082,
+              "contentHash": "6c598d1e29c61d7791e3ba7d16153c37afd508ae1bc12dd4b1fbf21f5e792c51",
+              "redirectChain": [],
+              "pages": 6
+            },
+            "pagination": {
+              "complete": false,
+              "pages": 6,
+              "maxPages": 50,
+              "stopReason": "advertised_total_reached",
+              "advertisedTotal": 10000,
+              "startOffset": 9500,
+              "observedEndOffset": 10000,
+              "nextOffset": 0,
+              "overlapRows": 100,
+              "cycleEndReached": true,
+              "headRefreshRows": 100,
+              "tailRowsObserved": 500,
+              "cursorFingerprint": "sha256:6101d8766669a9929dede1084c375dc533c071c6e20ac854a2778fb7e35b526d",
+              "cursorGeneration": 2
+            },
+            "parser": "bytedance_public_search_api",
+            "parserStats": {
+              "observedRows": 600,
+              "headRefreshRows": 100,
+              "tailRowsObserved": 500,
+              "beijingRows": 299
+            },
+            "storage": {
+              "received": 600,
+              "new": 405,
+              "updated": 0,
+              "unchanged": 195,
+              "missing": 0,
+              "missingAdvanceSuppressed": true,
+              "missingReviewOnly": false,
+              "missingThreshold": 2,
+              "notModified": false
+            },
+            "session": {
+              "kind": "anonymous_public_csrf_session",
+              "url": "https://jobs.bytedance.com/api/v1/csrf/token",
+              "status": 200,
+              "contentHash": "81c6fc1ee22d157ab7faabcebbda1eb1ca10425b626df501b2ae764492ab5e67",
+              "fetchedAt": "2026-08-22T16:42:28.809Z",
+              "credentialsPersisted": false,
+              "refreshes": 0
+            }
+          }
+        ]
+      },
+      {
+        "runId": "run-77b35015-f591-4935-95bc-5c3d59762548",
+        "stats": {
+          "sourcesRequested": 1,
+          "sourcesSucceeded": 1,
+          "sourcesFailed": 0,
+          "sourcesIncomplete": 1,
+          "jobsObserved": 0,
+          "jobsNew": 0,
+          "jobsUpdated": 0
+        },
+        "errors": [],
+        "evidence": [
+          {
+            "sourceId": "greenhouse-speechify",
+            "fetchedAt": "2026-08-22T16:43:13.349Z",
+            "endpoint": "https://boards-api.greenhouse.io/v1/boards/speechify/jobs?content=false",
+            "http": {
+              "status": 304,
+              "finalUrl": "https://boards-api.greenhouse.io/v1/boards/speechify/jobs?content=false",
+              "contentType": "",
+              "bytes": 0,
+              "contentHash": "f22c8636f3d7c3754440654a50fe76924bd8d7675f2e0c85bc813250f31986a2",
+              "redirectChain": [],
+              "pages": 1,
+              "notModified": true
+            },
+            "pagination": {
+              "complete": false,
+              "pages": 1,
+              "maxPages": 20,
+              "stopReason": "http_304_not_modified",
+              "advertisedTotal": null,
+              "startOffset": 0,
+              "observedEndOffset": 0,
+              "nextOffset": 0,
+              "overlapRows": 0,
+              "cycleEndReached": false,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "cursorFingerprint": null,
+              "cursorGeneration": 0
+            },
+            "parser": "http_304_not_modified",
+            "parserStats": {
+              "observedRows": 0,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "beijingRows": 0
+            },
+            "storage": {
+              "received": 0,
+              "new": 0,
+              "updated": 0,
+              "unchanged": 20,
+              "missing": 0,
+              "missingAdvanceSuppressed": true,
+              "missingReviewOnly": false,
+              "missingThreshold": 2,
+              "notModified": true
+            },
+            "session": null
+          }
+        ]
+      },
+      {
+        "runId": "run-07dbda32-12c5-4140-94e7-e321b6ede790",
+        "stats": {
+          "sourcesRequested": 1,
+          "sourcesSucceeded": 1,
+          "sourcesFailed": 0,
+          "sourcesIncomplete": 1,
+          "jobsObserved": 0,
+          "jobsNew": 0,
+          "jobsUpdated": 0
+        },
+        "errors": [],
+        "evidence": [
+          {
+            "sourceId": "greenhouse-fusion",
+            "fetchedAt": "2026-08-22T16:43:28.398Z",
+            "endpoint": "https://boards-api.greenhouse.io/v1/boards/fusionworldwide/jobs?content=false",
+            "http": {
+              "status": 304,
+              "finalUrl": "https://boards-api.greenhouse.io/v1/boards/fusionworldwide/jobs?content=false",
+              "contentType": "",
+              "bytes": 0,
+              "contentHash": "eb4a759594970929bfc1dd31400c39e66dbb79f5581c6204d0fbbc9c873f3cbf",
+              "redirectChain": [],
+              "pages": 1,
+              "notModified": true
+            },
+            "pagination": {
+              "complete": false,
+              "pages": 1,
+              "maxPages": 20,
+              "stopReason": "http_304_not_modified",
+              "advertisedTotal": null,
+              "startOffset": 0,
+              "observedEndOffset": 0,
+              "nextOffset": 0,
+              "overlapRows": 0,
+              "cycleEndReached": false,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "cursorFingerprint": null,
+              "cursorGeneration": 0
+            },
+            "parser": "http_304_not_modified",
+            "parserStats": {
+              "observedRows": 0,
+              "headRefreshRows": 0,
+              "tailRowsObserved": 0,
+              "beijingRows": 0
+            },
+            "storage": {
+              "received": 0,
+              "new": 0,
+              "updated": 0,
+              "unchanged": 10,
+              "missing": 0,
+              "missingAdvanceSuppressed": true,
+              "missingReviewOnly": false,
+              "missingThreshold": 2,
+              "notModified": true
+            },
+            "session": null
+          }
+        ]
+      }
+    ],
+    "safetyDowngrades": [],
+    "errors": [],
+    "separationBoundary": "此任务只更新已批准来源，不执行来源发现或候选探测。"
+  },
+  "projection": {
+    "path": "/home/runner/work/oriole-job-engine/oriole-job-engine/state/state-data/hosted-snapshot.json",
+    "revision": 511,
+    "manifest": {
+      "schemaVersion": "huangque.hosted-projection.v1",
+      "generatedAt": "2026-08-22T16:43:38.660Z",
+      "policy": "approved/reviewable sources first; confirmed_active jobs require fresh source-scoped evidence",
+      "freshnessPolicy": {
+        "schemaVersion": "huangque.hosted-freshness-policy.v1",
+        "maximumAgeDays": 14,
+        "cursorSources": "fresh per-job sourceObservations only; a partial source success never renews unseen jobs",
+        "sourceWideChecks": "non-cursor sources only; requires committed authoritative full collection or HTTP 304 evidence correlated with lastSuccessfulCheckAt",
+        "stats": {
+          "eligibleActiveJobs": 10276,
+          "freshJobs": 10276,
+          "excludedWithoutFreshSupport": 0
+        }
+      },
+      "limits": {
+        "sources": 60,
+        "edges": 200,
+        "runs": 30,
+        "jobs": 300,
+        "bytes": 7500000,
+        "d1RowBytes": 1500000
+      },
+      "original": {
+        "sources": 130,
+        "edges": 10855,
+        "runs": 44,
+        "jobs": 10276
+      },
+      "selected": {
+        "sources": 60,
+        "edges": 200,
+        "runs": 30,
+        "jobs": 300
+      },
+      "truncated": {
+        "sources": 70,
+        "edges": 10655,
+        "runs": 14,
+        "jobs": 9976
+      },
+      "replacementMode": "complete_snapshot",
+      "warnings": [],
+      "bytes": 3147474
+    }
+  },
+  "audit": {
+    "passed": 30,
+    "failedOrBlocked": 3,
+    "implementationComplete": true,
+    "stateIntegrityPassed": true,
+    "operationalNow": false,
+    "maturityObserved": false,
+    "fullyOperational": false,
+    "scope": "实现、当前数据、线上运行与跨天成熟度分别判定；代码回归仍必须以 npm test 和 GitHub CI 的独立输出为准。"
+  }
+}

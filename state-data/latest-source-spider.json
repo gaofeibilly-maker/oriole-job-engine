@@ -1,0 +1,387 @@
+{
+  "schemaVersion": "huangque.source-spider-run.v1",
+  "runId": "run-e4607d16-116c-41f3-8e4d-ae163ab37cab",
+  "startedAt": "2026-08-22T19:45:34.862Z",
+  "completedAt": "2026-08-22T19:55:30.306Z",
+  "timezone": "Asia/Shanghai",
+  "scheduledDate": "2026-08-23",
+  "mode": "weekly_deep",
+  "trigger": "github_actions",
+  "githubRunId": "32594649342",
+  "githubRunAttempt": "1",
+  "universe": {
+    "schemaVersion": "huangque.employer-universe.v1",
+    "generatedAt": "2026-08-22T17:34:38.612Z",
+    "targets": 5425,
+    "complete": true
+  },
+  "selectedTargets": 150,
+  "selectedTargetIds": [
+    "employer-cn-dabc3cd185f5f1941fcc",
+    "employer-cn-de3f2d91dc6c4887dd23",
+    "employer-cn-e53094408fab871ddbe8",
+    "employer-cn-e5b788bb22734b091879",
+    "employer-cn-e5e275122bd9123a2b56",
+    "employer-cn-e914309f02e35df5fced",
+    "employer-cn-efe4eda9702491f1c234",
+    "employer-cn-f827388f6767f71fac7c",
+    "employer-cn-f82e5246fa91761d5e1b",
+    "employer-cn-f8631a20ba17b2fed716",
+    "employer-cn-fb09c7bbd414a0ec064e",
+    "employer-cn-fb395421132f5d7f6eea",
+    "employer-cn-ff39a91f8e1e26dbfb96",
+    "employer-cn-055a753b87d4beb134f3",
+    "employer-cn-0ada852c29205a89a56d",
+    "employer-cn-10f4a04a46b6528fee43",
+    "employer-cn-1f4d721b635887602c27",
+    "employer-cn-44467431f287c6168cbb",
+    "employer-cn-70cfb717cd9b882c7cb6",
+    "employer-cn-84b12e1a84257bf054a5",
+    "employer-cn-9774e4f590d19ee2468c",
+    "employer-cn-d444b3cf85930b0c6513",
+    "employer-cn-d7e3abccbb4be0820617",
+    "employer-cn-d7e7514f081585b38e03",
+    "employer-cn-e6e28b81cebcaf87a676",
+    "employer-cn-05690568e7bbc9391dbd",
+    "employer-cn-05767105719f061d5d92",
+    "employer-cn-05799ee177170456edf7",
+    "employer-cn-05813fe7d3cb0b6d8df8",
+    "employer-cn-0597bf7f3bea2f33dd73",
+    "employer-cn-05a59d754f37cc617c5d",
+    "employer-cn-05bf94525e39e188c9e2",
+    "employer-cn-05d2794bbfbe1bdf30f2",
+    "employer-cn-05d63ebf59106f1f42da",
+    "employer-cn-05d6ce570138a743d807",
+    "employer-cn-05da6a0d1825c23048a8",
+    "employer-cn-05dbb21b6e66ce4f773f",
+    "employer-cn-05ead6c099fd6b5a0bb9",
+    "employer-cn-05ee9db4731c5ce9a9f8",
+    "employer-cn-05fa6a8cb320b93166d6",
+    "employer-cn-05fc9343d49e283076dd",
+    "employer-cn-0627a1aa7f004ac61f3f",
+    "employer-cn-0638e6ee0ed9ca3464ae",
+    "employer-cn-06433c4f708a65e65263",
+    "employer-cn-064b7883e1bbfefd8bd8",
+    "employer-cn-064ee02fcc430212237b",
+    "employer-cn-065f290f9e526b68ff22",
+    "employer-cn-0662f7fda5a4ac6b6432",
+    "employer-cn-06651a06f75cbb9602d2",
+    "employer-cn-0669c204e1fd0f8484d6",
+    "employer-cn-067a3947585d6aa73c56",
+    "employer-cn-067f64cf2677170f1ce7",
+    "employer-cn-068f7b10481a24a05544",
+    "employer-cn-0693bd556e87cf447600",
+    "employer-cn-069461ff581a00cfdb5a",
+    "employer-cn-0699069a090082528268",
+    "employer-cn-06b7c906446bd7de1884",
+    "employer-cn-06b8b8a011002b9d2f90",
+    "employer-cn-06cf66b813b402d0e0af",
+    "employer-cn-06d0e03bd2d28078f084",
+    "employer-cn-06de1c34e19c63d53cd5",
+    "employer-cn-06e755bb05aea6fa8adc",
+    "employer-cn-06edbf7659f371c577a2",
+    "employer-cn-07094ada47ee663862f8",
+    "employer-cn-0719b7e5cb5dcc6dbd76",
+    "employer-cn-071fda87c50a7435ac36",
+    "employer-cn-0720bf43bc14c04622d0",
+    "employer-cn-073173c2117a38256669",
+    "employer-cn-0737e1fed0bafa75cd62",
+    "employer-cn-075373ee9ff02fb800fb",
+    "employer-cn-0754cdc8ecbfcfb447cf",
+    "employer-cn-075fd73bea0abed60337",
+    "employer-cn-07622fae22ed5480c9ed",
+    "employer-cn-0764e85d039a7575ac87",
+    "employer-cn-07789e6f98242296f512",
+    "employer-cn-0781d4625089e15b61ea",
+    "employer-cn-079ce03536cd607f31c3",
+    "employer-cn-079d3fa494db81181bb9",
+    "employer-cn-07ab091d0252e4dc741a",
+    "employer-cn-07b8d4ca5526876c18ba",
+    "employer-cn-07de1a3d17ecf809b43f",
+    "employer-cn-07df78eba2a5aab790bf",
+    "employer-cn-07e82a6a655955e43162",
+    "employer-cn-07f7e6089cbcda00f8f7",
+    "employer-cn-0805cb9bcb51f9715b4f",
+    "employer-cn-08062e8d6003b32c9578",
+    "employer-cn-081fb13676f84f1c923e",
+    "employer-cn-0831ff05e19b75496d32",
+    "employer-cn-083601a35cb7ccd46a32",
+    "employer-cn-0838971cc22a564fa7ed",
+    "employer-cn-084c7f211893460577e0",
+    "employer-cn-085870dc071e25a18f2d",
+    "employer-cn-085f14c08d54edb18318",
+    "employer-cn-0866a5850ae766895c5a",
+    "employer-cn-0873d06e00cc9f67bb8f",
+    "employer-cn-08777887d2b5b655bd56",
+    "employer-cn-088b2da8d9a6fd7fd77d",
+    "employer-cn-08a494f1ff63824bc21d",
+    "employer-cn-08b347086bab8f89287d",
+    "employer-cn-08bb0255e5a0f0910305",
+    "employer-cn-08bdac9c83bac4f2a4e6",
+    "employer-cn-08cdae054c3de8032316",
+    "employer-cn-08f296c7389271b216af",
+    "employer-cn-0910878d8a510e44fc53",
+    "employer-cn-091492251f677e828aa1",
+    "employer-cn-09156b2380476c59e70e",
+    "employer-cn-0918aca7a2644cdd8a4d",
+    "employer-cn-093330267c081643174e",
+    "employer-cn-0939648296ab1e77bb93",
+    "employer-cn-093c635d8ed451c2a023",
+    "employer-cn-0958f90abefb81d7d2b4",
+    "employer-cn-095e5a4ded72a358b710",
+    "employer-cn-097242e685fc7f92bf14",
+    "employer-cn-0978c58fc1ff060bc1f9",
+    "employer-cn-0980b4143170ce0a5ea4",
+    "employer-cn-09b25e261275912eedce",
+    "employer-cn-09bac809a070178befee",
+    "employer-cn-09cf4aa68125a4d3d449",
+    "employer-cn-09d5dd9f3683197f64a0",
+    "employer-cn-09dac063d6b45118414b",
+    "employer-cn-09dbd4211a3bfae341c5",
+    "employer-cn-09e425354381934d30e5",
+    "employer-cn-09f71a50f7ccd3376542",
+    "employer-cn-0a028958dc974fc0d800",
+    "employer-cn-0a0d79cf57f6f75c3242",
+    "employer-cn-0a1203b5cec606404ff0",
+    "employer-cn-0a4ceb0fabe77fafe7a9",
+    "employer-cn-0a4d2b1eb47b7edfdcc4",
+    "employer-cn-0a4e197d0ad75028acf4",
+    "employer-cn-0a5116146c955df6bd7d",
+    "employer-cn-0a532d3cd82f58377364",
+    "employer-cn-0a6d337767c7c52a9c25",
+    "employer-cn-0a796108f2e892b89688",
+    "employer-cn-0a869a59bae1126e7b9a",
+    "employer-cn-0a87187852baa2fbdd87",
+    "employer-cn-0a8a6d7b209e9fcd4020",
+    "employer-cn-0a92c82bbb5a753e64c0",
+    "employer-cn-0aae6662453f2657f592",
+    "employer-cn-0ab84dfe517629b439ae",
+    "employer-cn-0ab910a8f8cff860a033",
+    "employer-cn-0abc15b426a3d2db97d1",
+    "employer-cn-0abf979c8ef8eac73c9c",
+    "employer-cn-0acc86c364df0e1aee3e",
+    "employer-cn-0ad4269a10e3a782a250",
+    "employer-cn-0af8a9d34dadd1eca645",
+    "employer-cn-0afe24638339d2edda08",
+    "employer-cn-0b063200228b5989bcfe",
+    "employer-cn-0b099660d5202db0220e",
+    "employer-cn-0b36ac4b5beb41e4576c",
+    "employer-cn-0b3b83d8f54cbb69ae84"
+  ],
+  "providerRuns": [
+    {
+      "provider": "baidu",
+      "status": "failed",
+      "hits": 0,
+      "warnings": [
+        "employer-search:employer-cn-dabc3cd185f5f1941fcc：百度 API 错误 QUOTA_USER_DAILY_FREE：Daily free quota per user for Web Search exceeded；本轮百度任务已熔断，剩余任务留待额度恢复后重试。"
+      ],
+      "metadata": {
+        "requestCount": 1,
+        "queryCount": 1,
+        "selectedTaskCount": 150,
+        "completedTaskIds": [],
+        "failedTaskIds": [
+          "employer-search:employer-cn-dabc3cd185f5f1941fcc"
+        ],
+        "budgetExhausted": false,
+        "upstreamQuotaExhausted": true,
+        "haltedReason": "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED",
+        "unattemptedTaskCount": 149,
+        "dailyBudget": {
+          "day": "2026-08-22",
+          "used": 82,
+          "limit": 300,
+          "remaining": 218
+        }
+      }
+    },
+    {
+      "provider": "common_crawl",
+      "status": "not_applicable",
+      "hits": 0,
+      "warnings": [
+        "本轮查询没有受控 site: 域名；Common Crawl 不执行正文关键词搜索。"
+      ],
+      "metadata": {
+        "completedTaskIds": [],
+        "failedTaskIds": [],
+        "requestCount": 0,
+        "eligibleQueries": 0
+      }
+    }
+  ],
+  "discovery": {
+    "inputResults": 0,
+    "validResults": 0,
+    "invalidResults": 0,
+    "candidateSources": 0,
+    "readyForProbe": 0,
+    "needsReview": 0,
+    "alreadyRegistered": 0,
+    "backlog": 0,
+    "rejected": 0,
+    "bySourceType": {},
+    "byProvider": {}
+  },
+  "crawl": {
+    "pages": 0,
+    "observations": []
+  },
+  "probes": [],
+  "onlineEvidence": {
+    "present": false,
+    "successfulProviders": [],
+    "successfulCrawlPages": 0,
+    "verifiedProbes": 0,
+    "note": "本地 imported 目标根只证明队列工作；不能替代真实网络成功证据。"
+  },
+  "queue": {
+    "total": 5425,
+    "approved": 1,
+    "verifiedPendingReview": 4,
+    "discovered": 81,
+    "missing": 5339,
+    "due": 5171,
+    "backoff": 254
+  },
+  "approvalBoundary": "寻源蜘蛛只写 candidate/probed；任何新来源都不能自动进入 approved 岗位采集。",
+  "status": "failed",
+  "sourceSpiderStatus": "failed",
+  "regionalGapScan": {
+    "status": "partial",
+    "discoveryRunId": "run-e915c1b5-7b69-47d1-a187-0b5d9227ea30",
+    "discovered": {
+      "inputResults": 206,
+      "validResults": 206,
+      "invalidResults": 0,
+      "candidateSources": 40,
+      "readyForProbe": 21,
+      "needsReview": 17,
+      "alreadyRegistered": 2,
+      "backlog": 0,
+      "rejected": 0,
+      "bySourceType": {
+        "company_career_site": 18,
+        "government_public_employment": 2,
+        "government_recruitment_hub": 1,
+        "official_ats": 1,
+        "official_source_directory": 1,
+        "single_government_post": 17
+      },
+      "byProvider": {
+        "BeijingPublicEmployment": 1,
+        "ByteDance": 1,
+        "NCSS": 1,
+        "none": 37
+      }
+    },
+    "probes": [
+      {
+        "runId": "run-9974e168-7a46-4fbb-8a26-60b0eb0c5884",
+        "sourceId": "huangque-e17550b19d1d03",
+        "verificationState": "probe_failed",
+        "counts": {
+          "total": 0,
+          "china": 0,
+          "beijing": 0
+        }
+      },
+      {
+        "runId": "run-a0f30254-9133-4a3c-8bfa-a2f48a1af8ab",
+        "sourceId": "huangque-fc223e5f558739",
+        "verificationState": "probe_failed",
+        "counts": {
+          "total": 0,
+          "china": 0,
+          "beijing": 0
+        }
+      },
+      {
+        "runId": "run-e43ebb06-e233-453d-9fa1-7ee61e970526",
+        "sourceId": "huangque-3c7e386006ca74",
+        "verificationState": "probe_failed",
+        "counts": {
+          "total": 0,
+          "china": 0,
+          "beijing": 0
+        }
+      }
+    ],
+    "probeQueue": {
+      "eligibleSources": 3,
+      "selectedSources": 3,
+      "remainingSources": 0,
+      "selectedSourceIds": [
+        "huangque-e17550b19d1d03",
+        "huangque-fc223e5f558739",
+        "huangque-3c7e386006ca74"
+      ]
+    },
+    "providerRuns": [
+      {
+        "provider": "official_catalog",
+        "status": "ok",
+        "hits": 26,
+        "warnings": [],
+        "metadata": {
+          "catalogUpdatedAt": "2026-08-20T00:00:00.000Z",
+          "entries": 26,
+          "directoryEntries": 8,
+          "employerWatchlistEntries": 18,
+          "inputTaskCount": 150
+        }
+      },
+      {
+        "provider": "common_crawl",
+        "status": "ok",
+        "hits": 180,
+        "warnings": [],
+        "metadata": {
+          "indexId": "CC-MAIN-2026-30",
+          "requestCount": 7,
+          "eligibleQueries": 32,
+          "executedQueries": 6,
+          "completedTaskIds": [
+            "provincial-public:037",
+            "provincial-public:038",
+            "provincial-public:039",
+            "provincial-public:040",
+            "provincial-public:041",
+            "provincial-public:042"
+          ],
+          "failedTaskIds": [],
+          "limitation": "URL 索引证据，不是网页正文关键词搜索"
+        }
+      },
+      {
+        "provider": "baidu",
+        "status": "failed",
+        "hits": 0,
+        "warnings": [
+          "provincial-public:001：百度 API 错误 QUOTA_USER_DAILY_FREE：Daily free quota per user for Web Search exceeded；本轮百度任务已熔断，剩余任务留待额度恢复后重试。"
+        ],
+        "metadata": {
+          "requestCount": 1,
+          "queryCount": 1,
+          "selectedTaskCount": 150,
+          "completedTaskIds": [],
+          "failedTaskIds": [
+            "provincial-public:001"
+          ],
+          "budgetExhausted": false,
+          "upstreamQuotaExhausted": true,
+          "haltedReason": "BAIDU_UPSTREAM_DAILY_QUOTA_EXHAUSTED",
+          "unattemptedTaskCount": 149,
+          "dailyBudget": {
+            "day": "2026-08-22",
+            "used": 83,
+            "limit": 300,
+            "remaining": 217
+          }
+        }
+      }
+    ]
+  },
+  "fingerprint": "sha256:1a3346a015efdb38d56b0fa483d4f91fbc2d66b59c82d3324fcc21b7fdc36b06"
+}
