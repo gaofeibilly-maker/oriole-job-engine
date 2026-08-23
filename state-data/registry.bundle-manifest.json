@@ -1,18 +1,18 @@
 {
   "schemaVersion": "huangque.state-bundle-manifest.v1",
-  "packedAt": "2026-08-22T19:56:48.562Z",
+  "packedAt": "2026-08-23T16:57:56.153Z",
   "registry": {
     "path": "registry.json",
     "schemaVersion": "huangque.registry.v1",
-    "revision": 661,
-    "sha256": "ce0a0f8fd76ce8b682d7da82948b5efe3db4ab971fff59fa4c8e9f84cf5c8b73",
-    "bytes": 207021319
+    "revision": 694,
+    "sha256": "7d66e8dbdddfa11087cf9ee43edb5d3fca4db1d9e3136aab7ea1d2796883a37b",
+    "bytes": 211290041
   },
   "bundle": {
     "path": "registry.json.gz",
     "encoding": "gzip",
-    "sha256": "8947218869f91ea63a8372a689f5f26ea000399576fb2e969d5e7927b0642146",
-    "bytes": 21329675,
+    "sha256": "f7eb082a651bd7e10d6d15caee9ab2e501cb0537cbc62466828132ecd4550470",
+    "bytes": 21757824,
     "maxBytes": 94371840
   }
 }
