@@ -1,8 +1,8 @@
 {
   "schemaVersion": "huangque.source-spider-state.v1",
-  "revision": 8,
+  "revision": 9,
   "createdAt": "2026-08-21T08:14:54.158Z",
-  "updatedAt": "2026-08-26T21:14:40.494Z",
+  "updatedAt": "2026-09-02T22:04:25.929Z",
   "targets": {
     "employer-cn-81baf57e05f112764536": {
       "frontier": [
@@ -40,13 +40,22 @@
           "status": "failed",
           "code": "INSECURE_PROTOCOL",
           "error": "网络探测只允许 HTTPS"
+        },
+        {
+          "employerTargetId": "employer-cn-81baf57e05f112764536",
+          "url": "https://zhaopin.jd.com/",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "INSECURE_PROTOCOL",
+          "error": "网络探测只允许 HTTPS"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-9627013afa8b62",
@@ -58,8 +67,8 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-1980df0d53239e236f89": {
@@ -98,21 +107,30 @@
           "status": "failed",
           "code": "ROBOTS_UNAVAILABLE",
           "error": "robots: robots_unavailable_fail_closed"
+        },
+        {
+          "employerTargetId": "employer-cn-1980df0d53239e236f89",
+          "url": "https://job.sinopec.com/",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_unavailable_fail_closed"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-2d0dd4c4aca4a1"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-3e91ef83817d7d6f1f30": {
@@ -151,13 +169,22 @@
           "status": "failed",
           "code": "ROBOTS_UNAVAILABLE",
           "error": "robots: robots_fetch_failed_fail_closed"
+        },
+        {
+          "employerTargetId": "employer-cn-3e91ef83817d7d6f1f30",
+          "url": "https://we.dji.com/zh-CN/",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_fetch_failed_fail_closed"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-b4169f792a5b22",
@@ -165,20 +192,31 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-455ece81de5605d85e54": {
       "frontier": [
         {
-          "url": "https://talent.baidu.com/static/index.html",
-          "depth": 1,
-          "parentUrl": "https://talent.baidu.com/"
+          "url": "https://talent.baidu.com/static/images/favicon-ignore.ico",
+          "depth": 2,
+          "parentUrl": "https://talent.baidu.com/static/index.html"
+        },
+        {
+          "url": "https://talent.baidu.com/static/src/_common/css/app.min.css",
+          "depth": 2,
+          "parentUrl": "https://talent.baidu.com/static/index.html"
+        },
+        {
+          "url": "https://talent.baidu.com/static/lib/element-ui/index.css",
+          "depth": 2,
+          "parentUrl": "https://talent.baidu.com/static/index.html"
         }
       ],
       "visitedUrls": [
-        "https://talent.baidu.com/"
+        "https://talent.baidu.com/",
+        "https://talent.baidu.com/static/index.html"
       ],
       "crawlEvidence": [
         {
@@ -195,23 +233,41 @@
             "observationId": "observation-d6046d0868f31be1-933361b3-01e3-4472-8415-ee2fdb9bf045",
             "contentHash": "d6046d0868f31be16b56a71c900b882f8b3cb90b154b5431847155f12600011b"
           }
+        },
+        {
+          "employerTargetId": "employer-cn-455ece81de5605d85e54",
+          "url": "https://talent.baidu.com/static/index.html",
+          "depth": 1,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "ok",
+          "finalUrl": "https://talent.baidu.com/static/index.html",
+          "httpStatus": 200,
+          "contentHash": "9ad46be85bb7eceff92b937c137a2ba1e74921fb032b4f31b06575f7762d03a7",
+          "links": 3,
+          "artifact": {
+            "observationId": "observation-9ad46be85bb7ecef-92f8e43c-d55f-4380-860d-959a84b24875",
+            "contentHash": "9ad46be85bb7eceff92b937c137a2ba1e74921fb032b4f31b06575f7762d03a7"
+          }
         }
       ],
-      "attempts": 1,
+      "attempts": 2,
       "consecutiveFailures": 0,
-      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
-      "lastSuccessAt": "2026-08-21T08:35:16.659Z",
-      "nextDueAt": "2026-08-28T08:35:16.659Z",
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-09T21:11:53.664Z",
       "coverage": "verified_pending_review",
       "discoveredSourceIds": [
         "huangque-bec04093023ef5",
         "huangque-b9d9b2cd13567f",
-        "huangque-967abf1d4cbecf"
+        "huangque-967abf1d4cbecf",
+        "huangque-84bb938876a550",
+        "huangque-9c5f43a8bbca0f",
+        "huangque-71f4cc8001e68d"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "failed",
-        "common_crawl": "ok"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-47c1e53c427aafb4556b": {
@@ -236,11 +292,11 @@
           }
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-b57b7ecd4a0918",
@@ -249,8 +305,8 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-522d3edeb64a7ca45f5e": {
@@ -275,11 +331,11 @@
           }
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-57343ee8df0864",
@@ -288,17 +344,12 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-536bc8fc40cad38c2256": {
       "frontier": [
-        {
-          "url": "https://jobs.lenovo.com/en_US/careers",
-          "depth": 1,
-          "parentUrl": "https://jobs.lenovo.com/"
-        },
         {
           "url": "https://jobs.lenovo.com/en_US/careers/Home",
           "depth": 1,
@@ -518,10 +569,36 @@
           "url": "https://jobs.lenovo.com/portal/4/favicon.ico",
           "depth": 1,
           "parentUrl": "https://jobs.lenovo.com/"
+        },
+        {
+          "url": "https://jobs.lenovo.com/en_US/careers",
+          "depth": 2,
+          "parentUrl": "https://jobs.lenovo.com/en_US/careers"
+        },
+        {
+          "url": "https://jobs.lenovo.com/ASSET/portal/jquery/UI/1.13.2/jquery-ui.min.css?version=10.81.91-stable",
+          "depth": 2,
+          "parentUrl": "https://jobs.lenovo.com/en_US/careers"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portalpacks/web/assets/body.C9CX2Y2H.css",
+          "depth": 2,
+          "parentUrl": "https://jobs.lenovo.com/en_US/careers"
+        },
+        {
+          "url": "https://jobs.lenovo.com/ASSET/wizard/portal/jquery/plugin/select2/select2.min.css?version=10.81.91-stable",
+          "depth": 2,
+          "parentUrl": "https://jobs.lenovo.com/en_US/careers"
+        },
+        {
+          "url": "https://jobs.lenovo.com/portalpacks/web/assets/wizard-legacy.Bpy3i56j.css",
+          "depth": 2,
+          "parentUrl": "https://jobs.lenovo.com/en_US/careers"
         }
       ],
       "visitedUrls": [
-        "https://jobs.lenovo.com/"
+        "https://jobs.lenovo.com/",
+        "https://jobs.lenovo.com/en_US/careers"
       ],
       "crawlEvidence": [
         {
@@ -538,21 +615,36 @@
             "observationId": "observation-96911cc9b5d68c8a-bee8a258-3225-4052-8e75-490c349adde0",
             "contentHash": "96911cc9b5d68c8a412185495bedcd924bc19c7f91d67e7f338590bcc9b460c0"
           }
+        },
+        {
+          "employerTargetId": "employer-cn-536bc8fc40cad38c2256",
+          "url": "https://jobs.lenovo.com/en_US/careers",
+          "depth": 1,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "ok",
+          "finalUrl": "https://jobs.lenovo.com/en_US/careers",
+          "httpStatus": 200,
+          "contentHash": "d1b94b0d5831ed86a7370f4edfd8c55cb4a6ae859646576f8423c146fc47a07d",
+          "links": 47,
+          "artifact": {
+            "observationId": "observation-d1b94b0d5831ed86-41943c1f-b7d0-4f88-8466-78109dbe9740",
+            "contentHash": "d1b94b0d5831ed86a7370f4edfd8c55cb4a6ae859646576f8423c146fc47a07d"
+          }
         }
       ],
-      "attempts": 1,
+      "attempts": 2,
       "consecutiveFailures": 0,
-      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
-      "lastSuccessAt": "2026-08-21T08:35:16.659Z",
-      "nextDueAt": "2026-08-28T08:35:16.659Z",
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-09T21:11:53.664Z",
       "coverage": "verified_pending_review",
       "discoveredSourceIds": [
         "huangque-5cff62c169391f"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "failed",
-        "common_crawl": "ok"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-53874092e000069bfeda": {
@@ -577,19 +669,19 @@
           }
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-90b01af9dfeabd"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-6f1a9695e1b7b7cd534d": {
@@ -628,13 +720,22 @@
           "status": "failed",
           "code": "TOO_MANY_REDIRECTS",
           "error": "重定向次数超过上限"
+        },
+        {
+          "employerTargetId": "employer-cn-6f1a9695e1b7b7cd534d",
+          "url": "https://talent.catl.com/",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "TOO_MANY_REDIRECTS",
+          "error": "重定向次数超过上限"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-ce214019b95a06",
@@ -642,8 +743,8 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-797301040f888505b435": {
@@ -682,41 +783,51 @@
           "status": "failed",
           "code": "TOO_MANY_REDIRECTS",
           "error": "重定向次数超过上限"
+        },
+        {
+          "employerTargetId": "employer-cn-797301040f888505b435",
+          "url": "https://job.zte.com.cn/",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "TOO_MANY_REDIRECTS",
+          "error": "重定向次数超过上限"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-893c491f49b061"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-82eaaba81d9dcc54deab": {
       "frontier": [
         {
-          "url": "https://career.huawei.com/'%20+%20window.$aioCdnPrefix%20+%20window.$aioList[i]%20+%20'/'%20+%20(window.gConfig.isMobile%20?+%27m%27+%3A+%27pc%27%29+++%27%2Findex.css=",
-          "depth": 1,
-          "parentUrl": "https://career.huawei.com/"
-        },
-        {
           "url": "https://career.huawei.com/cn",
           "depth": 2,
           "parentUrl": "https://career.huawei.com/cn"
+        },
+        {
+          "url": "https://career.huawei.com/'%20+%20window.$aioCdnPrefix%20+%20window.$aioList[i]%20+%20'/'%20+%20(window.gConfig.isMobile%20?+%27m%27+%3A+%27pc%27%29+++%27%2Findex.css=",
+          "depth": 2,
+          "parentUrl": "https://career.huawei.com/'%20+%20window.$aioCdnPrefix%20+%20window.$aioList[i]%20+%20'/'%20+%20(window.gConfig.isMobile%20?+%27m%27+%3A+%27pc%27%29+++%27%2Findex.css="
         }
       ],
       "visitedUrls": [
         "https://career.huawei.com/",
         "https://career.huawei.com/-/media/plugin/bfc701593d6acafd42dd77dd254a8090/logo_ico.png",
         "https://career.huawei.com/cn",
-        "https://career.huawei.com/-/media/plugin/243bea05d7aa09831da4ea9b1edaa63b/common.min.css"
+        "https://career.huawei.com/-/media/plugin/243bea05d7aa09831da4ea9b1edaa63b/common.min.css",
+        "https://career.huawei.com/'%20+%20window.$aioCdnPrefix%20+%20window.$aioList[i]%20+%20'/'%20+%20(window.gConfig.isMobile%20?+%27m%27+%3A+%27pc%27%29+++%27%2Findex.css="
       ],
       "crawlEvidence": [
         {
@@ -778,13 +889,28 @@
             "observationId": "observation-a1bae89c108fbef7-ccc8b59d-c876-4858-8196-ebefc7cf3a1f",
             "contentHash": "a1bae89c108fbef76d2f21ab8aec4d2926d6dbe6430add897fdb0afe6266fa2c"
           }
+        },
+        {
+          "employerTargetId": "employer-cn-82eaaba81d9dcc54deab",
+          "url": "https://career.huawei.com/'%20+%20window.$aioCdnPrefix%20+%20window.$aioList[i]%20+%20'/'%20+%20(window.gConfig.isMobile%20?+%27m%27+%3A+%27pc%27%29+++%27%2Findex.css=",
+          "depth": 1,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "ok",
+          "finalUrl": "https://career.huawei.com/cn?+%27m%27+%3A+%27pc%27%29+++%27%2Findex.css=",
+          "httpStatus": 200,
+          "contentHash": "3f12e035d1d59042823b2014fc050550bc048df0dc8d2a5917f3fdb85de01363",
+          "links": 4,
+          "artifact": {
+            "observationId": "observation-3f12e035d1d59042-d4ecf56f-7460-4c9f-a111-0e5e1ef41d3f",
+            "contentHash": "3f12e035d1d59042823b2014fc050550bc048df0dc8d2a5917f3fdb85de01363"
+          }
         }
       ],
-      "attempts": 4,
+      "attempts": 5,
       "consecutiveFailures": 0,
-      "lastAttemptAt": "2026-08-26T20:22:57.754Z",
-      "lastSuccessAt": "2026-08-26T20:22:57.754Z",
-      "nextDueAt": "2026-08-27T20:22:57.754Z",
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-c85ad429196fe0"
@@ -792,7 +918,7 @@
       "providerStatuses": {
         "imported": "ok",
         "baidu": "ok",
-        "common_crawl": "ok"
+        "common_crawl": "failed"
       }
     },
     "employer-cn-8368d634ea16e5381057": {
@@ -826,11 +952,11 @@
           }
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e6bc265160d5a9",
@@ -838,17 +964,12 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-8d0fc70cea9187c629e6": {
       "frontier": [
-        {
-          "url": "https://job.10086.cn/personal/notice",
-          "depth": 1,
-          "parentUrl": "https://job.10086.cn/"
-        },
         {
           "url": "https://job.10086.cn/personal/jobmatch",
           "depth": 1,
@@ -883,6 +1004,11 @@
           "url": "https://job.10086.cn/css/binding.css",
           "depth": 1,
           "parentUrl": "https://job.10086.cn/"
+        },
+        {
+          "url": "https://job.10086.cn/personal/notice",
+          "depth": 1,
+          "parentUrl": "https://job.10086.cn/"
         }
       ],
       "visitedUrls": [
@@ -912,21 +1038,30 @@
             "observationId": "observation-a4224fc037e9e09d-998fb39d-6e3c-4e90-8e5f-e8317a352a7e",
             "contentHash": "a4224fc037e9e09d8d651caf73e0e52c4029eeaaf1ee8d3c19972822e5628fb8"
           }
+        },
+        {
+          "employerTargetId": "employer-cn-8d0fc70cea9187c629e6",
+          "url": "https://job.10086.cn/personal/notice",
+          "depth": 1,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "INSECURE_PROTOCOL",
+          "error": "网络探测只允许 HTTPS"
         }
       ],
-      "attempts": 2,
+      "attempts": 3,
       "consecutiveFailures": 0,
-      "lastAttemptAt": "2026-08-22T18:55:17.224Z",
-      "lastSuccessAt": "2026-08-22T18:55:17.224Z",
-      "nextDueAt": "2026-08-29T18:55:17.224Z",
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-09T21:11:53.664Z",
       "coverage": "verified_pending_review",
       "discoveredSourceIds": [
         "huangque-2a9081bfb43795"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-99569f1207db2504e5f1": {
@@ -965,13 +1100,22 @@
           "status": "failed",
           "code": "CRAWL_HTTP_ERROR",
           "error": "HTTP 412"
+        },
+        {
+          "employerTargetId": "employer-cn-99569f1207db2504e5f1",
+          "url": "https://www.cnpc.com.cn/cnpc/jrwm/jrwm_index.shtml",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "CRAWL_HTTP_ERROR",
+          "error": "HTTP 412"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-f4a8bf7cbdd078",
@@ -1008,8 +1152,8 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-ac31d2f3d5bd3696e4ba": {
@@ -1048,21 +1192,30 @@
           "status": "failed",
           "code": "ROBOTS_UNAVAILABLE",
           "error": "robots: robots_fetch_failed_fail_closed"
+        },
+        {
+          "employerTargetId": "employer-cn-ac31d2f3d5bd3696e4ba",
+          "url": "https://zhaopin.sgcc.com.cn/sgcchr/static/home.html",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "ROBOTS_UNAVAILABLE",
+          "error": "robots: robots_unavailable_fail_closed"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-97432f5db7c7f6"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-c580a626b8f7287ce023": {
@@ -1101,21 +1254,30 @@
           "status": "failed",
           "code": "TOO_MANY_REDIRECTS",
           "error": "重定向次数超过上限"
+        },
+        {
+          "employerTargetId": "employer-cn-c580a626b8f7287ce023",
+          "url": "https://job.byd.com/portal/pc/",
+          "depth": 0,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "failed",
+          "code": "TOO_MANY_REDIRECTS",
+          "error": "重定向次数超过上限"
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 4,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
       "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "nextDueAt": "2026-09-10T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-03a2887d9ad9f3"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-cd6362472aea60ef45d5": {
@@ -1140,11 +1302,11 @@
           }
         }
       ],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-1161ee0f7dcc19",
@@ -1154,17 +1316,12 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-f62acd304e5754d98cd0": {
       "frontier": [
-        {
-          "url": "https://maker.haier.net/client/global/index.html",
-          "depth": 1,
-          "parentUrl": "https://maker.haier.net/client"
-        },
         {
           "url": "https://maker.haier.net/client/job/index",
           "depth": 1,
@@ -1197,7 +1354,8 @@
         }
       ],
       "visitedUrls": [
-        "https://maker.haier.net/client"
+        "https://maker.haier.net/client",
+        "https://maker.haier.net/client/global/index.html"
       ],
       "crawlEvidence": [
         {
@@ -1214,13 +1372,28 @@
             "observationId": "observation-c83bbd3cbf431d6a-65558aff-1cc2-42b2-a923-c473b980a5e6",
             "contentHash": "c83bbd3cbf431d6a6989fbcb1f1e45fcc89a2871d2be6c0da3a54afe257df064"
           }
+        },
+        {
+          "employerTargetId": "employer-cn-f62acd304e5754d98cd0",
+          "url": "https://maker.haier.net/client/global/index.html",
+          "depth": 1,
+          "fetchedAt": "2026-09-02T21:11:53.664Z",
+          "status": "ok",
+          "finalUrl": "https://maker.haier.net/client/global/index.html",
+          "httpStatus": 200,
+          "contentHash": "d4e38a3373ecd71f99539d4d621460bd3248c762096b5d4a923ac7bdf2c8c856",
+          "links": 0,
+          "artifact": {
+            "observationId": "observation-d4e38a3373ecd71f-5e5211d6-22f0-47bf-8fcf-55629aadee27",
+            "contentHash": "d4e38a3373ecd71f99539d4d621460bd3248c762096b5d4a923ac7bdf2c8c856"
+          }
         }
       ],
-      "attempts": 1,
+      "attempts": 2,
       "consecutiveFailures": 0,
-      "lastAttemptAt": "2026-08-21T08:35:16.659Z",
-      "lastSuccessAt": "2026-08-21T08:35:16.659Z",
-      "nextDueAt": "2026-08-28T08:35:16.659Z",
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-09T21:11:53.664Z",
       "coverage": "verified_pending_review",
       "discoveredSourceIds": [
         "huangque-1e6994543305c0",
@@ -1239,19 +1412,19 @@
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "failed",
-        "common_crawl": "ok"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-04dbd8c537a9c50275aa": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-c243e47baab93f",
@@ -1267,23 +1440,25 @@
         "huangque-2b22fb27cddb38",
         "huangque-4dfa0a0a27b0de",
         "huangque-27d48c88123b20",
-        "huangque-3e89cb845606e8"
+        "huangque-3e89cb845606e8",
+        "huangque-4cd367575b5d7d",
+        "huangque-dcecc0095ef5b7"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-04e5d9879d71cfbdb893": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-39f21aa9681bd8",
@@ -1308,23 +1483,32 @@
         "huangque-c2e90bf15eeb56",
         "huangque-770ac982764930",
         "huangque-a10fb476360b89",
-        "huangque-9a3046b61b6623"
+        "huangque-9a3046b61b6623",
+        "huangque-561447a0b86d12",
+        "huangque-d6b7e959b58007",
+        "huangque-5bb322ba741098",
+        "huangque-12ffe5d477f925",
+        "huangque-297b97e2dc1338",
+        "huangque-8773bd00becf05",
+        "huangque-47a6b80f634ba5",
+        "huangque-bfb6cc7513464f",
+        "huangque-a2a0a71d7d4978"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-053c2094dd7edaaf7906": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-6e1a0fa3158131",
@@ -1354,23 +1538,32 @@
         "huangque-3958511c93cba9",
         "huangque-b61160cc6fddea",
         "huangque-0ce241ec2ef355",
-        "huangque-6317abbb979153"
+        "huangque-6317abbb979153",
+        "huangque-125b22e844e1ac",
+        "huangque-1f4fd7ead28bc3",
+        "huangque-82b56e2c6d0bf1",
+        "huangque-c98caa7a0f01d4",
+        "huangque-ee8da804c50143",
+        "huangque-513b9f1edaaf37",
+        "huangque-dbe60f93424283",
+        "huangque-d629376e52f2da",
+        "huangque-eda04371f89f13"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-05e7dbb03fdc8e244925": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-58330f19a07d7a",
@@ -1401,23 +1594,29 @@
         "huangque-647169301762b1",
         "huangque-f34c966d677e32",
         "huangque-d538cfde46d43e",
-        "huangque-2756d6a48e1118"
+        "huangque-2756d6a48e1118",
+        "huangque-d70c5dc4e5d364",
+        "huangque-1940dfad26985d",
+        "huangque-69875a95ddd53e",
+        "huangque-2078e058481d21",
+        "huangque-219cae95f1e512",
+        "huangque-652bce74a55204"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-11c53daee48e80a37568": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -1437,23 +1636,29 @@
         "huangque-abe926a2320317",
         "huangque-85fe5152458296",
         "huangque-ba280b28a209db",
-        "huangque-ec8d14a8f86168"
+        "huangque-ec8d14a8f86168",
+        "huangque-fbde35afd2cd86",
+        "huangque-edc893bcc99d59",
+        "huangque-1a00c1512b2d66",
+        "huangque-056eb8e6d7c86b",
+        "huangque-bd9d3732689d97",
+        "huangque-3bf82e22e1d07d"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-12715a0a6636f33b8565": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-b82ba95c773cf1",
@@ -1477,23 +1682,34 @@
         "huangque-19f4b105de626d",
         "huangque-420a58f40949e1",
         "huangque-dde80bfe975d22",
-        "huangque-a85127a3f5bb49"
+        "huangque-a85127a3f5bb49",
+        "huangque-a000b1bc9055b9",
+        "huangque-9cb57cb9513673",
+        "huangque-366a2b99415ebb",
+        "huangque-708019c5ff831a",
+        "huangque-d934bd81a55a8d",
+        "huangque-b56ad797f042e0",
+        "huangque-9ddc6f6e78ab3e",
+        "huangque-e1181d2dbd0b9d",
+        "huangque-2d47a939918c96",
+        "huangque-feb8218467ea73",
+        "huangque-8c5ff06eb71e47"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-146ebe674ddc21330530": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -1518,23 +1734,27 @@
         "huangque-db58ea578d4a80",
         "huangque-47f9ea005686b3",
         "huangque-59d9fe59aaa549",
-        "huangque-eeb6134c7befe1"
+        "huangque-eeb6134c7befe1",
+        "huangque-1f4fd7ead28bc3",
+        "huangque-d9142bdf64a50f",
+        "huangque-b80f9a12200dfd",
+        "huangque-ee8fe397120d3c"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-1554913c7eea6bb8a6b8": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -1553,23 +1773,27 @@
         "huangque-c9263ed0d0770d",
         "huangque-5c59173c13d4a8",
         "huangque-9cf3b371057eea",
-        "huangque-9edb3f8bdf9e38"
+        "huangque-9edb3f8bdf9e38",
+        "huangque-f7a9ceaa182631",
+        "huangque-27988cd486ad7b",
+        "huangque-29397728e016db",
+        "huangque-640c72f880fce6"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-1a0621504c900b90f31b": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-bff8e84e19e2dd",
@@ -1591,23 +1815,24 @@
         "huangque-1b972487145f86",
         "huangque-697c01bca7c4b8",
         "huangque-e4b154043f5ee8",
-        "huangque-e2659775d9f793"
+        "huangque-e2659775d9f793",
+        "huangque-f288baaec28200"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-1e04d8f69bdcfa80dc2c": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-3498587ada1f1b",
@@ -1642,23 +1867,26 @@
         "huangque-ba0b28c7c02fe6",
         "huangque-c42c3b32e45774",
         "huangque-0f6801be64d0ed",
-        "huangque-1d646d021c68e3"
+        "huangque-1d646d021c68e3",
+        "huangque-83cd46b18bb5d5",
+        "huangque-540a08c19081a5",
+        "huangque-24ca8bc82d1ab5"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-2000e5d3685a46c2b7f1": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-5ba11989420673",
@@ -1680,23 +1908,30 @@
         "huangque-f9c5f531ea35dd",
         "huangque-f8e3464180997d",
         "huangque-ffb93fe476bfed",
-        "huangque-2aae1d65d35344"
+        "huangque-2aae1d65d35344",
+        "huangque-55d5c5a3fd0c5f",
+        "huangque-8ddf463c029dc6",
+        "huangque-9707416c55a6b2",
+        "huangque-22cc8695a7d8a6",
+        "huangque-6fec05a280a914",
+        "huangque-c84e42baa1a3ad",
+        "huangque-64af868597a83f"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-23afd37bff6940ddeeab": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-8029b290af016a",
@@ -1719,23 +1954,28 @@
         "huangque-a703353c1364a6",
         "huangque-28981279e5ce86",
         "huangque-0f7d5fa67555e9",
-        "huangque-bbff5b8cb4d7c3"
+        "huangque-bbff5b8cb4d7c3",
+        "huangque-03f298bcf59a61",
+        "huangque-0bffb58e646101",
+        "huangque-105297eef6e9c3",
+        "huangque-4797f4e7da6f6a",
+        "huangque-dd8e1874d010b9"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-2844911acb7887ff4b36": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-75b6c8a2ddfcca",
@@ -1758,23 +1998,31 @@
         "huangque-8c10c60b147599",
         "huangque-e87aa8efe37dad",
         "huangque-f96be792be988e",
-        "huangque-e19faf6f22398f"
+        "huangque-e19faf6f22398f",
+        "huangque-d80e7b43f340f4",
+        "huangque-0774ca7756dd39",
+        "huangque-5a267ed15fe3b3",
+        "huangque-10801f8f511ea9",
+        "huangque-3bff106d95f27f",
+        "huangque-66e34e25d003a5",
+        "huangque-42ec2459b596e9",
+        "huangque-0bb8fd950280db"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-28ca4f286a7eaafa1626": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-f44ace04cf5aef",
@@ -1787,23 +2035,33 @@
         "huangque-88bf621227669b",
         "huangque-a5d60448be4e84",
         "huangque-d429b5e71910e5",
-        "huangque-72fa69593820b7"
+        "huangque-72fa69593820b7",
+        "huangque-e2a4fbea1dd231",
+        "huangque-17324f2b946ab1",
+        "huangque-74d8b011eba633",
+        "huangque-9b1d986b8de158",
+        "huangque-d2a83e35a7bbcc",
+        "huangque-834ac01b606d9c",
+        "huangque-1aa1bfc592d107",
+        "huangque-e1423617d609c1",
+        "huangque-ebd8ff4d547cf5",
+        "huangque-646c810c241c56"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-2af580ac2b8fa767bd89": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-cf52555339e5e1",
@@ -1832,23 +2090,34 @@
         "huangque-7e529a352be115",
         "huangque-f53104a338ecdd",
         "huangque-724c9248d8f8f9",
-        "huangque-ac44127270e7f3"
+        "huangque-ac44127270e7f3",
+        "huangque-ee8ef2acd4a010",
+        "huangque-41d6acfc30b26d",
+        "huangque-0689e8091d25ae",
+        "huangque-600e947fc9e640",
+        "huangque-ab2ae43e514b6b",
+        "huangque-623a2ba77863e4",
+        "huangque-30cbf272eabec2",
+        "huangque-4ff73a8d2e790a",
+        "huangque-02f5065ffb3723",
+        "huangque-0f56580c8ab53f",
+        "huangque-fd6e71abde5be0"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-2d8c8fe90b44ffc4e3b5": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -1875,23 +2144,30 @@
         "huangque-388a858f13e835",
         "huangque-7a087bc5aea13d",
         "huangque-9478e23ba0256d",
-        "huangque-5a2f49beae9551"
+        "huangque-5a2f49beae9551",
+        "huangque-39543486cb951a",
+        "huangque-01e51732f0853e",
+        "huangque-1a818b5831dbf9",
+        "huangque-616bb88dd84e24",
+        "huangque-b8ac620dd6d6bc",
+        "huangque-ccd0c36730a55f",
+        "huangque-ce851cd04528ca"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-3074fc06485c0031c6e6": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-cb9f997f8e2a34",
@@ -1920,23 +2196,27 @@
         "huangque-8e5bd5a491bf6d",
         "huangque-6d34d6f232a161",
         "huangque-41a8d03b87231c",
-        "huangque-c917a61938503e"
+        "huangque-c917a61938503e",
+        "huangque-74164a7513beaf",
+        "huangque-47aa7fee3964da",
+        "huangque-2e91f065486baa",
+        "huangque-d36ee29771d109"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-31df2e474c432962d586": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-9722a9e8e0a7cf",
@@ -1962,23 +2242,32 @@
         "huangque-db03bc6b25f4ae",
         "huangque-275d0e273c8a12",
         "huangque-8a36a4ac33ea57",
-        "huangque-66a7ed7a3f1e96"
+        "huangque-66a7ed7a3f1e96",
+        "huangque-34b6c10af2c0c3",
+        "huangque-713873b5e2ad5e",
+        "huangque-0af16d9bac1df2",
+        "huangque-75a689cc484212",
+        "huangque-00605c8c33dd3f",
+        "huangque-c5e57968793553",
+        "huangque-7b49899d0b2dae",
+        "huangque-a364270cea08a7",
+        "huangque-a31bb761f27af1"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-3379d9abc2195094b13a": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-0188abaeda8eb6",
@@ -1996,23 +2285,25 @@
         "huangque-38599dd506faaa",
         "huangque-c0640b1782731c",
         "huangque-421cf6132a045f",
-        "huangque-0747bfe478f6e9"
+        "huangque-0747bfe478f6e9",
+        "huangque-0ab5ce8c314f50",
+        "huangque-7719e52e5e8f42"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-3753d2fc2b7c6497032b": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-776239f5de6cc4",
@@ -2040,23 +2331,37 @@
         "huangque-47fc2ad1e3305f",
         "huangque-39eba20589c5ac",
         "huangque-0f82853b0daa6b",
-        "huangque-ddcd741cbfc603"
+        "huangque-ddcd741cbfc603",
+        "huangque-8543e3b6d31a53",
+        "huangque-d437b21588056e",
+        "huangque-6d85cb1ddb1e06",
+        "huangque-be7ea93f9c9434",
+        "huangque-26b1ee8174ec35",
+        "huangque-06d5e9ebbfed01",
+        "huangque-43cacf9fe9fa77",
+        "huangque-f107932db6f0ae",
+        "huangque-1871522ba74597",
+        "huangque-447ede401c1794",
+        "huangque-72de1307e1a430",
+        "huangque-e4819a1a6707e0",
+        "huangque-b9a8b6931c26a9",
+        "huangque-41c4ae62e42861"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-3859d395565f2b715171": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-a5ab93bc442583",
@@ -2078,23 +2383,25 @@
         "huangque-1ba445bd5e045e",
         "huangque-d39768c4da080d",
         "huangque-c2e45f80307741",
-        "huangque-d37ce329b1a7a8"
+        "huangque-d37ce329b1a7a8",
+        "huangque-8a5755c0828f23",
+        "huangque-60f012c993d30c"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-39df5a0854ff041263b2": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-245bffc0d0c85f",
@@ -2119,23 +2426,42 @@
         "huangque-b8e325810c84c5",
         "huangque-e917c9ecf8cb98",
         "huangque-37275e49e87b0f",
-        "huangque-a8b921b88ff094"
+        "huangque-a8b921b88ff094",
+        "huangque-973c6e83712c31",
+        "huangque-a000b1bc9055b9",
+        "huangque-44bc3afe3c831b",
+        "huangque-71feaa7379f715",
+        "huangque-324e0afb562f99",
+        "huangque-e5df9771d99587",
+        "huangque-6b96b5a554a101",
+        "huangque-e7e13f810923c4",
+        "huangque-229016e109af32",
+        "huangque-7e7bec8efa5b69",
+        "huangque-6c87824843aeb0",
+        "huangque-3ea468912ad0dd",
+        "huangque-9384d930a234a8",
+        "huangque-4477316582c75d",
+        "huangque-bc696b8fe23aaf",
+        "huangque-bf83f8ef5633c2",
+        "huangque-b8299bef9be556",
+        "huangque-1c4d3f69937a79",
+        "huangque-c4facaf1c3bf7b"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-3a01e74fd9ed46e37e5b": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-ea11a72335964c",
@@ -2162,23 +2488,37 @@
         "huangque-48fe9d83dbec21",
         "huangque-e148fb5613042b",
         "huangque-9a91ad796cdb0b",
-        "huangque-0e372301d989a6"
+        "huangque-0e372301d989a6",
+        "huangque-3cc9b569fd4eb6",
+        "huangque-d7406134e4ca23",
+        "huangque-d70c5dc4e5d364",
+        "huangque-d96871e8fe85b3",
+        "huangque-8ba747311d0be0",
+        "huangque-a3d71e3f84ceb3",
+        "huangque-40b0d0e3f702b0",
+        "huangque-50f24c3816ba4a",
+        "huangque-ef425ad758cf72",
+        "huangque-23d20a635c196b",
+        "huangque-224b7a6848e29e",
+        "huangque-6e40789e872d23",
+        "huangque-b23aba47de075e",
+        "huangque-21aa34f19b77af"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-3f29e5c395cd6d33527a": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-a91f90b1cc4938",
@@ -2200,23 +2540,26 @@
         "huangque-8ce10d717484dc",
         "huangque-d0b8b0dd1e91d8",
         "huangque-e93137ecda2770",
-        "huangque-7d179284070afe"
+        "huangque-7d179284070afe",
+        "huangque-f993535cc67e08",
+        "huangque-0756440d748281",
+        "huangque-362269031e6fb9"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-4175adb6b83212865adc": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2240,23 +2583,29 @@
         "huangque-15dfa86eca80bd",
         "huangque-5c5b9cebf5e41d",
         "huangque-f029ef06550495",
-        "huangque-007f99dfeecfc1"
+        "huangque-007f99dfeecfc1",
+        "huangque-c33ad40c3b3ea0",
+        "huangque-8be8ad090bb83d",
+        "huangque-e114c4b32b6d67",
+        "huangque-625b7439464433",
+        "huangque-07460fc7706ad7",
+        "huangque-9a46600f5dfb12"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-44aa18831dc68639f271": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-a36be3cbbb718a",
@@ -2275,23 +2624,37 @@
         "huangque-6276747f5ee266",
         "huangque-8179896034c0fd",
         "huangque-6feee792a1dfc1",
-        "huangque-8709ed4bc332a5"
+        "huangque-8709ed4bc332a5",
+        "huangque-41542bd70e4d25",
+        "huangque-705f572aa9d87e",
+        "huangque-d3a510a0214c42",
+        "huangque-e9a3c9cd97d195",
+        "huangque-2bda5b7a060ec4",
+        "huangque-8b5dab555807e4",
+        "huangque-ea464ca1526581",
+        "huangque-2a90dd9dd16e76",
+        "huangque-2a0266922d4e58",
+        "huangque-309daa2c5f6d9e",
+        "huangque-ae765304a50c61",
+        "huangque-9cc83d77984e3c",
+        "huangque-235a0d05bd3c93",
+        "huangque-e5a0a89257e68f"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-46b1443196ec5d1467e7": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-2f14af8799fa7a",
@@ -2316,23 +2679,29 @@
         "huangque-1b8c33a8fbc9de",
         "huangque-f99e2eef2254aa",
         "huangque-947e28420deb73",
-        "huangque-a1edd5547ffe4b"
+        "huangque-a1edd5547ffe4b",
+        "huangque-01ee3d382b960e",
+        "huangque-72a43b63db69f6",
+        "huangque-32b4841d807a3a",
+        "huangque-d71b893bf17b34",
+        "huangque-416d7f2bf43bb3",
+        "huangque-cf4119e80f5299"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-4830d7510dee94319158": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-4ce22b3dd4073f",
@@ -2342,23 +2711,40 @@
         "huangque-52e65d26c44da2",
         "huangque-9226beedd2857e",
         "huangque-2f96f265f480b9",
-        "huangque-edcf9774a1e4d7"
+        "huangque-edcf9774a1e4d7",
+        "huangque-e57312d4e4ea49",
+        "huangque-91515c1b6c2d01",
+        "huangque-ace12639368d61",
+        "huangque-e917f55d1bc39c",
+        "huangque-5931bdf98ea01f",
+        "huangque-419d1e77d0499d",
+        "huangque-7f4484f5d56548",
+        "huangque-b708590802d18a",
+        "huangque-c17bf6c7907e9b",
+        "huangque-6b6dafa0133272",
+        "huangque-ee7219b4ed7cc9",
+        "huangque-23bee80c4f131b",
+        "huangque-f7e8524604cd7a",
+        "huangque-abf5c6ca471431",
+        "huangque-a74df6987dd5a5",
+        "huangque-d438e15d8f51a9",
+        "huangque-2f68ecaad47c1e"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-483cef00fa20fa792b44": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2379,23 +2765,26 @@
         "huangque-14d710014b56a5",
         "huangque-0e3d09cf4cf57d",
         "huangque-4689af44c4b597",
-        "huangque-aac3c143fb2fc4"
+        "huangque-aac3c143fb2fc4",
+        "huangque-9f5e7620a6ac5f",
+        "huangque-d7cc02ed313af9",
+        "huangque-7907c3ac79557c"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-4a31c5f65e8fa3cf0a86": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-883a37e0013a5b",
@@ -2417,23 +2806,40 @@
         "huangque-2bff2cf94894cd",
         "huangque-7570c5e88f50ce",
         "huangque-55a94161f4353a",
-        "huangque-2c724c4ce11cf1"
+        "huangque-2c724c4ce11cf1",
+        "huangque-5cd900cf88e4ec",
+        "huangque-bbd2127ccd7f17",
+        "huangque-a718e7b50c5651",
+        "huangque-a65ddcabad0687",
+        "huangque-0c70b74c4d9f20",
+        "huangque-0c7f6119aef270",
+        "huangque-f70d26dbd8d0c7",
+        "huangque-9942371be2ce49",
+        "huangque-d4e529542ada75",
+        "huangque-f5daf6507783f7",
+        "huangque-c34d82b243462a",
+        "huangque-eb8a0c751efafe",
+        "huangque-ff138a445155d9",
+        "huangque-855184d2b8dbe8",
+        "huangque-75d19095487483",
+        "huangque-c272551df859c1",
+        "huangque-50fb574a31262b"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-4b0952d7d0a24f0c4048": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-53aea29393fa60",
@@ -2455,23 +2861,36 @@
         "huangque-a1999253ff30eb",
         "huangque-45a14d9a62ce79",
         "huangque-6fe5ef378a9682",
-        "huangque-838c87a6263be0"
+        "huangque-838c87a6263be0",
+        "huangque-904c2603c9d984",
+        "huangque-6953584b1d2492",
+        "huangque-6b7c342fdd43fd",
+        "huangque-309a78d4ba8453",
+        "huangque-e17a4e3a7a7fbe",
+        "huangque-ceb85a291f01d4",
+        "huangque-4a0282eb944b4c",
+        "huangque-7a466c57e313b6",
+        "huangque-877e265770b36b",
+        "huangque-a090679a6bf835",
+        "huangque-886c8177724e38",
+        "huangque-5908a765ef2007",
+        "huangque-d6efa33b760177"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-51819db1f65a51ecaeca": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2482,45 +2901,61 @@
         "huangque-c031a600d72094",
         "huangque-4dd6136d513acd",
         "huangque-ca46b4ae86cdeb",
-        "huangque-62e6d5c3e88723"
+        "huangque-62e6d5c3e88723",
+        "huangque-9c1ed0cf9dfa9e",
+        "huangque-42e8aa15eabba9",
+        "huangque-b55628d49ed8b9",
+        "huangque-fa127dd5665d44",
+        "huangque-e5d0ddedf8e336",
+        "huangque-42e0a7bc999049",
+        "huangque-530cbaf99e9b62",
+        "huangque-517d896597ad14"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-53949b00107798bf8d84": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-3cc9b569fd4eb6",
         "huangque-36699ff0cff49a",
         "huangque-d789e446e8d08d",
-        "huangque-084be125e15cc4"
+        "huangque-084be125e15cc4",
+        "huangque-1941dd8a3a9902",
+        "huangque-37b28521b009b4",
+        "huangque-070ae8643509f8",
+        "huangque-ac5b700afe6ac9",
+        "huangque-4e5d560e0d16c5",
+        "huangque-4f8ec874137744",
+        "huangque-2df9786a7bfabd",
+        "huangque-e1183b193b3a83"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-54d8e632be58b004b334": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2542,23 +2977,28 @@
         "huangque-db71dcafe221df",
         "huangque-a53f51f60ac375",
         "huangque-13397e643e33c9",
-        "huangque-464e3719edc8dc"
+        "huangque-464e3719edc8dc",
+        "huangque-f8aa3e42552d3c",
+        "huangque-3da73bea9bb4c2",
+        "huangque-df7c9eed52adfe",
+        "huangque-b2172bdb86ff67",
+        "huangque-b4f7703a28f862"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-56befd7faed50938097c": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-74c9a184908cbf",
@@ -2580,23 +3020,29 @@
         "huangque-c39dea7dbdeda1",
         "huangque-eef7ea7f1b8412",
         "huangque-3aae32b2826ce4",
-        "huangque-d2ed061b44026f"
+        "huangque-d2ed061b44026f",
+        "huangque-250b7e3f166975",
+        "huangque-def5a552eab42b",
+        "huangque-f05a63ca195104",
+        "huangque-3e52a999be1688",
+        "huangque-4de6398b7108b5",
+        "huangque-d2fb90e5ab21ba"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-59f4930d11dae18e3286": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-d9f26b37028f86",
@@ -2611,23 +3057,25 @@
         "huangque-8eaed1b208376c",
         "huangque-23538bd3cb5097",
         "huangque-a3adc6332e8608",
-        "huangque-caee6799927062"
+        "huangque-caee6799927062",
+        "huangque-65b8d54d564224",
+        "huangque-324891655490a1"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-5da9e883c7b9245c3a8c": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2649,44 +3097,76 @@
         "huangque-e8b6a1aa1a1f90",
         "huangque-e8ef7d2c59b7ea",
         "huangque-7ce7607cfd5b0b",
-        "huangque-93a0150c42551e"
+        "huangque-93a0150c42551e",
+        "huangque-e7e738fc65efe7",
+        "huangque-abf60cdf3d99c4",
+        "huangque-e9b5e782238084",
+        "huangque-7298953dd100f7",
+        "huangque-bd25de2a76288b",
+        "huangque-9c07c31d984860",
+        "huangque-9f62b6b8aa57f8",
+        "huangque-57095b12a80c66",
+        "huangque-3eed09405a0486",
+        "huangque-2a6d0d013e815c",
+        "huangque-d42dea9917b6be",
+        "huangque-b9baff47310011",
+        "huangque-b2d026aba6167c"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-5e49687b521f62537b61": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-15b19448bc7580",
         "huangque-ee2e038bcc82dc",
-        "huangque-b77387bb41d582"
+        "huangque-b77387bb41d582",
+        "huangque-b61387fee97589",
+        "huangque-7c729e9edce0c5",
+        "huangque-efb4968c1b7399",
+        "huangque-dec3e65371d724",
+        "huangque-d9744c7e1ae7dd",
+        "huangque-5eb37830910ec8",
+        "huangque-9155a0c97874d0",
+        "huangque-58cd2f34553295",
+        "huangque-91e90538248a63",
+        "huangque-2b26847e006aba",
+        "huangque-a46387dea414f4",
+        "huangque-392d8b5ea3a37d",
+        "huangque-32e4bd4f5bd261",
+        "huangque-a1a9e2380e242d",
+        "huangque-0b3e94b2fba17e",
+        "huangque-a082bceae7f19b",
+        "huangque-eb9e9353892aba",
+        "huangque-6c0af70be1b9fa",
+        "huangque-cb7434f049a565"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-5eb70b88b998c94c2d7b": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-b61387fee97589",
@@ -2708,23 +3188,27 @@
         "huangque-49ae82e357fd59",
         "huangque-e74e93392f2301",
         "huangque-ae93aeac41213c",
-        "huangque-339458ce6e92da"
+        "huangque-339458ce6e92da",
+        "huangque-92303bd7171042",
+        "huangque-1dfd46ef60c36d",
+        "huangque-dba441682ee207",
+        "huangque-333aedbe287567"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-6704106065f4d30e0309": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-fef2e6832fc322",
@@ -2746,23 +3230,33 @@
         "huangque-f841f625a684d9",
         "huangque-3692618d5db42d",
         "huangque-bb1e86c8221bb9",
-        "huangque-93c92e9273e4d0"
+        "huangque-93c92e9273e4d0",
+        "huangque-5704af6214cae1",
+        "huangque-b647d44a785114",
+        "huangque-8eed8b5a675d34",
+        "huangque-622efb673da9aa",
+        "huangque-d06b57420ae1a7",
+        "huangque-c78553cf559942",
+        "huangque-e5dd3a5551f629",
+        "huangque-f235d311b88268",
+        "huangque-d4f17d5502db19",
+        "huangque-8ed50332cfe74f"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-6b1bfea6536ce80fdcae": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2784,23 +3278,33 @@
         "huangque-83df8fee1d7ca1",
         "huangque-81910b8b6d692e",
         "huangque-01a7222e76c713",
-        "huangque-60d034cd8b7fb1"
+        "huangque-60d034cd8b7fb1",
+        "huangque-8543e3b6d31a53",
+        "huangque-eeb65cf6d15c85",
+        "huangque-04890d4f214c71",
+        "huangque-683b22c477d846",
+        "huangque-60e1f53a562fc0",
+        "huangque-e4e9a014a999a3",
+        "huangque-94f03724eae9cc",
+        "huangque-da558e7fb7399b",
+        "huangque-cadc2a44635ee1",
+        "huangque-d978c7c5afad66"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-6cd7f3741aa36e1bdb47": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-72310d77db611e",
@@ -2822,23 +3326,31 @@
         "huangque-fd9571cc7df8b0",
         "huangque-23d799a58e1a83",
         "huangque-c06d1c85d57fdd",
-        "huangque-44438c342bcfba"
+        "huangque-44438c342bcfba",
+        "huangque-fe86689b000baa",
+        "huangque-91446dfb95f8e1",
+        "huangque-bc85b74982dc51",
+        "huangque-4466fdfc097424",
+        "huangque-872b2d9c7a0878",
+        "huangque-fd5d70c52c2ba5",
+        "huangque-bde8bf2b4878da",
+        "huangque-ce7aa79421e7c3"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-74595a84110048adbd2f": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-78a54d4328f9f1",
@@ -2860,23 +3372,30 @@
         "huangque-289a0778472869",
         "huangque-8c8e83b9730cd5",
         "huangque-f8314202e06343",
-        "huangque-294c87625ed798"
+        "huangque-294c87625ed798",
+        "huangque-849e161d4c4431",
+        "huangque-f082038167602f",
+        "huangque-1fe33ab1ae20f6",
+        "huangque-30a7a6402c3d95",
+        "huangque-86e76106a23408",
+        "huangque-3c2f63b0bddb96",
+        "huangque-54348a43a60ceb"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-74d08f31c7a29f6e3804": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2889,23 +3408,25 @@
         "huangque-3a293a080a9db3",
         "huangque-28108f5ad9e1ee",
         "huangque-e1742e673b9ab8",
-        "huangque-2ccd7d63c46819"
+        "huangque-2ccd7d63c46819",
+        "huangque-2af13ada672a5e",
+        "huangque-03ea16d8fdb063"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-7584a62a7bb0dcdd4be5": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -2923,23 +3444,32 @@
         "huangque-627d5b0f994140",
         "huangque-b60ddcd1700d83",
         "huangque-0dd4f7ce6bcd70",
-        "huangque-35b0a74caf10b2"
+        "huangque-35b0a74caf10b2",
+        "huangque-fb756c6c523857",
+        "huangque-7ec6bbafae6800",
+        "huangque-f1ffd1934b3c56",
+        "huangque-b367941950dd1c",
+        "huangque-986c5f9788d657",
+        "huangque-31639b51fb69b2",
+        "huangque-388c8b7674e147",
+        "huangque-deda163925c3c8",
+        "huangque-dcd559541d9984"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-790bc011691f723158e7": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-75b6c8a2ddfcca",
@@ -2960,23 +3490,30 @@
         "huangque-f9005e37ca0654",
         "huangque-e86c3842bb11b7",
         "huangque-d9341d060477b2",
-        "huangque-debd60da40835a"
+        "huangque-debd60da40835a",
+        "huangque-e97a9482c0d704",
+        "huangque-01e51732f0853e",
+        "huangque-fbdced82cd7f1d",
+        "huangque-138d34fe6fff12",
+        "huangque-51494738bf9daa",
+        "huangque-129be1b6f8457d",
+        "huangque-36d4e55317e743"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-7b2fecd720297a1e7352": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-3cc9b569fd4eb6",
@@ -2998,23 +3535,28 @@
         "huangque-474a6ebc0c8982",
         "huangque-136abcbff8ceab",
         "huangque-9d287db6f16cb4",
-        "huangque-5cfc4945ecbf72"
+        "huangque-5cfc4945ecbf72",
+        "huangque-5225bdf5cdcbdc",
+        "huangque-69a3fbc6038100",
+        "huangque-49c58c126eba73",
+        "huangque-42de64f1ce53d9",
+        "huangque-c2458d5c22def2"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-7c40b523ee4f059d2283": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-ba4903d9c2f1fb",
@@ -3036,23 +3578,29 @@
         "huangque-c7ee393a717777",
         "huangque-41406740daa042",
         "huangque-f496a26dca385d",
-        "huangque-7c22e430740368"
+        "huangque-7c22e430740368",
+        "huangque-f2e07787179eac",
+        "huangque-a346fa52eab1ac",
+        "huangque-a1bda531c9f448",
+        "huangque-c769ca155e920d",
+        "huangque-84a5db6e3dffd9",
+        "huangque-a73eb477672d91"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-845c407cb593f4336bd9": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3073,23 +3621,31 @@
         "huangque-1de98d3cd0fb5e",
         "huangque-650a2807e68d4b",
         "huangque-eaa5611c87fb6f",
-        "huangque-35d13a67cfbadf"
+        "huangque-35d13a67cfbadf",
+        "huangque-cde6ca1ec6b393",
+        "huangque-4305971118d64c",
+        "huangque-ac31525141c90a",
+        "huangque-40a5fbce0dca7b",
+        "huangque-8947f7e1d6dea5",
+        "huangque-6afa180f3b3a4f",
+        "huangque-fea40fba2ce6b5",
+        "huangque-3845f643bbddc1"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-85fb6c1c99c4fb76a5c9": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3110,23 +3666,43 @@
         "huangque-406320c9ad4ef8",
         "huangque-1baaca18f5578f",
         "huangque-b6ebce809c6e94",
-        "huangque-7d9e5d6e8698fe"
+        "huangque-7d9e5d6e8698fe",
+        "huangque-3ce98672365620",
+        "huangque-8a5a1faa6d182c",
+        "huangque-8456dc67dbd858",
+        "huangque-e07209016becbe",
+        "huangque-55e6265b777640",
+        "huangque-c7848fcf5829fd",
+        "huangque-229d1d87d5e9e8",
+        "huangque-e9bf3a542facb1",
+        "huangque-34225777a2e459",
+        "huangque-e1198a0bdf0a79",
+        "huangque-e5968e8358e786",
+        "huangque-953e7f2abd7d3a",
+        "huangque-3d89f7137ab30f",
+        "huangque-6f7867692e066c",
+        "huangque-007a0fa0f4abc9",
+        "huangque-c5d34bedc9e58b",
+        "huangque-88302032e70b0d",
+        "huangque-d54b0c4958619d",
+        "huangque-8cb1633efc6116",
+        "huangque-5edf2aaf8e737e"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-867e8d12a19a864ce031": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-77bfbdb9516819",
@@ -3144,23 +3720,37 @@
         "huangque-f97016674f4a61",
         "huangque-83bb1e98ced57a",
         "huangque-8a1e5845ccb76f",
-        "huangque-cc38b646d38c51"
+        "huangque-cc38b646d38c51",
+        "huangque-973c6e83712c31",
+        "huangque-4c87e0cecbc8e6",
+        "huangque-0f79f60ee75735",
+        "huangque-c0ddc71a0d1213",
+        "huangque-fe95c3f978ef26",
+        "huangque-5a4fada503b891",
+        "huangque-b7a76ba6bb1c04",
+        "huangque-14f656d554efea",
+        "huangque-b15a4dd3d0dd21",
+        "huangque-410b9ff67900d2",
+        "huangque-5dad82275d1551",
+        "huangque-cbd882c13c59ed",
+        "huangque-e0e66737ab55a9",
+        "huangque-92f8f012c90c15"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-8fac9f69cd71e950a01d": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3181,23 +3771,27 @@
         "huangque-edc482e751775b",
         "huangque-dbd3c87d5fcf57",
         "huangque-e2bedf36017231",
-        "huangque-7613fe0b0cb65b"
+        "huangque-7613fe0b0cb65b",
+        "huangque-0d84bc7bdd57d8",
+        "huangque-d4a6589c325726",
+        "huangque-318b3f949de373",
+        "huangque-b43afc33a8ef2b"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-92c28f1b875cf58b1280": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3218,23 +3812,26 @@
         "huangque-f09e3aa98f7a5a",
         "huangque-525e52896b289b",
         "huangque-e75429bd2330e4",
-        "huangque-f1a2a298178845"
+        "huangque-f1a2a298178845",
+        "huangque-bcbe51cbbfb54b",
+        "huangque-f3a6d467ffe49d",
+        "huangque-ef8a1754ddc4b9"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-939f5a0e12a3bdd28dd4": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-2df51d0e4d7ee3",
@@ -3256,46 +3853,69 @@
         "huangque-df768bc9f6b2e6",
         "huangque-68d442a16f7f93",
         "huangque-9c6b4602138d3e",
-        "huangque-8218fcf328be8d"
+        "huangque-8218fcf328be8d",
+        "huangque-3ce98672365620",
+        "huangque-9dc2bc4064b8ff",
+        "huangque-d6b7e959b58007",
+        "huangque-6b321bd0d56269",
+        "huangque-6670eaf41da249",
+        "huangque-16d8a88b093b7a"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-9438658b462f207c5074": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-f10e4f72350ef4",
         "huangque-edfca0e4cc0556",
         "huangque-d0502b68a91ade",
         "huangque-badab236863c81",
-        "huangque-fbefcde3161634"
+        "huangque-fbefcde3161634",
+        "huangque-bbc11aef423385",
+        "huangque-e91d91615a27e1",
+        "huangque-142403b33f9ad9",
+        "huangque-ecb7d8380b5e37",
+        "huangque-9168afc450e08b",
+        "huangque-8ffd2810a6d0b0",
+        "huangque-c37c3330ed8a06",
+        "huangque-26d31271a03972",
+        "huangque-a0a4836b96b07e",
+        "huangque-9ec5a49a579586",
+        "huangque-475e87a408b257",
+        "huangque-75d17e095905a2",
+        "huangque-d78e186fff0e30",
+        "huangque-94f85c0b7524d9",
+        "huangque-f4435679842850",
+        "huangque-bd86886ace44a2",
+        "huangque-3d3d384eec35d4"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-949a2ec1cfc4d8b6fea5": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-8c0cf7e3ff238c",
@@ -3317,23 +3937,28 @@
         "huangque-88c7e0dad42afb",
         "huangque-dd92bb40f56027",
         "huangque-b8f767b9cf2bf8",
-        "huangque-223aee1330976d"
+        "huangque-223aee1330976d",
+        "huangque-ade342375da7de",
+        "huangque-6ed01aef002530",
+        "huangque-7329707bd84152",
+        "huangque-a26b27142b9cce",
+        "huangque-344151d0f45d12"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-950a3d340efecbba6f43": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3348,23 +3973,32 @@
         "huangque-491480c752a307",
         "huangque-7f7adc19bc2f11",
         "huangque-01480b175c1680",
-        "huangque-1c55f4116c9f7d"
+        "huangque-1c55f4116c9f7d",
+        "huangque-4aa50e98118203",
+        "huangque-97c909e44f586d",
+        "huangque-355e5f42e5b9bd",
+        "huangque-653e39fc6af6cf",
+        "huangque-973e7899c3d370",
+        "huangque-e5463007da2948",
+        "huangque-71a94da206417c",
+        "huangque-87d7111ca71176",
+        "huangque-8e5891a181c104"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-98a8538a91709c3464d2": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-585c1cbc14b018",
@@ -3379,23 +4013,41 @@
         "huangque-37287e95c52f9a",
         "huangque-27501af4206b3c",
         "huangque-aabf9637a4423e",
-        "huangque-02926568a95eba"
+        "huangque-02926568a95eba",
+        "huangque-f2e07787179eac",
+        "huangque-09156c247d40b2",
+        "huangque-5e258d03233654",
+        "huangque-d6c88a0e39f997",
+        "huangque-678516b0103298",
+        "huangque-223405d0056b44",
+        "huangque-b87a618c35596b",
+        "huangque-941d6ac5b9a787",
+        "huangque-31fe85db3850c3",
+        "huangque-062741b704b61c",
+        "huangque-d6b522c8ea5650",
+        "huangque-3b5254c684b8ec",
+        "huangque-80687ff928e7c4",
+        "huangque-65c20093e8c9f6",
+        "huangque-4d04971c935150",
+        "huangque-7045ecdbe7b9f0",
+        "huangque-c6d68fa079cd5d",
+        "huangque-9578e60320455e"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-996fae5200aab13d1580": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-66e7c997544143",
@@ -3417,23 +4069,31 @@
         "huangque-9f41d5e661d8ce",
         "huangque-fd58b77db6bb23",
         "huangque-d62311536dc0c4",
-        "huangque-10c9f3e5e79d9b"
+        "huangque-10c9f3e5e79d9b",
+        "huangque-a7433af7f32201",
+        "huangque-e8edd5986fa630",
+        "huangque-61909183646388",
+        "huangque-7d74ba016565e0",
+        "huangque-ce31c2fd842d53",
+        "huangque-b6d10e880be52b",
+        "huangque-401766e9e8cd26",
+        "huangque-570b9b058b70a7"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-998c1eecb56076d93eec": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-8ccaa370af254c",
@@ -3449,23 +4109,24 @@
         "huangque-a6cccf15ba9db6",
         "huangque-7f80c1e431b54e",
         "huangque-f61abeb0613af9",
-        "huangque-1735cf642029fc"
+        "huangque-1735cf642029fc",
+        "huangque-a72edcd8531082"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-9ad496bac07faf085834": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-686c107dd6123e",
@@ -3487,23 +4148,27 @@
         "huangque-0a4254819125f1",
         "huangque-20e9dc47eb945d",
         "huangque-faec6ba7770b36",
-        "huangque-cb850ad5a5aadf"
+        "huangque-cb850ad5a5aadf",
+        "huangque-2ad95d6560565f",
+        "huangque-2f8ddf1703842d",
+        "huangque-9ca051c39d0048",
+        "huangque-718ed323af233d"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-a01294e0bc37226d2f8f": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3520,23 +4185,35 @@
         "huangque-bbc4ba17b7cecd",
         "huangque-29d60bebeec848",
         "huangque-317d4be371bffa",
-        "huangque-55770b59af680f"
+        "huangque-55770b59af680f",
+        "huangque-f9589c721639e5",
+        "huangque-21459efca04613",
+        "huangque-4a9bdc11819e85",
+        "huangque-7e541815faaf79",
+        "huangque-7fe9f4f31595b8",
+        "huangque-0aab9515bf8f0e",
+        "huangque-96d20740585e32",
+        "huangque-0a60fa2a849905",
+        "huangque-581b8e1cc25907",
+        "huangque-b5a792d3db921a",
+        "huangque-d97501e3df8f23",
+        "huangque-9c8fcf5f998533"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-a5755317ddf36f90c4b2": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3556,23 +4233,30 @@
         "huangque-dbc061f578f798",
         "huangque-fc1a0581a3edeb",
         "huangque-59c0959a0e6f6f",
-        "huangque-e11559b831be70"
+        "huangque-e11559b831be70",
+        "huangque-39f9af36cad28a",
+        "huangque-7c6e5cead6ddff",
+        "huangque-fd695848366376",
+        "huangque-1866a6f254dcde",
+        "huangque-8e335a19dfd9e2",
+        "huangque-d47439be323831",
+        "huangque-e2804220e03b0a"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-a72d5dce7dc1288c67ed": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-1f0957f120d447",
@@ -3586,23 +4270,33 @@
         "huangque-950e3e3e90accd",
         "huangque-c0000c50f7366f",
         "huangque-00e5678f63b6cb",
-        "huangque-facf5cef375136"
+        "huangque-facf5cef375136",
+        "huangque-ba25c1b0e0d27a",
+        "huangque-c4d853139566f6",
+        "huangque-5ccbc06356b715",
+        "huangque-1f2307b256c30b",
+        "huangque-1c3110e5563b09",
+        "huangque-1ee401edd5170f",
+        "huangque-22371af1cb2bc1",
+        "huangque-3630f3bb56ea6e",
+        "huangque-f2a519ec6cf4da",
+        "huangque-88175a05de55a6"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-a84553862864f20f6894": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-ac2e1bcd3c8f4a",
@@ -3624,23 +4318,27 @@
         "huangque-b0ff328ef14f82",
         "huangque-b92a70833808dc",
         "huangque-cdfc94b66e49f3",
-        "huangque-3c3c2d97efca32"
+        "huangque-3c3c2d97efca32",
+        "huangque-5c9d89c8171e3b",
+        "huangque-0a0cab6fc1bb97",
+        "huangque-b7847b1477b82f",
+        "huangque-7465b45f942dad"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-a9fe3444aeda402eb7b6": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-ff8a1f034a799c",
@@ -3652,23 +4350,42 @@
         "huangque-d9503f112de73c",
         "huangque-8f2ad7995b3a84",
         "huangque-f381417f0d7790",
-        "huangque-d707aaf204c646"
+        "huangque-d707aaf204c646",
+        "huangque-e7e738fc65efe7",
+        "huangque-bb51ed50cdc654",
+        "huangque-d6b7e959b58007",
+        "huangque-a30200513224ae",
+        "huangque-ddca3861850884",
+        "huangque-6dd57cd3b97bc3",
+        "huangque-bd333c88f0768e",
+        "huangque-a122acd343c7c8",
+        "huangque-3ec00b02ee17c1",
+        "huangque-ea3b7689ecd323",
+        "huangque-74fc8351b20dc5",
+        "huangque-4e3e31f11cf2cf",
+        "huangque-d3f552a0fd21ce",
+        "huangque-0490903a0ff99b",
+        "huangque-8b5f8dd18046fb",
+        "huangque-ac4b652ab1031a",
+        "huangque-bd570658250e37",
+        "huangque-4b7fad1769cb84",
+        "huangque-e59dab7d1718bf"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-ac1137c112372ac23d85": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-0f4ac116e00654",
@@ -3678,23 +4395,24 @@
         "huangque-2c6e3ac6503569",
         "huangque-57d17d3060b712",
         "huangque-95402ba57c6298",
-        "huangque-1572e2b7d618ec"
+        "huangque-1572e2b7d618ec",
+        "huangque-47903d40496ca4"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-b0ffb23058febc74338a": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-b61387fee97589",
@@ -3716,23 +4434,29 @@
         "huangque-45602c21b5a736",
         "huangque-864431f3537ae3",
         "huangque-162e912f55fdd8",
-        "huangque-02bea2ae456341"
+        "huangque-02bea2ae456341",
+        "huangque-ea949d9d96577a",
+        "huangque-3725e13b077bae",
+        "huangque-9b7423c02ec5bc",
+        "huangque-cd3f4144e5ccd8",
+        "huangque-b06f12be690490",
+        "huangque-3b60528f0176c9"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-b2996e8707f86b2d2fc1": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-bb51ed50cdc654",
@@ -3750,23 +4474,34 @@
         "huangque-4bf6b89c19c588",
         "huangque-0e1aaea96a3255",
         "huangque-437a257dcbd57c",
-        "huangque-5a7017a4226625"
+        "huangque-5a7017a4226625",
+        "huangque-55d5c5a3fd0c5f",
+        "huangque-0e569f61f092aa",
+        "huangque-58dc858030cb7f",
+        "huangque-b7ae6da19a6a59",
+        "huangque-19bec01f689fa7",
+        "huangque-65bdcba02f8d26",
+        "huangque-b24a341a9a42a4",
+        "huangque-d08b9620b5528e",
+        "huangque-922cce89f4b402",
+        "huangque-0fea4ab6fda3f9",
+        "huangque-cad694366d9de3"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-b99784dc1f7483f0b022": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -3786,23 +4521,25 @@
         "huangque-7b565c0496dc93",
         "huangque-c87a53ec1dea87",
         "huangque-6c75a74ff42ed7",
-        "huangque-1b5ea5768dcb7f"
+        "huangque-1b5ea5768dcb7f",
+        "huangque-75b6c8a2ddfcca",
+        "huangque-3f58a869942286"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-bc2e8e3ad31697a21d5a": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-51f2e76b4b002e",
@@ -3824,23 +4561,31 @@
         "huangque-c76eba1fbe6690",
         "huangque-7676f819054483",
         "huangque-7e70ef2231ef01",
-        "huangque-7e44f97f3eecf9"
+        "huangque-7e44f97f3eecf9",
+        "huangque-0c5394785b7efd",
+        "huangque-47eab34b72e525",
+        "huangque-ccd0b49ff203a5",
+        "huangque-5bc722b606431b",
+        "huangque-ba959fc7ecfff1",
+        "huangque-f1fda1ec044142",
+        "huangque-2963c997288b72",
+        "huangque-8ab59a5adb4094"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-c123a3be89ce61409c4b": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-2360db64c23725",
@@ -3853,67 +4598,88 @@
         "huangque-26270a12913e5b",
         "huangque-c2e5dfd07c8c27",
         "huangque-8f2c6d113e68b3",
-        "huangque-ab52ba87bf13e9"
+        "huangque-ab52ba87bf13e9",
+        "huangque-a92e44d8887c37",
+        "huangque-36ea1850e737c1",
+        "huangque-b4d182e36d6668",
+        "huangque-da009d56416f2c",
+        "huangque-ca2594f5d02769",
+        "huangque-0ebbd1c6408b1b",
+        "huangque-4af6b78e2dd2fd",
+        "huangque-49ecad2ce999a4",
+        "huangque-de1bc016d29be5"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-c1df3791aa0888e8b8a3": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-f7cc329c24dca7",
         "huangque-78a299d15e4d23",
         "huangque-5df4d6ee4a1082",
         "huangque-19dfcf5ee97466",
-        "huangque-5ee01662f278d8"
+        "huangque-5ee01662f278d8",
+        "huangque-9b774a5753e470"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-c3afffa0e59f942486b8": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-172a338e77577d",
         "huangque-b7a63e9e5cbf20",
-        "huangque-0661102b33cda4"
+        "huangque-0661102b33cda4",
+        "huangque-7bed68295aefff",
+        "huangque-48516f59a37cbf",
+        "huangque-f9ec413649f9bc",
+        "huangque-22f998e1467d84",
+        "huangque-b1c1eb05c60b0e",
+        "huangque-4039c27e3e2554",
+        "huangque-6a73947cb5e419",
+        "huangque-15dc0680d78308",
+        "huangque-8ea9dec5031a4f",
+        "huangque-19132bfce85c7a",
+        "huangque-f07733835eaa58"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-c3b62f1444e2e4bcc83e": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-fc0d764ee3f72f",
@@ -3935,23 +4701,35 @@
         "huangque-f3ea1881524f09",
         "huangque-8b39c2a9b943d6",
         "huangque-284e0752646eff",
-        "huangque-dadc797f8ae0a5"
+        "huangque-dadc797f8ae0a5",
+        "huangque-65918a58e91a11",
+        "huangque-9a5094afe1142c",
+        "huangque-ea5a2a513a0d47",
+        "huangque-c681f8c21a279d",
+        "huangque-57a08977f2a444",
+        "huangque-a249ff07989dfd",
+        "huangque-920d8acf87f325",
+        "huangque-7a0ee7e658f572",
+        "huangque-cbccb94f25fc27",
+        "huangque-191c679948ed64",
+        "huangque-67286010f71297",
+        "huangque-0f70424ec2840f"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-c3c7a8999d60bcb874e9": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-3cc9b569fd4eb6",
@@ -3971,23 +4749,25 @@
         "huangque-18a3893016d275",
         "huangque-d923d2556416c1",
         "huangque-2691d6a5f051c9",
-        "huangque-92b3019acd84d8"
+        "huangque-92b3019acd84d8",
+        "huangque-1446d76877d2e5",
+        "huangque-88dca469822d22"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-c42f781b0ed11ced35e7": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-bb51ed50cdc654",
@@ -4009,23 +4789,38 @@
         "huangque-5bc0f30696118a",
         "huangque-9eb3b089295437",
         "huangque-c59dcfb5f4a37b",
-        "huangque-50160bde883831"
+        "huangque-50160bde883831",
+        "huangque-436058559ffe73",
+        "huangque-6cf46b774d0591",
+        "huangque-6bffc1d638b39f",
+        "huangque-75ff7cea6d7fbe",
+        "huangque-b46aec305e9cf0",
+        "huangque-516d726e80edf3",
+        "huangque-28cad6496be71a",
+        "huangque-641d9edd2f460b",
+        "huangque-6378eeafa47356",
+        "huangque-42f3cfce0b29c3",
+        "huangque-d39d6450857b1a",
+        "huangque-d583446aa81c9b",
+        "huangque-52c67c0ecd8bd8",
+        "huangque-23dd16d7bea175",
+        "huangque-6382a72721beb3"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-cb2de14ec839485a3e14": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-05ed9ea65b4d66",
@@ -4046,23 +4841,28 @@
         "huangque-93ae64a8f34c8a",
         "huangque-66420535aa8f69",
         "huangque-c6ef4f9e22f676",
-        "huangque-04dc5a1867f887"
+        "huangque-04dc5a1867f887",
+        "huangque-4ac3a50532c17a",
+        "huangque-3614a3080404be",
+        "huangque-3270953d9cb56d",
+        "huangque-a8a8cb40f5a1aa",
+        "huangque-ec6737da9588b7"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-ccd52b44372b99745a4e": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-da16ffe289036e",
@@ -4084,23 +4884,32 @@
         "huangque-2dba830fbb7d8a",
         "huangque-6761f66e6d5bba",
         "huangque-1ebd6efc345cae",
-        "huangque-3cadad3449e64d"
+        "huangque-3cadad3449e64d",
+        "huangque-d142a234fc6c34",
+        "huangque-a8d1aea31defb2",
+        "huangque-65918a58e91a11",
+        "huangque-2c235f3bfeb3cb",
+        "huangque-47e8b732b3c404",
+        "huangque-232352a623a1bb",
+        "huangque-f8ea72b53e9fc2",
+        "huangque-6022d8f5045742",
+        "huangque-ce6854a4be3734"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-cf83c64d6aec481d0a36": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-a8c6d193059d13",
@@ -4122,23 +4931,32 @@
         "huangque-2748b1db49602e",
         "huangque-957e85a26bf947",
         "huangque-b8a29cc317bead",
-        "huangque-f22ffdc72b5dbf"
+        "huangque-f22ffdc72b5dbf",
+        "huangque-11be5322f7b2d4",
+        "huangque-069ed853d11254",
+        "huangque-c5ffd58723ae28",
+        "huangque-4877580827bad2",
+        "huangque-4833ccaa3db7f8",
+        "huangque-3e94d781561f63",
+        "huangque-2aa6cd0e3d4281",
+        "huangque-fcc2a1a7fd8b9d",
+        "huangque-9263d464299f3e"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-d04dabd97ab3f7ff4d65": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-bb51ed50cdc654",
@@ -4160,23 +4978,30 @@
         "huangque-54ddb5d1b9d055",
         "huangque-b69c1526c56cf9",
         "huangque-c4c894a4cb520c",
-        "huangque-6adf5fc24bf4d4"
+        "huangque-6adf5fc24bf4d4",
+        "huangque-5c7aa04c490b25",
+        "huangque-28959b3c06224f",
+        "huangque-4f5f17d9589c5e",
+        "huangque-b9ace9fabbb935",
+        "huangque-4dfeec7d2b0bdf",
+        "huangque-9a69c81594b88e",
+        "huangque-eed8f7efd0a853"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-d1218b3fa291a27d81d0": {
       "frontier": [],
       "visitedUrls": [],
       "crawlEvidence": [],
-      "attempts": 3,
-      "consecutiveFailures": 3,
-      "lastAttemptAt": "2026-08-24T19:09:36.795Z",
-      "lastSuccessAt": null,
-      "nextDueAt": "2026-08-28T19:09:36.795Z",
+      "attempts": 4,
+      "consecutiveFailures": 0,
+      "lastAttemptAt": "2026-09-02T21:11:53.664Z",
+      "lastSuccessAt": "2026-09-02T21:11:53.664Z",
+      "nextDueAt": "2026-09-03T21:11:53.664Z",
       "coverage": "discovered",
       "discoveredSourceIds": [
         "huangque-e97a9482c0d704",
@@ -4192,12 +5017,16 @@
         "huangque-a0cf0ddbf2b21e",
         "huangque-1f813203bb76da",
         "huangque-ba31db6d09cca4",
-        "huangque-375f3b624d18f1"
+        "huangque-375f3b624d18f1",
+        "huangque-17b6a99b852e3c",
+        "huangque-657d28a1d6e90a",
+        "huangque-b0bf454a16d77f",
+        "huangque-c23aa3d790fd00"
       ],
       "providerStatuses": {
         "imported": "ok",
-        "baidu": "partial",
-        "common_crawl": "partial"
+        "baidu": "ok",
+        "common_crawl": "failed"
       }
     },
     "employer-cn-d4c84e223f3482c3d3b5": {
@@ -17990,6 +18819,28 @@
     }
   },
   "runs": [
+    {
+      "id": "run-3ad6f824-ad2e-4855-9374-23dbffe02e0e",
+      "at": "2026-09-02T22:04:25.929Z",
+      "scheduledDate": "2026-09-03",
+      "mode": "daily",
+      "selectedTargets": 100,
+      "discoveredSources": 1403,
+      "probes": 8,
+      "status": "completed_with_findings",
+      "trigger": "github_actions",
+      "githubRunId": "33683620503",
+      "onlineEvidence": {
+        "present": true,
+        "successfulProviders": [
+          "baidu"
+        ],
+        "successfulCrawlPages": 4,
+        "verifiedProbes": 0,
+        "note": "本地 imported 目标根只证明队列工作；不能替代真实网络成功证据。"
+      },
+      "registryCommittedAt": "2026-09-02T22:04:35.026Z"
+    },
     {
       "id": "run-52902356-290b-4d28-8ef5-a2e56d628b8f",
       "at": "2026-08-26T21:14:40.494Z",
