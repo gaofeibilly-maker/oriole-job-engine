@@ -1,10 +1,7 @@
 name: Oriole daily nationwide update
 
 on:
-  schedule:
-    # GitHub cron is UTC. 16:17 UTC = 00:17 Asia/Shanghai on the next local day.
-    # The non-zero minute avoids GitHub's documented top-of-hour congestion.
-    - cron: "17 16 * * *"
+  # Legacy GitHub schedule retired after the Tencent migration; manual evidence runs remain available.
   workflow_dispatch:
     inputs:
       force:
