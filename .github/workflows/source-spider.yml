@@ -1,11 +1,7 @@
 name: Oriole source spider
 
 on:
-  schedule:
-    # 02:30 Asia/Shanghai every day: bounded employer-source discovery.
-    - cron: "30 18 * * *"
-    # 03:30 Asia/Shanghai every Sunday: deeper gap scan.
-    - cron: "30 19 * * 6"
+  # Legacy GitHub schedule retired after the Tencent migration; manual evidence runs remain available.
   workflow_dispatch:
     inputs:
       deep:
